@@ -58,6 +58,9 @@ This provider exposes quite a few provider-specific configuration options:
   within a [VPC](http://aws.amazon.com/vpc/)
 * `region` - The region to start the instance in, such as "us-east-1"
 * `secret_access_key` - The secret access key for accessing AWS
+* `ssh_private_key_path` - The path to the SSH private key. This overrides
+  `config.ssh.private_key_path`.
+* `ssh_username` - The SSH username, which overrides `config.ssh.username`.
 * `subnet_id` - The subnet to boot the instance into, for VPC.
 
 These can be set like typical provider-specific configuration:
