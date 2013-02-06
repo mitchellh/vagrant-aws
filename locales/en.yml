@@ -30,6 +30,8 @@ en:
         An access key ID must be specified via "access_key_id"
       ami_required: |-
         An AMI must be configured via "ami"
+      private_key_missing: |-
+        The specified private key for AWS could not be found
       region_required: |-
         A region must be specified via "region"
       secret_access_key_required: |-

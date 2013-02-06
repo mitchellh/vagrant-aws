@@ -200,6 +200,11 @@ module VagrantPlugins
           errors << I18n.t("vagrant_aws.config.secret_access_key_required") if \
             config.secret_access_key.nil?
           errors << I18n.t("vagrant_aws.config.ami_required") if config.ami.nil?
+
+          if config.ssh_private_key_path && \
+            !File.file?(File.expand_path(config.ssh_private_key_path, machine.env.root_path))
+            errors << I18n.t("vagrant_aws.config.private_key_missing")
+          end
         end
 
         { "AWS Provider" => errors }
