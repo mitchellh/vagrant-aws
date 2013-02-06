@@ -1,0 +1,14 @@
+# OS-specific
+.DS_Store
+
+# Bundler/Rubygems
+*.gem
+.bundle
+pkg/*
+tags
+Gemfile.lock
+
+# Vagrant
+.vagrant
+Vagrantfile
+!example_box/Vagrantfile

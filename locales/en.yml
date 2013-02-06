@@ -1,0 +1,62 @@
+en:
+  vagrant_aws:
+    already_created: |-
+      The machine is already created.
+    launching_instance: |-
+      Launching an instance with the following settings...
+    launch_no_keypair: |-
+      Warning! You didn't specify a keypair to launch your instance with.
+      This can sometimes result in not being able to access your instance.
+    launch_vpc_warning: |-
+      Warning! You're launching this instance into a VPC without an
+      elastic IP. Please verify you're properly connected to a VPN so
+      you can access this machine, otherwise Vagrant will not be able
+      to SSH into it.
+    not_created: |-
+      Instance is not created. Please run `vagrant up` first.
+    ready: |-
+      Machine is booted and ready for use!
+    rsync_folder: |-
+      Rsyncing folder: %{hostpath} => %{guestpath}
+    terminating: |-
+      Terminating the instance...
+    waiting_for_ready: |-
+      Waiting for instance to become "ready"...
+    waiting_for_ssh: |-
+      Waiting for SSH to become available...
+
+    config:
+      access_key_id_required: |-
+        An access key ID must be specified via "access_key_id"
+      ami_required: |-
+        An AMI must be configured via "ami"
+      region_required: |-
+        A region must be specified via "region"
+      secret_access_key_required: |-
+        A secret access key is required via "secret_access_key"
+
+    errors:
+      fog_error: |-
+        There was an error talking to AWS. The error message is shown
+        below:
+
+        %{message}
+      rsync_error: |-
+        There was an error when attemping to rsync a share folder.
+        Please inspect the error message below for more info.
+
+        Host path: %{hostpath}
+        Guest path: %{guestpath}
+        Error: %{stderr}
+
+    states:
+      short_not_created: |-
+        not created
+      long_not_created: |-
+        The EC2 instance is not created. Run `vagrant up` to create it.
+
+      short_running: |-
+        running
+      long_running: |-
+        The EC2 instance is running. To stop this machine, you can run
+        `vagrant halt`. To destroy the machine, you can run `vagrant destroy`.
