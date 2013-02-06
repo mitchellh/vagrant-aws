@@ -90,6 +90,27 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+The region-specific configurations will override the top-level
+configurations when that region is used. They otherwise inherit
+the top-level configurations, as you would probably expect.
+
+## Networks
+
+Networking features in the form of `config.vm.network` are not
+supported with `vagrant-aws`, currently. If any of these are
+specified, Vagrant will emit a warning, but will otherwise boot
+the AWS machine.
+
+## Synced Folders
+
+There is minimal support for synced folders. Upon `vagrant up`,
+`vagrant reload`, and `vagrant provision`, the AWS provider will use
+`rsync` (if available) to uni-directionally sync the folder to
+the remote machine over SSH.
+
+This is good enough for all built-in Vagrant provisioners (shell,
+chef, and puppet) to work!
+
 ## Development
 
 To work on the `vagrant-aws` plugin, clone this repository out, and use
