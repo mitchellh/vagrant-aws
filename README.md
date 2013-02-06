@@ -9,6 +9,15 @@ Vagrant 1.1 will be released soon. In the mean time, this repository is
 meant as an example of a high quality plugin using the new plugin system
 in Vagrant.
 
+## Features
+
+* Boot EC2 or VPC instances.
+* SSH into the instances.
+* Provision the instances with any built-in Vagrant provisioner.
+* Minimal synced folder support via `rsync`.
+* Define region-specifc configurations so Vagrant can manage machines
+  in multiple regions.
+
 ## Usage
 
 Install using standard Vagrant 1.1+ plugin installation methods. After
