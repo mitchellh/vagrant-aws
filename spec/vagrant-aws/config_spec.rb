@@ -17,6 +17,8 @@ describe VagrantPlugins::AWS::Config do
     its("private_ip_address") { should be_nil }
     its("region")            { should == "us-east-1" }
     its("secret_access_key") { should be_nil }
+    its("ssh_private_key_path") { should be_nil }
+    its("ssh_username")      { should be_nil }
     its("subnet_id")         { should be_nil }
   end
 

@@ -38,6 +38,18 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :secret_access_key
 
+      # The path to the SSH private key to use with this EC2 instance.
+      # This overrides the `config.ssh.private_key_path` variable.
+      #
+      # @return [String]
+      attr_accessor :ssh_private_key_path
+
+      # The SSH username to use with this EC2 instance. This overrides
+      # the `config.ssh.username` variable.
+      #
+      # @return [String]
+      attr_accessor :ssh_username
+
       # The subnet ID to launch the machine into (VPC).
       #
       # @return [String]
@@ -51,6 +63,8 @@ module VagrantPlugins
         @private_ip_address = UNSET_VALUE
         @region             = UNSET_VALUE
         @secret_access_key  = UNSET_VALUE
+        @ssh_private_key_path = UNSET_VALUE
+        @ssh_username       = UNSET_VALUE
         @subnet_id          = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
@@ -137,6 +151,11 @@ module VagrantPlugins
         # Default region is us-east-1. This is sensible because AWS
         # generally defaults to this as well.
         @region = "us-east-1" if @region == UNSET_VALUE
+
+        # The SSH values by default are nil, and the top-level config
+        # `config.ssh` values are used.
+        @ssh_private_key_path = nil if @ssh_private_key_path == UNSET_VALUE
+        @ssh_username = nil if @ssh_username == UNSET_VALUE
 
         # Subnet is nil by default otherwise we'd launch into VPC.
         @subnet_id = nil if @subnet_id == UNSET_VALUE

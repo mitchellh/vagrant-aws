@@ -29,10 +29,16 @@ module VagrantPlugins
             return nil
           end
 
+          # Get the configuration
+          region = machine.provider_config.region
+          config = machine.provider_config.get_region_config(region)
+
           # Read the DNS info
           return {
             :host => server.dns_name,
-            :port => 22
+            :port => 22,
+            :private_key_path => config.ssh_private_key_path,
+            :username => config.ssh_username
           }
         end
       end
