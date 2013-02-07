@@ -34,6 +34,39 @@ $ vagrant up --provider=aws
 Of course prior to doing this, you'll need to obtain an AWS-compatible
 box file for Vagrant.
 
+## Quick Start
+
+After installing the plugin (instructions above), the quickest way to get
+started is to actually use a dummy AWS box and specify all the details
+manually within a `config.vm.provider` block. So first, add the dummy
+box using any name you want:
+
+```
+$ vagrant box add dummy TODO
+...
+```
+
+And then make a Vagrantfile that looks like the following, filling in
+your information where necessary.
+
+```
+Vagrant.configure("2") do |config|
+  config.vm.box = "dummy"
+
+  config.vm.provider :aws do |aws|
+    aws.access_key_id = "YOUR KEY"
+    aws.secret_access_key = "YOUR SECRET KEY"
+    aws.keypair_name = "KEYPAIR NAME"
+    aws.ssh_private_key_path = "PATH TO YOUR PRIVATE KEY"
+
+    aws.ami = "ami-7747d01e"
+    aws.ssh_username = "ubuntu"
+  end
+end
+```
+
+And then run `vagrant up --provider=aws`.
+
 ## Box Format
 
 Every provider in Vagrant must introduce a custom box format. This
