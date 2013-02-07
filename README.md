@@ -67,6 +67,14 @@ end
 
 And then run `vagrant up --provider=aws`.
 
+This will start an Ubuntu 12.04 instance in the us-east-1 region within
+your account. And assuming your SSH information was filled in properly
+within your Vagrantfile, SSH and provisioning will work as well.
+
+Note that normally a lot of this boilerplate is encoded within the box
+file, but the box file used for the quick start, the "dummy" box, has
+no preconfigured defaults.
+
 ## Box Format
 
 Every provider in Vagrant must introduce a custom box format. This
