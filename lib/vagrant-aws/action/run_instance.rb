@@ -2,6 +2,8 @@ require "log4r"
 
 require 'vagrant/util/retryable'
 
+require 'vagrant-aws/util/timer'
+
 module VagrantPlugins
   module AWS
     module Action
@@ -15,7 +17,11 @@ module VagrantPlugins
         end
 
         def call(env)
-          region       = env[:machine].provider_config.region
+          # Initialize metrics if they haven't been
+          env[:metrics] ||= {}
+
+          # Get the region we're going to booting up in
+          region = env[:machine].provider_config.region
 
           # Get the configs
           region_config      = env[:machine].provider_config.get_region_config(region)
@@ -69,24 +75,32 @@ module VagrantPlugins
           env[:machine].id = server.id
 
           # Wait for the instance to be ready first
-          env[:ui].info(I18n.t("vagrant_aws.waiting_for_ready"))
-          retryable(:on => Fog::Errors::TimeoutError, :tries => 30) do
-            # If we're interrupted don't worry about waiting
-            next if env[:interrupted]
+          env[:metrics]["instance_ready_time"] = Util::Timer.time do
+            env[:ui].info(I18n.t("vagrant_aws.waiting_for_ready"))
+            retryable(:on => Fog::Errors::TimeoutError, :tries => 30) do
+              # If we're interrupted don't worry about waiting
+              next if env[:interrupted]
 
-            # Wait for the server to be ready
-            server.wait_for(2) { ready? }
+              # Wait for the server to be ready
+              server.wait_for(2) { ready? }
+            end
           end
 
+          @logger.info("Time to instance ready: #{env[:metrics]["instance_ready_time"]}")
+
           if !env[:interrupted]
-            # Wait for SSH to be ready.
-            env[:ui].info(I18n.t("vagrant_aws.waiting_for_ssh"))
-            while true
-              # If we're interrupted then just back out
-              break if env[:interrupted]
-              break if env[:machine].communicate.ready?
-              sleep 2
+            env[:metrics]["instance_ssh_time"] = Util::Timer.time do
+              # Wait for SSH to be ready.
+              env[:ui].info(I18n.t("vagrant_aws.waiting_for_ssh"))
+              while true
+                # If we're interrupted then just back out
+                break if env[:interrupted]
+                break if env[:machine].communicate.ready?
+                sleep 2
+              end
             end
+
+            @logger.info("Time for SSH ready: #{env[:metrics]["instance_ssh_time"]}")
 
             # Ready and booted!
             env[:ui].info(I18n.t("vagrant_aws.ready"))
