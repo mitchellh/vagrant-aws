@@ -42,7 +42,7 @@ manually within a `config.vm.provider` block. So first, add the dummy
 box using any name you want:
 
 ```
-$ vagrant box add dummy TODO
+$ vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
 ...
 ```
 
