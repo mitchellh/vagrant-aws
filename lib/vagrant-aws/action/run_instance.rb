@@ -32,6 +32,7 @@ module VagrantPlugins
           private_ip_address = region_config.private_ip_address
           security_groups    = region_config.security_groups
           subnet_id          = region_config.subnet_id
+          tags               = region_config.tags
 
           # If there is no keypair then warn the user
           if !keypair
@@ -61,7 +62,8 @@ module VagrantPlugins
               :image_id           => ami,
               :key_name           => keypair,
               :private_ip_address => private_ip_address,
-              :subnet_id          => subnet_id
+              :subnet_id          => subnet_id,
+              :tags               => tags
             }
 
             if !security_groups.empty?

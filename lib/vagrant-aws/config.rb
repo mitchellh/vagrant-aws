@@ -67,6 +67,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :subnet_id
 
+      # The tags for the machine.
+      #
+      # @return [Hash<String, String>]
+      attr_accessor :tags
+
       def initialize(region_specific=false)
         @access_key_id      = UNSET_VALUE
         @ami                = UNSET_VALUE
@@ -80,6 +85,7 @@ module VagrantPlugins
         @ssh_private_key_path = UNSET_VALUE
         @ssh_username       = UNSET_VALUE
         @subnet_id          = UNSET_VALUE
+        @tags               = {}
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -142,6 +148,10 @@ module VagrantPlugins
 
           # Set it
           result.instance_variable_set(:@__region_config, new_region_config)
+
+          # Merge in the tags
+          result.tags.merge!(self.tags)
+          result.tags.merge!(other.tags)
         end
       end
 

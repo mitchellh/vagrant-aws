@@ -22,6 +22,7 @@ describe VagrantPlugins::AWS::Config do
     its("ssh_private_key_path") { should be_nil }
     its("ssh_username")      { should be_nil }
     its("subnet_id")         { should be_nil }
+    its("tags")              { should == {} }
   end
 
   describe "overriding defaults" do
@@ -32,7 +33,7 @@ describe VagrantPlugins::AWS::Config do
     [:access_key_id, :ami, :availability_zone, :instance_type,
       :keypair_name,
       :region, :secret_access_key, :security_groups,
-      :ssh_private_key_path, :ssh_username, :subnet_id].each do |attribute|
+      :ssh_private_key_path, :ssh_username, :subnet_id, :tags].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
         instance.send("#{attribute}=".to_sym, "foo")
@@ -139,6 +140,22 @@ describe VagrantPlugins::AWS::Config do
       end
 
       its("ami") { should == "child" }
+    end
+
+    describe "merging" do
+      let(:first)  { described_class.new }
+      let(:second) { described_class.new }
+
+      it "should merge the tags" do
+        first.tags["one"] = "one"
+        second.tags["two"] = "two"
+
+        third = first.merge(second)
+        third.tags.should == {
+          "one" => "one",
+          "two" => "two"
+        }
+      end
     end
   end
 end
