@@ -13,6 +13,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :ami
 
+      # The availability zone to launch the instance into. If nil, it will
+      # use the default for your account.
+      #
+      # @return [String]
+      attr_accessor :availability_zone
+
       # The type of instance to launch, such as "m1.small"
       #
       # @return [String]
@@ -58,6 +64,7 @@ module VagrantPlugins
       def initialize(region_specific=false)
         @access_key_id      = UNSET_VALUE
         @ami                = UNSET_VALUE
+        @availability_zone  = UNSET_VALUE
         @instance_type      = UNSET_VALUE
         @keypair_name       = UNSET_VALUE
         @private_ip_address = UNSET_VALUE
@@ -151,6 +158,7 @@ module VagrantPlugins
         # Default region is us-east-1. This is sensible because AWS
         # generally defaults to this as well.
         @region = "us-east-1" if @region == UNSET_VALUE
+        @availability_zone = nil if @availability_zone == UNSET_VALUE
 
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.

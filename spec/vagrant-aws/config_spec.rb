@@ -12,6 +12,7 @@ describe VagrantPlugins::AWS::Config do
 
     its("access_key_id")     { should be_nil }
     its("ami")               { should be_nil }
+    its("availability_zone") { should be_nil }
     its("instance_type")     { should == "m1.small" }
     its("keypair_name")      { should be_nil }
     its("private_ip_address") { should be_nil }
@@ -27,7 +28,8 @@ describe VagrantPlugins::AWS::Config do
     # simple boilerplate test, so I cut corners here. It just sets
     # each of these attributes to "foo" in isolation, and reads the value
     # and asserts the proper result comes back out.
-    [:access_key_id, :ami, :instance_type, :keypair_name,
+    [:access_key_id, :ami, :availability_zone, :instance_type,
+      :keypair_name,
       :region, :secret_access_key].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
