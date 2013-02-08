@@ -108,6 +108,7 @@ This provider exposes quite a few provider-specific configuration options:
   instance will be launched in VPC, this must be a list of security group
   IDs.
 * `subnet_id` - The subnet to boot the instance into, for VPC.
+* `tags` - A hash of tags to set on the machine.
 
 These can be set like typical provider-specific configuration:
 
