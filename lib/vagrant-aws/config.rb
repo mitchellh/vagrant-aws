@@ -44,6 +44,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :secret_access_key
 
+      # The security groups to set on the instance. For VPC this must
+      # be a list of IDs. For EC2, it can be either.
+      #
+      # @return [Array<String>]
+      attr_accessor :security_groups
+
       # The path to the SSH private key to use with this EC2 instance.
       # This overrides the `config.ssh.private_key_path` variable.
       #
@@ -70,6 +76,7 @@ module VagrantPlugins
         @private_ip_address = UNSET_VALUE
         @region             = UNSET_VALUE
         @secret_access_key  = UNSET_VALUE
+        @security_groups    = UNSET_VALUE
         @ssh_private_key_path = UNSET_VALUE
         @ssh_username       = UNSET_VALUE
         @subnet_id          = UNSET_VALUE
@@ -159,6 +166,9 @@ module VagrantPlugins
         # generally defaults to this as well.
         @region = "us-east-1" if @region == UNSET_VALUE
         @availability_zone = nil if @availability_zone == UNSET_VALUE
+
+        # The security groups are empty by default.
+        @security_groups = [] if @security_groups == UNSET_VALUE
 
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.

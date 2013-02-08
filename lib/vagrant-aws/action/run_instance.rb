@@ -30,6 +30,7 @@ module VagrantPlugins
           instance_type      = region_config.instance_type
           keypair            = region_config.keypair_name
           private_ip_address = region_config.private_ip_address
+          security_groups    = region_config.security_groups
           subnet_id          = region_config.subnet_id
 
           # If there is no keypair then warn the user
@@ -51,16 +52,24 @@ module VagrantPlugins
           env[:ui].info(" -- Keypair: #{keypair}") if keypair
           env[:ui].info(" -- Subnet ID: #{subnet_id}") if subnet_id
           env[:ui].info(" -- Private IP: #{private_ip_address}") if private_ip_address
+          env[:ui].info(" -- Security Groups: #{security_groups.inspect}") if !security_groups.empty?
 
           begin
-            server = env[:aws_compute].servers.create({
+            options = {
               :availability_zone  => availability_zone,
               :flavor_id          => instance_type,
               :image_id           => ami,
               :key_name           => keypair,
               :private_ip_address => private_ip_address,
               :subnet_id          => subnet_id
-            })
+            }
+
+            if !security_groups.empty?
+              security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
+              options[security_group_key] = security_groups
+            end
+
+            server = env[:aws_compute].servers.create(options)
           rescue Fog::Compute::AWS::NotFound => e
             # Invalid subnet doesn't have its own error so we catch and
             # check the error message here.

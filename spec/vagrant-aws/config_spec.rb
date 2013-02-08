@@ -18,6 +18,7 @@ describe VagrantPlugins::AWS::Config do
     its("private_ip_address") { should be_nil }
     its("region")            { should == "us-east-1" }
     its("secret_access_key") { should be_nil }
+    its("security_groups")   { should == [] }
     its("ssh_private_key_path") { should be_nil }
     its("ssh_username")      { should be_nil }
     its("subnet_id")         { should be_nil }
@@ -30,7 +31,8 @@ describe VagrantPlugins::AWS::Config do
     # and asserts the proper result comes back out.
     [:access_key_id, :ami, :availability_zone, :instance_type,
       :keypair_name,
-      :region, :secret_access_key].each do |attribute|
+      :region, :secret_access_key, :security_groups,
+      :ssh_private_key_path, :ssh_username, :subnet_id].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
         instance.send("#{attribute}=".to_sym, "foo")
