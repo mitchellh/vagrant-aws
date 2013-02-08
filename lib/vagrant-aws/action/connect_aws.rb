@@ -14,14 +14,20 @@ module VagrantPlugins
         end
 
         def call(env)
-          access_key_id = env[:machine].provider_config.access_key_id
-          secret_access_key = env[:machine].provider_config.secret_access_key
+          # Get the region we're going to booting up in
+          region = env[:machine].provider_config.region
+
+          # Get the configs
+          region_config     = env[:machine].provider_config.get_region_config(region)
+          access_key_id     = region_config.access_key_id
+          secret_access_key = region_config.secret_access_key
 
           @logger.info("Connecting to AWS...")
           env[:aws_compute] = Fog::Compute.new({
             :provider => :aws,
             :aws_access_key_id => access_key_id,
-            :aws_secret_access_key => secret_access_key
+            :aws_secret_access_key => secret_access_key,
+            :region => region
           })
 
           @app.call(env)
