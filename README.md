@@ -4,10 +4,7 @@ This is a [Vagrant](http://www.vagrantup.com) 1.1+ plugin that adds an [AWS](htt
 provider to Vagrant, allowing Vagrant to control and provision machines in
 EC2 and VPC.
 
-**NOTE:** This plugin requires Vagrant 1.1+, which is still unreleased.
-Vagrant 1.1 will be released soon. In the mean time, this repository is
-meant as an example of a high quality plugin using the new plugin system
-in Vagrant.
+**NOTE:** This plugin requires Vagrant 1.1+,
 
 ## Features
 
