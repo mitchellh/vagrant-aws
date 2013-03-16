@@ -39,6 +39,16 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :region
 
+      # The EC2 endpoint to connect to
+      #
+      # @return [String]
+      attr_accessor :endpoint
+
+      # The version of the AWS api to use
+      #
+      # @return [String]
+      attr_accessor :version
+
       # The secret access key for accessing AWS.
       #
       # @return [String]
@@ -80,6 +90,8 @@ module VagrantPlugins
         @keypair_name       = UNSET_VALUE
         @private_ip_address = UNSET_VALUE
         @region             = UNSET_VALUE
+        @endpoint           = UNSET_VALUE
+        @version            = UNSET_VALUE
         @secret_access_key  = UNSET_VALUE
         @security_groups    = UNSET_VALUE
         @ssh_private_key_path = UNSET_VALUE
@@ -176,6 +188,8 @@ module VagrantPlugins
         # generally defaults to this as well.
         @region = "us-east-1" if @region == UNSET_VALUE
         @availability_zone = nil if @availability_zone == UNSET_VALUE
+        @endpoint = nil if @endpoint == UNSET_VALUE
+        @version = nil if @version == UNSET_VALUE
 
         # The security groups are empty by default.
         @security_groups = [] if @security_groups == UNSET_VALUE
