@@ -60,6 +60,7 @@ module VagrantPlugins
               :availability_zone  => availability_zone,
               :flavor_id          => instance_type,
               :image_id           => ami,
+              :region             => region,
               :key_name           => keypair,
               :private_ip_address => private_ip_address,
               :subnet_id          => subnet_id,
