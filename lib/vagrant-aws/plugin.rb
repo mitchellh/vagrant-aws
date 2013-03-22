@@ -24,7 +24,7 @@ module VagrantPlugins
         Config
       end
 
-      provider(:aws) do
+      provider(:aws, parallel: true) do
         # Setup logging and i18n
         setup_logging
         setup_i18n
