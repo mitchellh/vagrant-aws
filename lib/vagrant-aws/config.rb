@@ -50,6 +50,11 @@ module VagrantPlugins
       # @return [Array<String>]
       attr_accessor :security_groups
 
+      # The SSH port used by the instance
+      #
+      # @return [int]
+      attr_accessor :ssh_port
+
       # The path to the SSH private key to use with this EC2 instance.
       # This overrides the `config.ssh.private_key_path` variable.
       #
@@ -82,6 +87,7 @@ module VagrantPlugins
         @region             = UNSET_VALUE
         @secret_access_key  = UNSET_VALUE
         @security_groups    = UNSET_VALUE
+        @ssh_port           = UNSET_VALUE
         @ssh_private_key_path = UNSET_VALUE
         @ssh_username       = UNSET_VALUE
         @subnet_id          = UNSET_VALUE
@@ -182,6 +188,8 @@ module VagrantPlugins
 
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.
+        # The SSH port should be 22 if left unset.
+        @ssh_port = 22 if @ssh_port == UNSET_VALUE
         @ssh_private_key_path = nil if @ssh_private_key_path == UNSET_VALUE
         @ssh_username = nil if @ssh_username == UNSET_VALUE
 
