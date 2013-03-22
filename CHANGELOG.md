@@ -4,6 +4,7 @@
 * Configurable SSH port. [GH-13]
 * Support other AWS-compatible API endpoints with `config.endpoint`
   and `config.version`. [GH-6]
+* Disable strict host key checking on rsync so known hosts aren't an issue. [GH-7]
 
 # 0.1.1 (March 18, 2013)
 
