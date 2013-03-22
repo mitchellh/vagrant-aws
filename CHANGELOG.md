@@ -1,6 +1,6 @@
 # 0.1.3 (unreleased)
 
-
+* Exclude the ".vagrant" directory from rsync.
 
 # 0.1.2 (March 22, 2013)
 
