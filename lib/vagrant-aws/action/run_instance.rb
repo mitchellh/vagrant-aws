@@ -62,7 +62,6 @@ module VagrantPlugins
               :availability_zone  => availability_zone,
               :flavor_id          => instance_type,
               :image_id           => ami,
-              :region             => region,
               :key_name           => keypair,
               :ssh_port           => ssh_port,
               :private_ip_address => private_ip_address,
