@@ -68,6 +68,12 @@ en:
         Host path: %{hostpath}
         Guest path: %{guestpath}
         Error: %{stderr}
+      mkdir_error: |-
+        There was an error when attemping to create a shared host folder.
+        Please inspect the error message below for more info.
+
+        Host path: %{hostpath}
+        Error: %{stderr}
 
     states:
       short_not_created: |-
