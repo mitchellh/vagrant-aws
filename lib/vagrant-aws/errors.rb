@@ -14,6 +14,10 @@ module VagrantPlugins
       class RsyncError < VagrantAWSError
         error_key(:rsync_error)
       end
+
+      class MkdirError < VagrantAWSError
+        error_key(:mkdir_error)
+      end
     end
   end
 end
