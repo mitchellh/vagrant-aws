@@ -59,7 +59,7 @@ en:
         Please inspect the error message below for more info.
 
         Host path: %{hostpath}
-        Error: %{stderr}
+        Error: %{err}
 
     states:
       short_not_created: |-

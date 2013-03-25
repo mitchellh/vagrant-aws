@@ -31,12 +31,12 @@ module VagrantPlugins
                                 :guestpath => guestpath))
 
             # Create the host path if it doesn't exist
-            command = ["mkdir", "-p", hostpath]
-            r = Vagrant::Util::Subprocess.execute(*command)
-            if r.exit_code != 0
+            begin
+              FileUtils::mkdir_p(hostpath)
+            rescue Exception => err
               raise Errors::MkdirError,
                 :hostpath => hostpath,
-                :stderr => r.stderr
+                :err => err
             end
 
             # Create the guest path
