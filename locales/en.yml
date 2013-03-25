@@ -48,14 +48,14 @@ en:
 
         %{message}
       rsync_error: |-
-        There was an error when attemping to rsync a share folder.
+        There was an error when attempting to rsync a share folder.
         Please inspect the error message below for more info.
 
         Host path: %{hostpath}
         Guest path: %{guestpath}
         Error: %{stderr}
       mkdir_error: |-
-        There was an error when attemping to create a shared host folder.
+        There was an error when attempting to create a shared host folder.
         Please inspect the error message below for more info.
 
         Host path: %{hostpath}
