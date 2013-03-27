@@ -7,7 +7,7 @@ module VagrantPlugins
       class TerminateInstance
         def initialize(app, env)
           @app    = app
-          @logger = Log4r::Logger.new("vagrant_aws::action::run_instance")
+          @logger = Log4r::Logger.new("vagrant_aws::action::terminate_instance")
         end
 
         def call(env)
