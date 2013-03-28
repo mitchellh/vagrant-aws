@@ -33,7 +33,7 @@ module VagrantPlugins
             # Create the host path if it doesn't exist
             begin
               FileUtils::mkdir_p(hostpath)
-            rescue Exception => err
+            rescue => err
               raise Errors::MkdirError,
                 :hostpath => hostpath,
                 :err => err
