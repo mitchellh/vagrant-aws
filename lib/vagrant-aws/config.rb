@@ -87,6 +87,11 @@ module VagrantPlugins
       # @return [Hash<String, String>]
       attr_accessor :tags
 
+      # The user data string
+      #
+      # @return [String]
+      attr_accessor :user_data
+
       def initialize(region_specific=false)
         @access_key_id      = UNSET_VALUE
         @ami                = UNSET_VALUE
@@ -104,6 +109,7 @@ module VagrantPlugins
         @ssh_username       = UNSET_VALUE
         @subnet_id          = UNSET_VALUE
         @tags               = {}
+        @user_data          = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -209,6 +215,9 @@ module VagrantPlugins
 
         # Subnet is nil by default otherwise we'd launch into VPC.
         @subnet_id = nil if @subnet_id == UNSET_VALUE
+
+        # User Data is nil by default
+        @user_data = nil if @user_data == UNSET_VALUE
 
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.

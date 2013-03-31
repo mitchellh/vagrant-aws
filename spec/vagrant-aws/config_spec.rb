@@ -23,6 +23,7 @@ describe VagrantPlugins::AWS::Config do
     its("ssh_username")      { should be_nil }
     its("subnet_id")         { should be_nil }
     its("tags")              { should == {} }
+    its("user_data")         { should be_nil }
   end
 
   describe "overriding defaults" do
