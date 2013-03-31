@@ -18,6 +18,10 @@ en:
       Machine is booted and ready for use!
     rsync_folder: |-
       Rsyncing folder: %{hostpath} => %{guestpath}
+    starting: |-
+      Starting the instance...
+    stopping: |-
+      Stopping the instance...
     terminating: |-
       Terminating the instance...
     waiting_for_ready: |-
@@ -60,6 +64,22 @@ en:
         not created
       long_not_created: |-
         The EC2 instance is not created. Run `vagrant up` to create it.
+
+      short_stopped: |-
+        stopped
+      long_stopped: |-
+        The EC2 instance is stopped. Run `vagrant up` to start it.
+
+      short_stopping: |-
+        stopping
+      long_stopping: |-
+        The EC2 instance is stopping. Wait until is completely stopped to 
+        run `vagrant up` and start it.
+
+      short_pending: |-
+        pending
+      long_pending: |-
+        The EC2 instance is pending a start (i.e. this is a transition state).
 
       short_running: |-
         running
