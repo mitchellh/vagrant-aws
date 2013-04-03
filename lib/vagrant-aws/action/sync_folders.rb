@@ -2,12 +2,16 @@ require "log4r"
 
 require "vagrant/util/subprocess"
 
+require "vagrant/util/scoped_hash_override"
+
 module VagrantPlugins
   module AWS
     module Action
       # This middleware uses `rsync` to sync the folders over to the
       # AWS instance.
       class SyncFolders
+        include Vagrant::Util::ScopedHashOverride
+
         def initialize(app, env)
           @app    = app
           @logger = Log4r::Logger.new("vagrant_aws::action::sync_folders")
@@ -19,6 +23,11 @@ module VagrantPlugins
           ssh_info = env[:machine].ssh_info
 
           env[:machine].config.vm.synced_folders.each do |id, data|
+            data = scoped_hash_override(data, :aws)
+
+            # Ignore disabled shared folders
+            next if data[:disabled]
+
             hostpath  = File.expand_path(data[:hostpath], env[:root_path])
             guestpath = data[:guestpath]
 
