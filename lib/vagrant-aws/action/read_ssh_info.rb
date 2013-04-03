@@ -35,7 +35,7 @@ module VagrantPlugins
 
           # Read the DNS info
           return {
-            :host => server.dns_name,
+            :host => server.dns_name || server.private_ip_address,
             :port => config.ssh_port,
             :private_key_path => config.ssh_private_key_path,
             :username => config.ssh_username
