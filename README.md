@@ -72,6 +72,9 @@ Note that normally a lot of this boilerplate is encoded within the box
 file, but the box file used for the quick start, the "dummy" box, has
 no preconfigured defaults.
 
+If you have issues with SSH connecting, make sure that the instances
+are being launched with a security group that allows SSH access.
+
 ## Box Format
 
 Every provider in Vagrant must introduce a custom box format. This
@@ -91,7 +94,8 @@ This provider exposes quite a few provider-specific configuration options:
 * `ami` - The AMI id to boot, such as "ami-12345678"
 * `availability_zone` - The availability zone within the region to launch
   the instance. If nil, it will use the default set by Amazon.
-* `instance_type` - The type of instance, such as "m1.small"
+* `instance_type` - The type of instance, such as "m1.small". The default
+  value of this if not specified is "m1.small".
 * `keypair_name` - The name of the keypair to use to bootstrap AMIs
    which support it.
 * `private_ip_address` - The private IP address to assign to an instance
