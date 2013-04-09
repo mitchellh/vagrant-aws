@@ -4,6 +4,7 @@
   and no specific keys are set in the Vagrantfile. [GH-33]
 * Fix issues with SSH on VPCs, the correct IP is used. [GH-30]
 * Exclude the ".vagrant" directory from rsync.
+* Implement `:disabled` flag support for shared folders. [GH-29]
 
 # 0.1.2 (March 22, 2013)
 
