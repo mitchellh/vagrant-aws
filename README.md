@@ -134,7 +134,7 @@ Vagrant.configure("2") do |config|
     aws.secret_access_key = "bar"
     aws.region = "us-east-1"
 
-    # Simply region config
+    # Simple region config
     aws.region_config "us-east-1", :ami => "ami-12345678"
 
     # More comprehensive region config
