@@ -3,6 +3,11 @@ require "vagrant-aws/config"
 describe VagrantPlugins::AWS::Config do
   let(:instance) { described_class.new }
 
+  # Ensure tests are not affected by AWS credential environment variables
+  before :each do
+    ENV.stub(:[] => nil)
+  end
+
   describe "defaults" do
     subject do
       instance.tap do |o|
@@ -40,6 +45,35 @@ describe VagrantPlugins::AWS::Config do
         instance.finalize!
         instance.send(attribute).should == "foo"
       end
+    end
+  end
+
+  describe "getting credentials from environment" do
+    context "without EC2 credential environment variables" do
+      subject do
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+
+      its("access_key_id")     { should be_nil }
+      its("secret_access_key") { should be_nil }
+    end
+
+    context "with EC2 credential environment variables" do
+      before :each do
+        ENV.stub(:[]).with("AWS_ACCESS_KEY").and_return("access_key")
+        ENV.stub(:[]).with("AWS_SECRET_KEY").and_return("secret_key")
+      end
+
+      subject do
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+
+      its("access_key_id")     { should == "access_key" }
+      its("secret_access_key") { should == "secret_key" }
     end
   end
 
