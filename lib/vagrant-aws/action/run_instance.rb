@@ -34,6 +34,7 @@ module VagrantPlugins
           security_groups    = region_config.security_groups
           subnet_id          = region_config.subnet_id
           tags               = region_config.tags
+          user_data          = region_config.user_data
 
           # If there is no keypair then warn the user
           if !keypair
@@ -66,7 +67,8 @@ module VagrantPlugins
               :ssh_port           => ssh_port,
               :private_ip_address => private_ip_address,
               :subnet_id          => subnet_id,
-              :tags               => tags
+              :tags               => tags,
+              :user_data          => user_data
             }
 
             if !security_groups.empty?
