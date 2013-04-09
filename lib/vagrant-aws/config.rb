@@ -174,9 +174,10 @@ module VagrantPlugins
       end
 
       def finalize!
-        # The access keys default to nil
-        @access_key_id     = nil if @access_key_id     == UNSET_VALUE
-        @secret_access_key = nil if @secret_access_key == UNSET_VALUE
+        # Try to get access keys from standard AWS environment variables; they
+        # will default to nil if the environment variables are not present.
+        @access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
+        @secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
 
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
