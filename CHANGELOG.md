@@ -1,5 +1,8 @@
 # 0.1.3 (unreleased)
 
+* The `AWS_ACCESS_KEY` and `AWS_SECRET_KEY` will be used if available
+  and no specific keys are set in the Vagrantfile. [GH-33]
+* Fix issues with SSH on VPCs, the correct IP is used. [GH-30]
 * Exclude the ".vagrant" directory from rsync.
 
 # 0.1.2 (March 22, 2013)
