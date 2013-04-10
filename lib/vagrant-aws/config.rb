@@ -92,6 +92,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :user_data
 
+      # Use IAM Instance Role for authentication to AWS instead of an
+      # explicit access_id and secret_access_key
+      #
+      # @return [Boolean]
+      attr_accessor :use_iam_profile
+
       def initialize(region_specific=false)
         @access_key_id      = UNSET_VALUE
         @ami                = UNSET_VALUE
@@ -110,6 +116,7 @@ module VagrantPlugins
         @subnet_id          = UNSET_VALUE
         @tags               = {}
         @user_data          = UNSET_VALUE
+        @use_iam_profile    = false
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -182,8 +189,8 @@ module VagrantPlugins
       def finalize!
         # Try to get access keys from standard AWS environment variables; they
         # will default to nil if the environment variables are not present.
-        @access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
-        @secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
+        @access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE && ! @use_iam_profile
+        @secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE && ! @use_iam_profile
 
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
@@ -256,9 +263,9 @@ module VagrantPlugins
           config = get_region_config(@region)
 
           errors << I18n.t("vagrant_aws.config.access_key_id_required") if \
-            config.access_key_id.nil?
+            config.access_key_id.nil? && ! config.use_iam_profile
           errors << I18n.t("vagrant_aws.config.secret_access_key_required") if \
-            config.secret_access_key.nil?
+            config.secret_access_key.nil? && ! config.use_iam_profile
           errors << I18n.t("vagrant_aws.config.ami_required") if config.ami.nil?
 
           if config.ssh_private_key_path && \

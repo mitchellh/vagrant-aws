@@ -29,6 +29,7 @@ describe VagrantPlugins::AWS::Config do
     its("subnet_id")         { should be_nil }
     its("tags")              { should == {} }
     its("user_data")         { should be_nil }
+    its("use_iam_profile")   { should be_false }
   end
 
   describe "overriding defaults" do
@@ -46,6 +47,11 @@ describe VagrantPlugins::AWS::Config do
         instance.finalize!
         instance.send(attribute).should == "foo"
       end
+    end
+    it "should be true if overriden" do
+      instance.use_iam_profile = true
+      instance.finalize!
+      instance.use_iam_profile.should be_true
     end
   end
 
@@ -75,6 +81,23 @@ describe VagrantPlugins::AWS::Config do
 
       its("access_key_id")     { should == "access_key" }
       its("secret_access_key") { should == "secret_key" }
+    end
+  end
+
+  describe "Working with instance profiles" do
+    context "Using iam instance profile" do
+      subject do
+        instance.tap do |o|
+          o.use_iam_profile = true
+          o.access_key_id = nil
+          o.secret_access_key = nil
+          o.finalize!
+        end
+      end
+
+      its("access_key_id")     { should be_nil }
+      its("secret_access_key") { should be_nil }
+      its("use_iam_profile")   { should be_true }
     end
   end
 
