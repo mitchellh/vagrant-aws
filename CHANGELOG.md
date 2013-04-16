@@ -1,4 +1,4 @@
-# 0.1.4 (unreleased)
+# 0.2.0 (April 16, 2013)
 
 * Add support for `vagrant ssh -c` [GH-42]
 * Ability to specify a timeout for waiting for instances to become ready. [GH-44]
