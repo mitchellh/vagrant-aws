@@ -1,3 +1,7 @@
+# 0.2.1 (April 16, 2013)
+
+* Got rid of extranneous references to old SSH settings.
+
 # 0.2.0 (April 16, 2013)
 
 * Add support for `vagrant ssh -c` [GH-42]
