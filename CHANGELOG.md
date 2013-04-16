@@ -1,6 +1,6 @@
 # 0.1.4 (unreleased)
 
-
+* Ability to specify a timeout for waiting for instances to become ready. [GH-44]
 
 # 0.1.3 (April 9, 2013)
 

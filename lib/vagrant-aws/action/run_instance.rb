@@ -95,8 +95,10 @@ module VagrantPlugins
 
           # Wait for the instance to be ready first
           env[:metrics]["instance_ready_time"] = Util::Timer.time do
+            tries = region_config.instance_ready_timeout / 2
+
             env[:ui].info(I18n.t("vagrant_aws.waiting_for_ready"))
-            retryable(:on => Fog::Errors::TimeoutError, :tries => 30) do
+            retryable(:on => Fog::Errors::TimeoutError, :tries => tries) do
               # If we're interrupted don't worry about waiting
               next if env[:interrupted]
 

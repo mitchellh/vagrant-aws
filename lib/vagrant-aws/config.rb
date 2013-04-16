@@ -19,6 +19,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :availability_zone
 
+      # The timeout to wait for an instance to become ready.
+      #
+      # @return [Fixnum]
+      attr_accessor :instance_ready_timeout
+
       # The type of instance to launch, such as "m1.small"
       #
       # @return [String]
@@ -187,6 +192,9 @@ module VagrantPlugins
 
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
+
+        # Set the default timeout for waiting for an instance to be ready
+        @instance_ready_timeout = 120 if @instance_ready_timeout == UNSET_VALUE
 
         # Default instance type is an m1.small
         @instance_type = "m1.small" if @instance_type == UNSET_VALUE
