@@ -101,6 +101,7 @@ module VagrantPlugins
         @access_key_id      = UNSET_VALUE
         @ami                = UNSET_VALUE
         @availability_zone  = UNSET_VALUE
+        @instance_ready_timeout = UNSET_VALUE
         @instance_type      = UNSET_VALUE
         @keypair_name       = UNSET_VALUE
         @private_ip_address = UNSET_VALUE
