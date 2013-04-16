@@ -58,7 +58,8 @@ Vagrant.configure("2") do |config|
 
     aws.ami = "ami-7747d01e"
     aws.ssh_username = "ubuntu"
-  end
+    config.ssh.username = "ubuntu"
+  end  
 end
 ```
 
@@ -66,7 +67,9 @@ And then run `vagrant up --provider=aws`.
 
 This will start an Ubuntu 12.04 instance in the us-east-1 region within
 your account. And assuming your SSH information was filled in properly
-within your Vagrantfile, SSH and provisioning will work as well.
+within your Vagrantfile, SSH and provisioning will work as well. Note that
+for Vagrant 1.1 you must specify config.ssh.username as well as aws.ssh_username
+in order for provisioning to work.
 
 Note that normally a lot of this boilerplate is encoded within the box
 file, but the box file used for the quick start, the "dummy" box, has
