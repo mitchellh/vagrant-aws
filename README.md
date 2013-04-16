@@ -58,9 +58,8 @@ Vagrant.configure("2") do |config|
 
     aws.ami = "ami-7747d01e"
     aws.ssh_username = "ubuntu"
-  end
-  
-  config.ssh.username = "ubuntu"
+    config.ssh.username = "ubuntu"
+  end  
 end
 ```
 
