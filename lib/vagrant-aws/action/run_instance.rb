@@ -28,7 +28,6 @@ module VagrantPlugins
           ami                = region_config.ami
           availability_zone  = region_config.availability_zone
           instance_type      = region_config.instance_type
-          ssh_port           = region_config.ssh_port
           keypair            = region_config.keypair_name
           private_ip_address = region_config.private_ip_address
           security_groups    = region_config.security_groups
@@ -52,7 +51,6 @@ module VagrantPlugins
           env[:ui].info(" -- AMI: #{ami}")
           env[:ui].info(" -- Region: #{region}")
           env[:ui].info(" -- Availability Zone: #{availability_zone}") if availability_zone
-          env[:ui].info(" -- SSH Port: #{ssh_port}") if ssh_port
           env[:ui].info(" -- Keypair: #{keypair}") if keypair
           env[:ui].info(" -- Subnet ID: #{subnet_id}") if subnet_id
           env[:ui].info(" -- Private IP: #{private_ip_address}") if private_ip_address
@@ -64,7 +62,6 @@ module VagrantPlugins
               :flavor_id          => instance_type,
               :image_id           => ami,
               :key_name           => keypair,
-              :ssh_port           => ssh_port,
               :private_ip_address => private_ip_address,
               :subnet_id          => subnet_id,
               :tags               => tags,
