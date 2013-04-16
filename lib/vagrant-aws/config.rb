@@ -92,6 +92,12 @@ module VagrantPlugins
       # @return [Hash<String, String>]
       attr_accessor :tags
 
+      # Use IAM Instance Role for authentication to AWS instead of an
+      # explicit access_id and secret_access_key
+      #
+      # @return [Boolean]
+      attr_accessor :use_iam_profile
+
       # The user data string
       #
       # @return [String]
@@ -116,6 +122,7 @@ module VagrantPlugins
         @subnet_id          = UNSET_VALUE
         @tags               = {}
         @user_data          = UNSET_VALUE
+        @use_iam_profile    = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -226,6 +233,9 @@ module VagrantPlugins
         # Subnet is nil by default otherwise we'd launch into VPC.
         @subnet_id = nil if @subnet_id == UNSET_VALUE
 
+        # By default we don't use an IAM profile
+        @use_iam_profile = false if @use_iam_profile == UNSET_VALUE
+
         # User Data is nil by default
         @user_data = nil if @user_data == UNSET_VALUE
 
@@ -264,10 +274,13 @@ module VagrantPlugins
           # that region.
           config = get_region_config(@region)
 
-          errors << I18n.t("vagrant_aws.config.access_key_id_required") if \
-            config.access_key_id.nil?
-          errors << I18n.t("vagrant_aws.config.secret_access_key_required") if \
-            config.secret_access_key.nil?
+          if !config.use_iam_profile
+            errors << I18n.t("vagrant_aws.config.access_key_id_required") if \
+              config.access_key_id.nil?
+            errors << I18n.t("vagrant_aws.config.secret_access_key_required") if \
+              config.secret_access_key.nil?
+          end
+
           errors << I18n.t("vagrant_aws.config.ami_required") if config.ami.nil?
 
           if config.ssh_private_key_path && \
