@@ -3,6 +3,7 @@
 * Add support for `vagrant ssh -c` [GH-42]
 * Ability to specify a timeout for waiting for instances to become ready. [GH-44]
 * Better error message if instance didn't become ready in time.
+* Connection can now be done using IAM profiles. [GH-41]
 
 # 0.1.3 (April 9, 2013)
 
