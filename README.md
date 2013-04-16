@@ -1,10 +1,10 @@
 # Vagrant AWS Provider
 
-This is a [Vagrant](http://www.vagrantup.com) 1.1+ plugin that adds an [AWS](http://aws.amazon.com)
+This is a [Vagrant](http://www.vagrantup.com) 1.2+ plugin that adds an [AWS](http://aws.amazon.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in
 EC2 and VPC.
 
-**NOTE:** This plugin requires Vagrant 1.1+,
+**NOTE:** This plugin requires Vagrant 1.2+,
 
 ## Features
 
@@ -50,14 +50,15 @@ your information where necessary.
 Vagrant.configure("2") do |config|
   config.vm.box = "dummy"
 
-  config.vm.provider :aws do |aws|
+  config.vm.provider :aws do |aws, override|
     aws.access_key_id = "YOUR KEY"
     aws.secret_access_key = "YOUR SECRET KEY"
     aws.keypair_name = "KEYPAIR NAME"
-    aws.ssh_private_key_path = "PATH TO YOUR PRIVATE KEY"
 
     aws.ami = "ami-7747d01e"
-    aws.ssh_username = "ubuntu"
+
+    override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = "PATH TO YOUR PRIVATE KEY"
   end
 end
 ```
@@ -104,9 +105,6 @@ This provider exposes quite a few provider-specific configuration options:
   within a [VPC](http://aws.amazon.com/vpc/)
 * `region` - The region to start the instance in, such as "us-east-1"
 * `secret_access_key` - The secret access key for accessing AWS
-* `ssh_private_key_path` - The path to the SSH private key. This overrides
-  `config.ssh.private_key_path`.
-* `ssh_username` - The SSH username, which overrides `config.ssh.username`.
 * `security_groups` - An array of security groups for the instance. If this
   instance will be launched in VPC, this must be a list of security group
   IDs.
