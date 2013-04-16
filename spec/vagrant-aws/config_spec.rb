@@ -25,8 +25,6 @@ describe VagrantPlugins::AWS::Config do
     its("region")            { should == "us-east-1" }
     its("secret_access_key") { should be_nil }
     its("security_groups")   { should == [] }
-    its("ssh_private_key_path") { should be_nil }
-    its("ssh_username")      { should be_nil }
     its("subnet_id")         { should be_nil }
     its("tags")              { should == {} }
     its("user_data")         { should be_nil }
@@ -41,7 +39,7 @@ describe VagrantPlugins::AWS::Config do
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
       :instance_type, :keypair_name,
       :region, :secret_access_key, :security_groups,
-      :ssh_private_key_path, :ssh_username, :subnet_id, :tags,
+      :subnet_id, :tags,
       :use_iam_profile, :user_data].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
