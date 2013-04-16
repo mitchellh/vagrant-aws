@@ -47,6 +47,11 @@ en:
         below:
 
         %{message}
+      instance_ready_timeout: |-
+        The instance never became "ready" in AWS. The timeout currently
+        set waiting for the instance to become ready is %{timeout} seconds.
+        Please verify that the machine properly boots. If you need more time
+        set the `instance_ready_timeout` configuration on the AWS provider.
       rsync_error: |-
         There was an error when attemping to rsync a share folder.
         Please inspect the error message below for more info.

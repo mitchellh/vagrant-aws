@@ -11,6 +11,10 @@ module VagrantPlugins
         error_key(:fog_error)
       end
 
+      class InstanceReadyTimeout < VagrantAWSError
+        error_key(:instance_ready_timeout)
+      end
+
       class RsyncError < VagrantAWSError
         error_key(:rsync_error)
       end
