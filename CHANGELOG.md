@@ -1,3 +1,7 @@
+# 0.2.2 (April 18, 2013)
+
+* Fix crashing bug with incorrect provisioner arguments.
+
 # 0.2.1 (April 16, 2013)
 
 * Got rid of extranneous references to old SSH settings.
