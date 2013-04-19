@@ -2,6 +2,7 @@
 
 * Show proper configuration errors if an invalid configuration key
   is used.
+* Request confirmation on `vagrant destroy`, like normal VirtualBox + Vagrant.
 
 # 0.2.2 (April 18, 2013)
 
