@@ -11,9 +11,15 @@ module VagrantPlugins
       # This action is called to terminate the remote machine.
       def self.action_destroy
         Vagrant::Action::Builder.new.tap do |b|
-          b.use ConfigValidate
-          b.use ConnectAWS
-          b.use TerminateInstance
+          b.use Call, DestroyConfirm do |env, b2|
+            if env2[:result]
+              b2.use ConfigValidate
+              b2.use ConnectAWS
+              b2.use TerminateInstance
+            else
+              b2.use MessageWillNotDestro
+            end
+          end
         end
       end
 
