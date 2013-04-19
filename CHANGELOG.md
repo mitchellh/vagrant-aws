@@ -1,6 +1,7 @@
 # 0.2.3 (unreleased)
 
-
+* Show proper configuration errors if an invalid configuration key
+  is used.
 
 # 0.2.2 (April 18, 2013)
 

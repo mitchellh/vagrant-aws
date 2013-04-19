@@ -238,7 +238,7 @@ module VagrantPlugins
       end
 
       def validate(machine)
-        errors = []
+        errors = _detected_errors
 
         errors << I18n.t("vagrant_aws.config.region_required") if @region.nil?
 
