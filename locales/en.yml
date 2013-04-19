@@ -28,6 +28,9 @@ en:
       Warning! The AWS provider doesn't support any of the Vagrant
       high-level network configurations (`config.vm.network`). They
       will be silently ignored.
+    will_not_destroy: |-
+      The instance '%{name}' will not be destroyed, since the confirmation
+      was declined.
 
     config:
       access_key_id_required: |-
