@@ -55,6 +55,8 @@ module VagrantPlugins
           env[:ui].info(" -- Subnet ID: #{subnet_id}") if subnet_id
           env[:ui].info(" -- Private IP: #{private_ip_address}") if private_ip_address
           env[:ui].info(" -- Security Groups: #{security_groups.inspect}") if !security_groups.empty?
+          env[:ui].info(" -- User Data: #{user_data}") if user_data
+          env[:ui].info(" -- Tags: #{tags.inspect}") if !tags.empty?
 
           begin
             options = {
