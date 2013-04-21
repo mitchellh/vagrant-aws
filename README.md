@@ -187,6 +187,21 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+## User data
+Here are some example to use user_data
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ... other stuff
+
+  # Option 1: a single string
+  aws.user_data = "#!/bin/bash\necho 'got user data' > /tmp/user_data.log\necho"
+  
+  # Option 2: use a file
+  aws.user_data = File.read("user_data.txt")
+end
+```
+
 ## Development
 
 To work on the `vagrant-aws` plugin, clone this repository out, and use
