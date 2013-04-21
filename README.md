@@ -188,7 +188,7 @@ end
 ```
 
 ## User data
-Here are some example to use user_data
+There are different options to send user_data to the instance.
 
 ```ruby
 Vagrant.configure("2") do |config|
