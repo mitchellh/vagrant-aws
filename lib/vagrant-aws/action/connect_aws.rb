@@ -26,7 +26,7 @@ module VagrantPlugins
             :region                => region
           }
           if region_config.use_iam_profile
-            fog_config[:use_iam_profile] = True
+            fog_config[:use_iam_profile] = true
           else
             fog_config[:aws_access_key_id] = region_config.access_key_id
             fog_config[:aws_secret_access_key] = region_config.secret_access_key
