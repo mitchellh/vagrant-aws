@@ -1,5 +1,6 @@
-# 0.2.3 (unreleased)
+# 0.3.0 (unreleased)
 
+* Parallelize multi-machine up on Vagrant 1.2+
 * Show proper configuration errors if an invalid configuration key
   is used.
 * Request confirmation on `vagrant destroy`, like normal VirtualBox + Vagrant.

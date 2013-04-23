@@ -1,5 +1,5 @@
 module VagrantPlugins
   module AWS
-    VERSION = "0.2.3.dev"
+    VERSION = "0.3.0.dev"
   end
 end
