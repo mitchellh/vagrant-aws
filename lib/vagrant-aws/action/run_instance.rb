@@ -54,6 +54,7 @@ module VagrantPlugins
           env[:ui].info(" -- Keypair: #{keypair}") if keypair
           env[:ui].info(" -- Subnet ID: #{subnet_id}") if subnet_id
           env[:ui].info(" -- Private IP: #{private_ip_address}") if private_ip_address
+          env[:ui].info(" -- User Data: yes") if user_data
           env[:ui].info(" -- Security Groups: #{security_groups.inspect}") if !security_groups.empty?
 
           begin
