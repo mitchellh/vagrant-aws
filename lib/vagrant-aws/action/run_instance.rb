@@ -57,7 +57,6 @@ module VagrantPlugins
           env[:ui].info(" -- User Data: yes") if user_data
           env[:ui].info(" -- Security Groups: #{security_groups.inspect}") if !security_groups.empty?
           env[:ui].info(" -- User Data: #{user_data}") if user_data
-          env[:ui].info(" -- Tags: #{tags.inspect}") if !tags.empty?
 
           begin
             options = {
