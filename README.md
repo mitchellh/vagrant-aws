@@ -173,32 +173,40 @@ the remote machine over SSH.
 This is good enough for all built-in Vagrant provisioners (shell,
 chef, and puppet) to work!
 
-## Tags
+## Other Examples
+
+### Tags
+
 To use tags, simply define a hash of key/value for the tags you want to associate to your instance, like:
 
 ```ruby
 Vagrant.configure("2") do |config|
   # ... other stuff
 
-  aws.tags = {
-       'Name' => 'Some Name',
-       'Some Key' => 'Some Value'
-  }
+  config.vm.provider "aws" do |aws|
+    aws.tags = {
+	  'Name' => 'Some Name',
+	  'Some Key' => 'Some Value'
+    }
+  end
 end
 ```
 
-## User data
-There are different options to send user_data to the instance.
+### User data
+
+You can specify user data for the instance being booted.
 
 ```ruby
 Vagrant.configure("2") do |config|
   # ... other stuff
 
-  # Option 1: a single string
-  aws.user_data = "#!/bin/bash\necho 'got user data' > /tmp/user_data.log\necho"
-  
-  # Option 2: use a file
-  aws.user_data = File.read("user_data.txt")
+  config.vm.provider "aws" do |aws|
+    # Option 1: a single string
+    aws.user_data = "#!/bin/bash\necho 'got user data' > /tmp/user_data.log\necho"
+
+    # Option 2: use a file
+    aws.user_data = File.read("user_data.txt")
+  end
 end
 ```
 
