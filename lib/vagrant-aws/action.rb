@@ -12,7 +12,7 @@ module VagrantPlugins
       def self.action_destroy
         Vagrant::Action::Builder.new.tap do |b|
           b.use Call, DestroyConfirm do |env, b2|
-            if env2[:result]
+            if env[:result]
               b2.use ConfigValidate
               b2.use ConnectAWS
               b2.use TerminateInstance
