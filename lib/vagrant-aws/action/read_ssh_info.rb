@@ -31,7 +31,7 @@ module VagrantPlugins
 
           # Read the DNS info
           return {
-            :host => server.dns_name || server.private_ip_address,
+            :host => server.public_ip_address || server.dns_name || server.private_ip_address,
             :port => 22
           }
         end

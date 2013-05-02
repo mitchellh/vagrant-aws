@@ -34,6 +34,7 @@ module VagrantPlugins
           subnet_id          = region_config.subnet_id
           tags               = region_config.tags
           user_data          = region_config.user_data
+          elastic_ip         = region_config.elastic_ip
 
           # If there is no keypair then warn the user
           if !keypair
@@ -54,6 +55,7 @@ module VagrantPlugins
           env[:ui].info(" -- Keypair: #{keypair}") if keypair
           env[:ui].info(" -- Subnet ID: #{subnet_id}") if subnet_id
           env[:ui].info(" -- Private IP: #{private_ip_address}") if private_ip_address
+          env[:ui].info(" -- Elastic IP: #{elastic_ip}") if elastic_ip
           env[:ui].info(" -- User Data: yes") if user_data
           env[:ui].info(" -- Security Groups: #{security_groups.inspect}") if !security_groups.empty?
           env[:ui].info(" -- User Data: #{user_data}") if user_data
@@ -116,6 +118,20 @@ module VagrantPlugins
           end
 
           @logger.info("Time to instance ready: #{env[:metrics]["instance_ready_time"]}")
+
+          if elastic_ip
+            allocation = env[:aws_compute].allocate_address('vpc')
+            if allocation.body['publicIp'].nil?
+              @logger.debug("Could not allocate Elastic IP.")
+              return nil
+            end
+            @logger.debug("Public IP #{allocation.body['publicIp']}")
+            association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
+            unless association.body['return']
+              @logger.debug("Could not associate Elastic IP.")
+              return nil
+            end
+          end
 
           if !env[:interrupted]
             env[:metrics]["instance_ssh_time"] = Util::Timer.time do

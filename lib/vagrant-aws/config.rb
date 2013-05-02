@@ -39,6 +39,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :private_ip_address
 
+      # Acquire and attach an elastic IP address (VPC).
+      #
+      # @return [Boolean]
+      attr_accessor :elastic_ip
+
       # The name of the AWS region in which to create the instance.
       #
       # @return [String]
@@ -103,6 +108,7 @@ module VagrantPlugins
         @tags               = {}
         @user_data          = UNSET_VALUE
         @use_iam_profile    = UNSET_VALUE
+        @elastic_ip         = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -192,6 +198,9 @@ module VagrantPlugins
 
         # Default the private IP to nil since VPC is not default
         @private_ip_address = nil if @private_ip_address == UNSET_VALUE
+
+        # Acquire an elastic IP if requested
+        @elastic_ip = nil if @elastic_ip == UNSET_VALUE
 
         # Default region is us-east-1. This is sensible because AWS
         # generally defaults to this as well.
