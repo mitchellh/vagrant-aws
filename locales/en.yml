@@ -16,6 +16,9 @@ en:
       Instance is not created. Please run `vagrant up` first.
     ready: |-
       Machine is booted and ready for use!
+    rsync_not_found_warning: |-
+      Warning! Folder sync disabled because the rsync binary is missing.
+      Make sure rsync is installed and the binary can be found in the PATH.
     rsync_folder: |-
       Rsyncing folder: %{hostpath} => %{guestpath}
     terminating: |-
