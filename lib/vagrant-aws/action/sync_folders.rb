@@ -4,6 +4,8 @@ require "vagrant/util/subprocess"
 
 require "vagrant/util/scoped_hash_override"
 
+require "vagrant/util/which"
+
 module VagrantPlugins
   module AWS
     module Action
@@ -27,6 +29,11 @@ module VagrantPlugins
 
             # Ignore disabled shared folders
             next if data[:disabled]
+
+            unless Vagrant::Util::Which.which('rsync')
+              env[:ui].warn(I18n.t('vagrant_aws.rsync_not_found_warning'))
+              break
+            end
 
             hostpath  = File.expand_path(data[:hostpath], env[:root_path])
             guestpath = data[:guestpath]
