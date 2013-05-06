@@ -132,13 +132,18 @@ module VagrantPlugins
           @logger.info("Time to instance ready: #{env[:metrics]["instance_ready_time"]}")
 
           if elastic_ip
-            allocation = env[:aws_compute].allocate_address('vpc')
+            domain = subnet_id ? 'vpc' : 'standard'
+            allocation = env[:aws_compute].allocate_address(domain)
             if allocation.body['publicIp'].nil?
               @logger.debug("Could not allocate Elastic IP.")
               return nil
             end
             @logger.debug("Public IP #{allocation.body['publicIp']}")
-            association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
+            if domain == 'vpc'
+              association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
+            else
+              association = env[:aws_compute].associate_address(server.id, allocation.body['publicIp'])
+            end
             unless association.body['return']
               @logger.debug("Could not associate Elastic IP.")
               return nil
