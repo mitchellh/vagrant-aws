@@ -23,14 +23,11 @@ module VagrantPlugins
         return if !argv
 
         with_target_vms(argv, :reverse => true) do |machine|
-          puts machine
-          puts "test"
+          puts "Creating AMI for #{machine.name}"
 
           @env.action_runner.run(VagrantPlugins::AWS::Action.action_create_ami, {
             :machine    => machine
           })
-
-          puts env[:machine].provider_config.ami_tags
         end
 
         puts "Hello!"

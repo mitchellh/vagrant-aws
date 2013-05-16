@@ -34,8 +34,8 @@ module VagrantPlugins
         Provider
       end
 
-      command "create-ami" do
-        require_relative "commands/create_ami"
+      command("create-ami") do
+        require File.expand_path("../commands/create_ami.rb", __FILE__)
         Command
       end
 
