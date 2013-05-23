@@ -44,7 +44,7 @@ module VagrantPlugins
           end
 
           # If there is a subnet ID then warn the user
-          if subnet_id and not elastic_ip and not allocate_elastic_ip
+          if subnet_id and !elastic_ip
             env[:ui].warn(I18n.t("vagrant_aws.launch_vpc_warning"))
           end
 
@@ -65,7 +65,6 @@ module VagrantPlugins
           env[:ui].info(" -- User Data: #{user_data}") if user_data
           env[:ui].info(" -- Block Device Mapping: #{block_device_mapping}") if block_device_mapping
           env[:ui].info(" -- Elastic IP: #{elastic_ip.inspect}") if elastic_ip
-          env[:ui].info(" -- Allocate Elastic IP: #{allocate_elastic_ip.inspect}") if allocate_elastic_ip
 
           begin
             options = {
@@ -81,7 +80,6 @@ module VagrantPlugins
               :user_data          => user_data,
               :block_device_mapping => block_device_mapping,
               :elastic_ip         => elastic_ip,
-              :allocate_elastic_ip => allocate_elastic_ip
             }
 
             if !security_groups.empty?
