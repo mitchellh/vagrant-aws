@@ -8,6 +8,15 @@ module VagrantPlugins
       # Include the built-in modules so we can use them as top-level things.
       include Vagrant::Action::Builtin
 
+      # Test func
+      def self.action_create_ami
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use ConnectAWS
+          b.use CreateAMI
+        end
+      end
+
       # This action is called to terminate the remote machine.
       def self.action_destroy
         Vagrant::Action::Builder.new.tap do |b|
@@ -124,6 +133,7 @@ module VagrantPlugins
       autoload :TimedProvision, action_root.join("timed_provision")
       autoload :WarnNetworks, action_root.join("warn_networks")
       autoload :TerminateInstance, action_root.join("terminate_instance")
+      autoload :CreateAMI, action_root.join("create_ami")
     end
   end
 end

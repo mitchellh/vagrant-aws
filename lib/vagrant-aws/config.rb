@@ -86,6 +86,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :user_data
 
+      # The tags for created AMIs.
+      #
+      # @return [Hash<String, String>]
+      attr_accessor :ami_tags
+
       def initialize(region_specific=false)
         @access_key_id      = UNSET_VALUE
         @ami                = UNSET_VALUE
@@ -103,6 +108,7 @@ module VagrantPlugins
         @tags               = {}
         @user_data          = UNSET_VALUE
         @use_iam_profile    = UNSET_VALUE
+        @ami_tags           = {}
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -169,6 +175,8 @@ module VagrantPlugins
           # Merge in the tags
           result.tags.merge!(self.tags)
           result.tags.merge!(other.tags)
+          result.ami_tags.merge!(self.ami_tags)
+          result.ami_tags.merge!(other.ami_tags)
         end
       end
 
