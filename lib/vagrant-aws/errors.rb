@@ -18,6 +18,10 @@ module VagrantPlugins
       class RsyncError < VagrantAWSError
         error_key(:rsync_error)
       end
+
+      class ElbDoesNotExistError < VagrantAWSError
+        error_key("elb_does_not_exist")
+      end
     end
   end
 end
