@@ -138,6 +138,12 @@ module VagrantPlugins
       # @return [Boolean]
       attr_accessor :associate_public_ip
 
+      # The name of ELB, which an instance should be
+      # attached to
+      #
+      # @return [String]
+      attr_accessor :elb
+
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
         @ami                    = UNSET_VALUE
@@ -164,6 +170,7 @@ module VagrantPlugins
         @monitoring             = UNSET_VALUE
         @ebs_optimized          = UNSET_VALUE
         @associate_public_ip    = UNSET_VALUE
+        @elb                    = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -304,6 +311,9 @@ module VagrantPlugins
 
         # default false
         @associate_public_ip = false if @associate_public_ip == UNSET_VALUE
+
+        # Don't attach instance to any ELB by default
+        @elb = nil if @elb == UNSET_VALUE
 
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
