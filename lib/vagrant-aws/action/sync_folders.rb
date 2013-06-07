@@ -22,6 +22,14 @@ module VagrantPlugins
 
           ssh_info = env[:machine].ssh_info
 
+          region = env[:machine].provider_config.region
+          region_config = env[:machine].provider_config.get_region_config(region)
+          if region_config.install_chef_client
+            # Wait chef-solo...
+            env[:ui].info(I18n.t("vagrant_aws.waiting_to_install_chef_client"))
+            env[:machine].communicate.execute("until sudo ls >/dev/null 2>&1; do sleep 1; done")
+          end
+
           env[:machine].config.vm.synced_folders.each do |id, data|
             data = scoped_hash_override(data, :aws)
 

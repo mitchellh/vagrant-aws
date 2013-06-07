@@ -34,6 +34,7 @@ module VagrantPlugins
           subnet_id          = region_config.subnet_id
           tags               = region_config.tags
           user_data          = region_config.user_data
+          install_chef_client = region_config.install_chef_client
 
           # If there is no keypair then warn the user
           if !keypair
@@ -43,6 +44,18 @@ module VagrantPlugins
           # If there is a subnet ID then warn the user
           if subnet_id
             env[:ui].warn(I18n.t("vagrant_aws.launch_vpc_warning"))
+          end
+
+          # If install_chef_client then set install-script to user_data
+          if install_chef_client
+            if user_data
+              env[:ui].warn(I18n.t("vagrant_aws.user_data_overwrite_warning"))
+            end
+            user_data = <<-__INSTALL_CHEF__
+#!/bin/sh
+curl -L https://www.opscode.com/chef/install.sh | bash
+sed -i -e 's/^\\(Defaults.*requiretty\\)/#\\1/' /etc/sudoers
+            __INSTALL_CHEF__
           end
 
           # Launch!
