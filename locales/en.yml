@@ -2,6 +2,13 @@ en:
   vagrant_aws:
     already_created: |-
       The machine is already created.
+    elb:
+      adjusting: "Adjusting availability zones of ELB %{elb_name}... "
+      registering: "Registering %{instance_id} at ELB %{elb_name}... "
+      deregistering: "Deregistering %{instance_id} from ELB %{elb_name}... " 
+      ok: "ok"
+      skipped: "skipped"
+
     launching_instance: |-
       Launching an instance with the following settings...
     launch_no_keypair: |-
@@ -62,6 +69,8 @@ en:
         Host path: %{hostpath}
         Guest path: %{guestpath}
         Error: %{stderr}
+      elb_does_not_exist: |-
+        ELB configured for the instance does not exist
 
     states:
       short_not_created: |-

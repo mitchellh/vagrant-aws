@@ -15,6 +15,7 @@ module VagrantPlugins
             if env[:result]
               b2.use ConfigValidate
               b2.use ConnectAWS
+              b2.use ElbDeregisterInstance
               b2.use TerminateInstance
             else
               b2.use MessageWillNotDestroy
@@ -105,6 +106,7 @@ module VagrantPlugins
             b2.use TimedProvision
             b2.use SyncFolders
             b2.use WarnNetworks
+            b2.use ElbRegisterInstance
             b2.use RunInstance
           end
         end
@@ -124,6 +126,8 @@ module VagrantPlugins
       autoload :TimedProvision, action_root.join("timed_provision")
       autoload :WarnNetworks, action_root.join("warn_networks")
       autoload :TerminateInstance, action_root.join("terminate_instance")
+      autoload :ElbRegisterInstance, action_root.join("elb_register_instance")
+      autoload :ElbDeregisterInstance, action_root.join("elb_deregister_instance")
     end
   end
 end

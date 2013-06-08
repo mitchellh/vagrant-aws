@@ -86,6 +86,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :user_data
 
+      # The name of ELB, which an instance should be
+      # attached to
+      #
+      # @return [String]
+      attr_accessor :elb
+
       def initialize(region_specific=false)
         @access_key_id      = UNSET_VALUE
         @ami                = UNSET_VALUE
@@ -102,6 +108,7 @@ module VagrantPlugins
         @subnet_id          = UNSET_VALUE
         @tags               = {}
         @user_data          = UNSET_VALUE
+        @elb                = UNSET_VALUE
         @use_iam_profile    = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
@@ -211,6 +218,9 @@ module VagrantPlugins
 
         # User Data is nil by default
         @user_data = nil if @user_data == UNSET_VALUE
+
+        # Don't attach instance to any ELB by default
+        @elb = nil if @elb == UNSET_VALUE
 
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
