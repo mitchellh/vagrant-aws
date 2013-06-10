@@ -34,7 +34,7 @@ module VagrantPlugins
           subnet_id          = region_config.subnet_id
           tags               = region_config.tags
           user_data          = region_config.user_data
-          install_chef_client = region_config.install_chef_client
+          disable_sudo_requiretty  = region_config.disable_sudo_requiretty
 
           # If there is no keypair then warn the user
           if !keypair
@@ -46,16 +46,15 @@ module VagrantPlugins
             env[:ui].warn(I18n.t("vagrant_aws.launch_vpc_warning"))
           end
 
-          # If install_chef_client then set install-script to user_data
-          if install_chef_client
+          # If disable_sudo_requiretty then set install-script to user_data
+          if disable_sudo_requiretty
             if user_data
               env[:ui].warn(I18n.t("vagrant_aws.user_data_overwrite_warning"))
             end
-            user_data = <<-__INSTALL_CHEF__
+            user_data = <<-__DISABLE_SUDO_REQUIRE_TTY__
 #!/bin/sh
-curl -L https://www.opscode.com/chef/install.sh | bash
 sed -i -e 's/^\\(Defaults.*requiretty\\)/#\\1/' /etc/sudoers
-            __INSTALL_CHEF__
+            __DISABLE_SUDO_REQUIRE_TTY__
           end
 
           # Launch!

@@ -32,10 +32,10 @@ en:
       The instance '%{name}' will not be destroyed, since the confirmation
       was declined.
     user_data_overwrite_warning: |-
-      Warning! You have specified `user_data` and `install_chef_client = true`.
-      `user_data` wiill be overwritten for install chef-client.
-    waiting_to_install_chef_client: |-
-      Waiting for chef-client to become ready...
+      Warning! You have specified `user_data` and `disable_sudo_requiretty = true`.
+      `user_data` wiill be overwritten for setting to /etc/sudoers.
+    waiting_to_disable_requiretty: |-
+      Waiting for setting to /etc/sudoers...
 
     config:
       access_key_id_required: |-
