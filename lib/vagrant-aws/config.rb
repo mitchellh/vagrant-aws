@@ -87,22 +87,23 @@ module VagrantPlugins
       attr_accessor :user_data
 
       def initialize(region_specific=false)
-        @access_key_id      = UNSET_VALUE
-        @ami                = UNSET_VALUE
-        @availability_zone  = UNSET_VALUE
+        @access_key_id          = UNSET_VALUE
+        @ami                    = UNSET_VALUE
+        @availability_zone      = UNSET_VALUE
         @instance_ready_timeout = UNSET_VALUE
-        @instance_type      = UNSET_VALUE
-        @keypair_name       = UNSET_VALUE
-        @private_ip_address = UNSET_VALUE
-        @region             = UNSET_VALUE
-        @endpoint           = UNSET_VALUE
-        @version            = UNSET_VALUE
-        @secret_access_key  = UNSET_VALUE
-        @security_groups    = UNSET_VALUE
-        @subnet_id          = UNSET_VALUE
-        @tags               = {}
-        @user_data          = UNSET_VALUE
-        @use_iam_profile    = UNSET_VALUE
+        @instance_type          = UNSET_VALUE
+        @keypair_name           = UNSET_VALUE
+        @private_ip_address     = UNSET_VALUE
+        @region                 = UNSET_VALUE
+        @endpoint               = UNSET_VALUE
+        @version                = UNSET_VALUE
+        @secret_access_key      = UNSET_VALUE
+        @security_groups        = UNS ET_VALUE
+        @subnet_id              = UNSET_VALUE
+        @tags                   = {}
+        @user_data              = UNSET_VALUE
+        @use_iam_profile        = UNSET_VALUE
+        @block_device_mapping   = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
