@@ -86,6 +86,8 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :user_data
 
+      attr_accessor :block_device_mapping
+
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
         @ami                    = UNSET_VALUE
