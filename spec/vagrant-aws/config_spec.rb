@@ -29,7 +29,7 @@ describe VagrantPlugins::AWS::Config do
     its("tags")              { should == {} }
     its("user_data")         { should be_nil }
     its("use_iam_profile")   { should be_false }
-    its("block_device_mapping")  {shoud == {} }
+    its("block_device_mapping")  {should == {} }
   end
 
   describe "overriding defaults" do
