@@ -105,7 +105,7 @@ module VagrantPlugins
         @tags                   = {}
         @user_data              = UNSET_VALUE
         @use_iam_profile        = UNSET_VALUE
-        @block_device_mapping   = UNSET_VALUE
+        @block_device_mapping   = {}
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
