@@ -98,7 +98,7 @@ module VagrantPlugins
         @endpoint               = UNSET_VALUE
         @version                = UNSET_VALUE
         @secret_access_key      = UNSET_VALUE
-        @security_groups        = UNS ET_VALUE
+        @security_groups        = UNSET_VALUE
         @subnet_id              = UNSET_VALUE
         @tags                   = {}
         @user_data              = UNSET_VALUE
