@@ -4,6 +4,8 @@ require 'vagrant/util/retryable'
 
 require 'vagrant-aws/util/timer'
 
+require 'pp'
+
 module VagrantPlugins
   module AWS
     module Action
@@ -35,6 +37,7 @@ module VagrantPlugins
           tags                  = region_config.tags
           user_data             = region_config.user_data
           block_device_mapping  = region_config.block_devices
+          pp block_device_mapping
 
           # If there is no keypair then warn the user
           if !keypair
