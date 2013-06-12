@@ -24,16 +24,17 @@ module VagrantPlugins
           region = env[:machine].provider_config.region
 
           # Get the configs
-          region_config      = env[:machine].provider_config.get_region_config(region)
-          ami                = region_config.ami
-          availability_zone  = region_config.availability_zone
-          instance_type      = region_config.instance_type
-          keypair            = region_config.keypair_name
-          private_ip_address = region_config.private_ip_address
-          security_groups    = region_config.security_groups
-          subnet_id          = region_config.subnet_id
-          tags               = region_config.tags
-          user_data          = region_config.user_data
+          region_config         = env[:machine].provider_config.get_region_config(region)
+          ami                   = region_config.ami
+          availability_zone     = region_config.availability_zone
+          instance_type         = region_config.instance_type
+          keypair               = region_config.keypair_name
+          private_ip_address    = region_config.private_ip_address
+          security_groups       = region_config.security_groups
+          subnet_id             = region_config.subnet_id
+          tags                  = region_config.tags
+          user_data             = region_config.user_data
+          block_device_mapping  = region_config.block_device_mapping
 
           # If there is no keypair then warn the user
           if !keypair
@@ -57,6 +58,7 @@ module VagrantPlugins
           env[:ui].info(" -- User Data: yes") if user_data
           env[:ui].info(" -- Security Groups: #{security_groups.inspect}") if !security_groups.empty?
           env[:ui].info(" -- User Data: #{user_data}") if user_data
+          env[:ui].info(" -- Block Device Mapping: #{block_device_mapping}") if block_device_mapping
 
           begin
             options = {
@@ -67,7 +69,8 @@ module VagrantPlugins
               :private_ip_address => private_ip_address,
               :subnet_id          => subnet_id,
               :tags               => tags,
-              :user_data          => user_data
+              :user_data          => user_data,
+              :block_device_mapping => block_device_mapping
             }
 
             if !security_groups.empty?
