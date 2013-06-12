@@ -36,7 +36,7 @@ module VagrantPlugins
           subnet_id             = region_config.subnet_id
           tags                  = region_config.tags
           user_data             = region_config.user_data
-          block_device_mapping  = region_config.block_devices
+          block_device_mapping  = region_config.block_device_mapping
           pp block_device_mapping
 
           # If there is no keypair then warn the user
