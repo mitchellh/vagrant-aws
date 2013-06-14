@@ -86,6 +86,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :user_data
 
+      # Set true if disable sudo-requiretty with user_data.
+      #
+      # @return [Boolean]
+      attr_accessor :disable_sudo_requiretty
+
       def initialize(region_specific=false)
         @access_key_id      = UNSET_VALUE
         @ami                = UNSET_VALUE
@@ -103,6 +108,7 @@ module VagrantPlugins
         @tags               = {}
         @user_data          = UNSET_VALUE
         @use_iam_profile    = UNSET_VALUE
+        @disable_sudo_requiretty = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -211,6 +217,9 @@ module VagrantPlugins
 
         # User Data is nil by default
         @user_data = nil if @user_data == UNSET_VALUE
+
+        # disable_sudo_requiretty false by default
+        @disable_sudo_requiretty = false if @disable_sudo_requiretty == UNSET_VALUE
 
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.

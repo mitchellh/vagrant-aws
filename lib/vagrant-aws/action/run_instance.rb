@@ -34,6 +34,7 @@ module VagrantPlugins
           subnet_id          = region_config.subnet_id
           tags               = region_config.tags
           user_data          = region_config.user_data
+          disable_sudo_requiretty  = region_config.disable_sudo_requiretty
 
           # If there is no keypair then warn the user
           if !keypair
@@ -43,6 +44,17 @@ module VagrantPlugins
           # If there is a subnet ID then warn the user
           if subnet_id
             env[:ui].warn(I18n.t("vagrant_aws.launch_vpc_warning"))
+          end
+
+          # If disable_sudo_requiretty then set install-script to user_data
+          if disable_sudo_requiretty
+            if user_data
+              env[:ui].warn(I18n.t("vagrant_aws.user_data_overwrite_warning"))
+            end
+            user_data = <<-__DISABLE_SUDO_REQUIRE_TTY__
+#!/bin/sh
+sed -i -e 's/^\\(Defaults.*requiretty\\)/#\\1/' /etc/sudoers
+            __DISABLE_SUDO_REQUIRE_TTY__
           end
 
           # Launch!
