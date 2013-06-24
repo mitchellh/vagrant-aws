@@ -18,6 +18,8 @@ en:
       Machine is booted and ready for use!
     rsync_folder: |-
       Rsyncing folder: %{hostpath} => %{guestpath}
+    halting: |-
+      Halting the instance...
     terminating: |-
       Terminating the instance...
     waiting_for_ready: |-

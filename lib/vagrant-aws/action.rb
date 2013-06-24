@@ -8,6 +8,15 @@ module VagrantPlugins
       # Include the built-in modules so we can use them as top-level things.
       include Vagrant::Action::Builtin
 
+      # This action is called to stop  the remote machine.
+      def self.action_halt
+        Vagrant::Action::Builder.new.tap do |b|
+           b.use ConfigValidate
+           b.use ConnectAWS
+           b.use HaltInstance
+        end
+      end
+
       # This action is called to terminate the remote machine.
       def self.action_destroy
         Vagrant::Action::Builder.new.tap do |b|
@@ -124,6 +133,7 @@ module VagrantPlugins
       autoload :TimedProvision, action_root.join("timed_provision")
       autoload :WarnNetworks, action_root.join("warn_networks")
       autoload :TerminateInstance, action_root.join("terminate_instance")
+      autoload :HaltInstance, action_root.join("halt_instance")
     end
   end
 end
