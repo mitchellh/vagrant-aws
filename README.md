@@ -228,8 +228,11 @@ $ bundle exec rake
 If those pass, you're ready to start developing the plugin. You can test
 the plugin without installing it into your Vagrant environment by just
 creating a `Vagrantfile` in the top level of this directory (it is gitignored)
-that uses it, and uses bundler to execute Vagrant:
-
+and add the following line to your `Vagrantfile` 
+```ruby
+Vagrant.require_plugin "vagrant-cloudstack"
+```
+Use bundler to execute VagrantL
 ```
 $ bundle exec vagrant up --provider=aws
 ```
