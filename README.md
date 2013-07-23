@@ -230,9 +230,9 @@ the plugin without installing it into your Vagrant environment by just
 creating a `Vagrantfile` in the top level of this directory (it is gitignored)
 and add the following line to your `Vagrantfile` 
 ```ruby
-Vagrant.require_plugin "vagrant-cloudstack"
+Vagrant.require_plugin "vagrant-aws"
 ```
-Use bundler to execute VagrantL
+Use bundler to execute Vagrant:
 ```
 $ bundle exec vagrant up --provider=aws
 ```
