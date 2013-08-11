@@ -74,3 +74,9 @@ en:
       long_running: |-
         The EC2 instance is running. To stop this machine, you can run
         `vagrant halt`. To destroy the machine, you can run `vagrant destroy`.
+
+      short_pending: |-
+        pending
+      long_pending: |-
+        The EC2 instance is still being initialized. To destroy this machine,
+        you can run `vagrant destroy`.
