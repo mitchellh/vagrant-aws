@@ -32,6 +32,7 @@ describe VagrantPlugins::AWS::Config do
     its("user_data")         { should be_nil }
     its("use_iam_profile")   { should be_false }
     its("block_device_mapping")  {should == {} }
+    its("elastic_ip")        { should be_nil }
   end
 
   describe "overriding defaults" do
@@ -42,9 +43,8 @@ describe VagrantPlugins::AWS::Config do
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
       :instance_type, :keypair_name,
       :region, :secret_access_key, :security_groups,
-      :subnet_id, :iam_instance_profile_arn,
-      :iam_instance_profile_name, :tags,
-      :use_iam_profile, :user_data].each do |attribute|
+      :subnet_id, :tags, :elastic_ip,
+      :use_iam_profile, :user_data, :block_device_mapping].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
         instance.send("#{attribute}=".to_sym, "foo")
