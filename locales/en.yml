@@ -20,6 +20,10 @@ en:
       Rsyncing folder: %{hostpath} => %{guestpath}
     terminating: |-
       Terminating the instance...
+    elastic_ip_allocated: |-
+      Allocated Elastic IP...
+    elastic_ip_deallocated: |-
+      Deallocated Elastic IP...
     waiting_for_ready: |-
       Waiting for instance to become "ready"...
     waiting_for_ssh: |-
@@ -43,6 +47,8 @@ en:
         A region must be specified via "region"
       secret_access_key_required: |-
         A secret access key is required via "secret_access_key"
+      allocate_elastic_ip: |-
+        Allocate_elastic_ip must be set to either "standard" or "vpc"
 
     errors:
       fog_error: |-

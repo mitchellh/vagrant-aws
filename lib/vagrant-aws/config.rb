@@ -87,6 +87,15 @@ module VagrantPlugins
       attr_accessor :user_data
 
       attr_accessor :block_device_mapping
+      # Elastic IP 
+      #
+      # @return [String]
+      attr_accessor :elastic_ip
+
+      # Allocate Elastic IP 
+      #
+      # @return [String]
+      attr_accessor :allocate_elastic_ip
 
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
@@ -106,6 +115,8 @@ module VagrantPlugins
         @user_data              = UNSET_VALUE
         @use_iam_profile        = UNSET_VALUE
         @block_device_mapping   = {}
+        @elastic_ip         = UNSET_VALUE
+        @allocate_elastic_ip  = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -209,6 +220,11 @@ module VagrantPlugins
         # Subnet is nil by default otherwise we'd launch into VPC.
         @subnet_id = nil if @subnet_id == UNSET_VALUE
 
+        # Elastic ip is nil by default
+        @elastic_ip = nil if @elastic_ip == UNSET_VALUE
+        # Allocate Elastic ip is nil by default
+        @allocate_elastic_ip = nil if @allocate_elastic_ip == UNSET_VALUE
+
         # By default we don't use an IAM profile
         @use_iam_profile = false if @use_iam_profile == UNSET_VALUE
 
@@ -256,6 +272,9 @@ module VagrantPlugins
             errors << I18n.t("vagrant_aws.config.secret_access_key_required") if \
               config.secret_access_key.nil?
           end
+
+          errors << I18n.t("vagrant_aws.config.allocate_elastic_ip") if \
+            not config.allocate_elastic_ip.nil? and not ["standard","vpc"].include? allocate_elastic_ip
 
           errors << I18n.t("vagrant_aws.config.ami_required") if config.ami.nil?
         end

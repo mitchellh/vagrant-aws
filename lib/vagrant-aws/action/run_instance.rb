@@ -35,6 +35,8 @@ module VagrantPlugins
           tags                  = region_config.tags
           user_data             = region_config.user_data
           block_device_mapping  = region_config.block_device_mapping
+          elastic_ip            = region_config.elastic_ip
+          allocate_elastic_ip   = region_config.allocate_elastic_ip
 
           # If there is no keypair then warn the user
           if !keypair
@@ -42,7 +44,7 @@ module VagrantPlugins
           end
 
           # If there is a subnet ID then warn the user
-          if subnet_id
+          if subnet_id and not elastic_ip and not allocate_elastic_ip
             env[:ui].warn(I18n.t("vagrant_aws.launch_vpc_warning"))
           end
 
@@ -59,6 +61,8 @@ module VagrantPlugins
           env[:ui].info(" -- Security Groups: #{security_groups.inspect}") if !security_groups.empty?
           env[:ui].info(" -- User Data: #{user_data}") if user_data
           env[:ui].info(" -- Block Device Mapping: #{block_device_mapping}") if block_device_mapping
+          env[:ui].info(" -- Elastic IP: #{elastic_ip.inspect}") if elastic_ip
+          env[:ui].info(" -- Allocate Elastic IP: #{allocate_elastic_ip.inspect}") if allocate_elastic_ip
 
           begin
             options = {
@@ -70,7 +74,9 @@ module VagrantPlugins
               :subnet_id          => subnet_id,
               :tags               => tags,
               :user_data          => user_data,
-              :block_device_mapping => block_device_mapping
+              :block_device_mapping => block_device_mapping,
+              :elastic_ip         => elastic_ip,
+              :allocate_elastic_ip => allocate_elastic_ip
             }
 
             if !security_groups.empty?
@@ -119,6 +125,12 @@ module VagrantPlugins
           end
 
           @logger.info("Time to instance ready: #{env[:metrics]["instance_ready_time"]}")
+          # Associate instance with Elastic Ip if Elastic Ip is defined
+          if elastic_ip
+            associate_elastic_ip(env,elastic_ip)
+          elsif allocate_elastic_ip
+            allocate_and_associate_elastic_ip(env,allocate_elastic_ip)
+          end
 
           if !env[:interrupted]
             env[:metrics]["instance_ssh_time"] = Util::Timer.time do
@@ -159,6 +171,45 @@ module VagrantPlugins
           destroy_env[:config_validate] = false
           destroy_env[:force_confirm_destroy] = true
           env[:action_runner].run(Action.action_destroy, destroy_env)
+        end
+
+        def associate_elastic_ip(env,elastic_ip)
+          begin 
+            eip = env[:aws_compute].addresses.get(elastic_ip)
+            if eip.nil?
+              terminate(env)
+              raise Errors::FogError,
+                :message => "Elastic IP specified not found: #{elastic_ip}"
+            end
+            @logger.info("eip - #{eip}")
+            env[:aws_compute].associate_address(env[:machine].id,nil,nil,eip.allocation_id)
+            env[:ui].info(I18n.t("vagrant_aws.elastic_ip_allocated"))
+          rescue Fog::Compute::AWS::NotFound => e
+          # Invalid elasticip doesn't have its own error so we catch and
+          # check the error message here.
+            if e.message =~ /Elastic IP/
+              terminate(env)
+              raise Errors::FogError,
+                :message => "Elastic IP not found: #{elastic_ip}"
+            end
+            raise
+          end
+        end
+
+        def allocate_and_associate_elastic_ip(env,allocate_elastic_ip)
+          begin
+            allocated_eip = env[:aws_compute].allocate_address(allocate_elastic_ip)
+            associate_elastic_ip(env,allocated_eip[:body]["publicIp"])
+          rescue Fog::Compute::AWS::NotFound => e
+          # Invalid computation of elasticip doesn't have its own error so we catch and
+          # check the error message here.
+            if e.message =~ /Elastic IP/
+              terminate(env)
+              raise Errors::FogError,
+                :message => "Elastic IP not allocated with allocate_elastic_ip option: #{allocate_elastic_ip}"
+            end
+            raise
+          end
         end
       end
     end
