@@ -273,6 +273,9 @@ module VagrantPlugins
               config.secret_access_key.nil?
           end
 
+          errors << I18n.t("vagrant_aws.config.allocate_elastic_ip") if \
+            not config.allocate_elastic_ip.nil? and not ["standard","vpc"].include? allocate_elastic_ip
+
           errors << I18n.t("vagrant_aws.config.ami_required") if config.ami.nil?
         end
 

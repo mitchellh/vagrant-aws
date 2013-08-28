@@ -47,6 +47,8 @@ en:
         A region must be specified via "region"
       secret_access_key_required: |-
         A secret access key is required via "secret_access_key"
+      allocate_elastic_ip: |-
+        Allocate_elastic_ip must be set to either "standard" or "vpc"
 
     errors:
       fog_error: |-

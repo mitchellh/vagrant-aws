@@ -18,8 +18,10 @@ module VagrantPlugins
           server.destroy
           # Deallocate Elastic IP if allocated
           elastic_ip = env[:aws_compute].describe_addresses('public-ip' => server.public_ip_address)
-          env[:aws_compute].disassociate_address(nil,elastic_ip[:body]["addressesSet"][0]["associationId"]) if !elastic_ip[:body]["addressesSet"].empty?
-          env[:ui].info(I18n.t("vagrant_aws.elastic_ip_deallocated"))
+          if !elastic_ip[:body]["addressesSet"].empty?
+            env[:aws_compute].disassociate_address(nil,elastic_ip[:body]["addressesSet"][0]["associationId"])
+            env[:ui].info(I18n.t("vagrant_aws.elastic_ip_deallocated"))
+          end
           env[:machine].id = nil
 
           @app.call(env)
