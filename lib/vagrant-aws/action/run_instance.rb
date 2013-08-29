@@ -99,6 +99,10 @@ module VagrantPlugins
             raise
           rescue Fog::Compute::AWS::Error => e
             raise Errors::FogError, :message => e.message
+          rescue Excon::Errors::HTTPStatusError => e
+            raise Errors::InternalFogError,
+              :error => e.message,
+              :response => e.response.body
           end
 
           # Immediately save the ID since it is created at this point.
