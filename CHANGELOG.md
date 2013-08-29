@@ -6,6 +6,9 @@
 * Request confirmation on `vagrant destroy`, like normal VirtualBox + Vagrant.
 * If user data is configured, output is shown on "vagrant up" that
   it is being set.
+* Add block device mapping support (GH #93)
+* README improvements (GH #120)
+* Fix missing locale message (GH #73)
 
 # 0.2.2 (April 18, 2013)
 
