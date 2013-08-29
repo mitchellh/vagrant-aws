@@ -36,7 +36,7 @@ module VagrantPlugins
           tags                  = region_config.tags
           user_data             = region_config.user_data
           block_device_mapping  = region_config.block_device_mapping
-          elastic_ip         = region_config.elastic_ip
+          elastic_ip            = region_config.elastic_ip
 
           # If there is no keypair then warn the user
           if !keypair
