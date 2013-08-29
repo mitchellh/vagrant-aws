@@ -37,6 +37,8 @@ module VagrantPlugins
           user_data             = region_config.user_data
           block_device_mapping  = region_config.block_device_mapping
           elastic_ip            = region_config.elastic_ip
+          iam_instance_profile_arn  = region_config.iam_instance_profile_arn
+          iam_instance_profile_name = region_config.iam_instance_profile_name
 
           # If there is no keypair then warn the user
           if !keypair
@@ -56,6 +58,8 @@ module VagrantPlugins
           env[:ui].info(" -- Availability Zone: #{availability_zone}") if availability_zone
           env[:ui].info(" -- Keypair: #{keypair}") if keypair
           env[:ui].info(" -- Subnet ID: #{subnet_id}") if subnet_id
+          env[:ui].info(" -- IAM Instance Profile ARN: #{iam_instance_profile_arn}") if iam_instance_profile_arn
+          env[:ui].info(" -- IAM Instance Profile Name: #{iam_instance_profile_name}") if iam_instance_profile_name
           env[:ui].info(" -- Private IP: #{private_ip_address}") if private_ip_address
           env[:ui].info(" -- Elastic IP: #{elastic_ip}") if elastic_ip
           env[:ui].info(" -- User Data: yes") if user_data
@@ -71,6 +75,8 @@ module VagrantPlugins
               :key_name           => keypair,
               :private_ip_address => private_ip_address,
               :subnet_id          => subnet_id,
+              :iam_instance_profile_arn   => iam_instance_profile_arn,
+              :iam_instance_profile_name  => iam_instance_profile_name,
               :tags               => tags,
               :user_data          => user_data,
               :block_device_mapping => block_device_mapping

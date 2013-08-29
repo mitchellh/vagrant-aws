@@ -70,6 +70,18 @@ module VagrantPlugins
       # @return [Array<String>]
       attr_accessor :security_groups
 
+      # The Amazon resource name (ARN) of the IAM Instance Profile
+      # to associate with the instance.
+      #
+      # @return [String]
+      attr_accessor :iam_instance_profile_arn
+
+      # The name of the IAM Instance Profile to associate with
+      # the instance.
+      #
+      # @return [String]
+      attr_accessor :iam_instance_profile_name
+
       # The subnet ID to launch the machine into (VPC).
       #
       # @return [String]
@@ -112,6 +124,8 @@ module VagrantPlugins
         @use_iam_profile        = UNSET_VALUE
         @block_device_mapping   = {}
         @elastic_ip             = UNSET_VALUE
+        @iam_instance_profile_arn  = UNSET_VALUE
+        @iam_instance_profile_name = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -217,6 +231,10 @@ module VagrantPlugins
 
         # Subnet is nil by default otherwise we'd launch into VPC.
         @subnet_id = nil if @subnet_id == UNSET_VALUE
+
+        # IAM Instance profile arn/name is nil by default.
+        @iam_instance_profile_arn   = nil if @iam_instance_profile_arn  == UNSET_VALUE
+        @iam_instance_profile_name  = nil if @iam_instance_profile_name == UNSET_VALUE
 
         # By default we don't use an IAM profile
         @use_iam_profile = false if @use_iam_profile == UNSET_VALUE
