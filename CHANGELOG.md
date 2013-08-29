@@ -10,6 +10,7 @@
 * Add block device mapping support (GH #93)
 * README improvements (GH #120)
 * Fix missing locale message (GH #73)
+* SyncFolders creates hostpath if it doesn't exist and `:create` option is set (GH #17)
 
 # 0.2.2 (April 18, 2013)
 
