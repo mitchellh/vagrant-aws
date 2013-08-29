@@ -104,36 +104,26 @@ module VagrantPlugins
       attr_accessor :user_data
 
       attr_accessor :block_device_mapping
-      # Elastic IP 
-      #
-      # @return [String]
-      attr_accessor :elastic_ip
-
-      # Allocate Elastic IP 
-      #
-      # @return [String]
-      attr_accessor :allocate_elastic_ip
 
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
         @ami                    = UNSET_VALUE
         @availability_zone      = UNSET_VALUE
         @instance_ready_timeout = UNSET_VALUE
-        @instance_type      = UNSET_VALUE
-        @keypair_name       = UNSET_VALUE
-        @private_ip_address = UNSET_VALUE
-        @region             = UNSET_VALUE
-        @endpoint           = UNSET_VALUE
-        @version            = UNSET_VALUE
-        @secret_access_key  = UNSET_VALUE
-        @security_groups    = UNSET_VALUE
-        @iam_instance_profile_arn   = UNSET_VALUE
-        @iam_instance_profile_name  = UNSET_VALUE
-        @subnet_id          = UNSET_VALUE
-        @tags               = {}
-        @user_data          = UNSET_VALUE
-        @use_iam_profile    = UNSET_VALUE
-        @elastic_ip         = UNSET_VALUE
+        @instance_type          = UNSET_VALUE
+        @keypair_name           = UNSET_VALUE
+        @private_ip_address     = UNSET_VALUE
+        @region                 = UNSET_VALUE
+        @endpoint               = UNSET_VALUE
+        @version                = UNSET_VALUE
+        @secret_access_key      = UNSET_VALUE
+        @security_groups        = UNSET_VALUE
+        @subnet_id              = UNSET_VALUE
+        @tags                   = {}
+        @user_data              = UNSET_VALUE
+        @use_iam_profile        = UNSET_VALUE
+        @block_device_mapping   = {}
+        @elastic_ip             = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -291,10 +281,6 @@ module VagrantPlugins
             errors << I18n.t("vagrant_aws.config.secret_access_key_required") if \
               config.secret_access_key.nil?
           end
-
-          errors << I18n.t("vagrant_aws.config.allocate_elastic_ip") if \
-            not config.allocate_elastic_ip.nil? and not ["standard","vpc"].include? allocate_elastic_ip
-
           errors << I18n.t("vagrant_aws.config.ami_required") if config.ami.nil?
         end
 

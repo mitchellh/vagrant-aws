@@ -25,19 +25,18 @@ module VagrantPlugins
           region = env[:machine].provider_config.region
 
           # Get the configs
-          region_config      = env[:machine].provider_config.get_region_config(region)
-          ami                = region_config.ami
-          availability_zone  = region_config.availability_zone
-          instance_type      = region_config.instance_type
-          keypair            = region_config.keypair_name
-          private_ip_address = region_config.private_ip_address
-          security_groups    = region_config.security_groups
-          subnet_id          = region_config.subnet_id
-          iam_instance_profile_arn  = region_config.iam_instance_profile_arn
-          iam_instance_profile_name = region_config.iam_instance_profile_name
-          tags               = region_config.tags
-          user_data          = region_config.user_data
-          elastic_ip         = region_config.elastic_ip
+          region_config         = env[:machine].provider_config.get_region_config(region)
+          ami                   = region_config.ami
+          availability_zone     = region_config.availability_zone
+          instance_type         = region_config.instance_type
+          keypair               = region_config.keypair_name
+          private_ip_address    = region_config.private_ip_address
+          security_groups       = region_config.security_groups
+          subnet_id             = region_config.subnet_id
+          tags                  = region_config.tags
+          user_data             = region_config.user_data
+          block_device_mapping  = region_config.block_device_mapping
+          elastic_ip            = region_config.elastic_ip
 
           # If there is no keypair then warn the user
           if !keypair
