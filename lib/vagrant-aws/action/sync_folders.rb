@@ -39,6 +39,15 @@ module VagrantPlugins
                                 :hostpath => hostpath,
                                 :guestpath => guestpath))
 
+            # Create the host path if it doesn't exist
+            begin
+              FileUtils::mkdir_p(hostpath)
+            rescue => err
+              raise Errors::MkdirError,
+                :hostpath => hostpath,
+                :err => err
+            end
+
             # Create the guest path
             env[:machine].communicate.sudo("mkdir -p '#{guestpath}'")
             env[:machine].communicate.sudo(
