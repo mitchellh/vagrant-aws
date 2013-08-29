@@ -108,6 +108,10 @@ This provider exposes quite a few provider-specific configuration options:
 * `security_groups` - An array of security groups for the instance. If this
   instance will be launched in VPC, this must be a list of security group
   IDs.
+* `iam_instance_profile_arn` - The Amazon resource name (ARN) of the IAM Instance
+    Profile to associate with the instance
+* `iam_instance_profile_name` - The name of the IAM Instance Profile to associate
+  with the instance
 * `subnet_id` - The subnet to boot the instance into, for VPC.
 * `tags` - A hash of tags to set on the machine.
 * `use_iam_profile` - If true, will use [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)
