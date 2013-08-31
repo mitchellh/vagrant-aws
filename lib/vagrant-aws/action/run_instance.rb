@@ -47,7 +47,7 @@ module VagrantPlugins
           end
 
           # If there is a subnet ID then warn the user
-          if subnet_id and !elastic_ip
+          if subnet_id && !elastic_ip
             env[:ui].warn(I18n.t("vagrant_aws.launch_vpc_warning"))
           end
 
