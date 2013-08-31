@@ -194,7 +194,7 @@ module VagrantPlugins
               h = { :public_ip => allocation.body['publicIp'] }
             end
 
-            unless association.body['return']
+            if !association.body['return']
               @logger.debug("Could not associate Elastic IP.")
               return nil
             end
