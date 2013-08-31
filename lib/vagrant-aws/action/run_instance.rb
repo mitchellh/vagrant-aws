@@ -82,8 +82,10 @@ module VagrantPlugins
               :tags               => tags,
               :user_data          => user_data,
               :block_device_mapping => block_device_mapping,
-              :instance_initiated_shutdown_behavior => shutdown_behavior
             }
+            
+            options[:instance_initiated_shutdown_behavior] = shutdown_behavior if env[:aws_compute].images.get(ami).root_device_type == "ebs" or shutdown_be
+            havior == "terminate"
 
             if !security_groups.empty?
               security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
