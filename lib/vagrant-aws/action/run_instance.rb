@@ -84,7 +84,6 @@ module VagrantPlugins
               :block_device_mapping => block_device_mapping,
               :instance_initiated_shutdown_behavior => instance_initiated_shutdown_behavior(terminate_on_shutdown)
             }
-@logger.info("instance_initiated_shutdown_behavior - #{instance_initiated_shutdown_behavior(terminate_on_shutdown)}")
             if !security_groups.empty?
               security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
               options[security_group_key] = security_groups
@@ -207,8 +206,7 @@ module VagrantPlugins
         end
 
         def instance_initiated_shutdown_behavior(terminate_on_shutdown)
-          (terminate_on_shutdown == true) ? "terminate" : nil #(env[:aws_compute].images.get(ami).root_device_type == "ebs") ? "stop" : nil
-#              options[:instance_initiated_shutdown_behavior] = shutdown_behavior if env[:aws_compute].images.get(ami).root_device_type == "ebs" or shutdown_behavior == "terminate"
+          (terminate_on_shutdown == true) ? "terminate" : nil
         end
         def terminate(env)
           destroy_env = env.dup
