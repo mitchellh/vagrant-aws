@@ -175,34 +175,39 @@ module VagrantPlugins
         end
 
         def do_elastic_ip(env, domain, server)
+          begin
             allocation = env[:aws_compute].allocate_address(domain)
-            if allocation.body['publicIp'].nil?
-              @logger.debug("Could not allocate Elastic IP.")
-              return nil
-            end
-            @logger.debug("Public IP #{allocation.body['publicIp']}")
+          rescue
+            @logger.debug("Could not allocate Elastic IP.")
+            terminate(env)
+            raise Errors::FogError,
+                            :message => "Could not allocate Elastic IP."
+          end
+          @logger.debug("Public IP #{allocation.body['publicIp']}")
 
-            # Associate the address and save the metadata to a hash
-            if domain == 'vpc'
-              # VPC requires an allocation ID to assign an IP
-              association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
-              h = { :allocation_id => allocation.body['allocationId'], :association_id => association.body['associationId'], :public_ip => allocation.body['publicIp'] }
-            else
-              # Standard EC2 instances only need the allocated IP address
-              association = env[:aws_compute].associate_address(server.id, allocation.body['publicIp'])
-              h = { :public_ip => allocation.body['publicIp'] }
-            end
+          # Associate the address and save the metadata to a hash
+          if domain == 'vpc'
+            # VPC requires an allocation ID to assign an IP
+            association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
+            h = { :allocation_id => allocation.body['allocationId'], :association_id => association.body['associationId'], :public_ip => allocation.body['publicIp'] }
+          else
+            # Standard EC2 instances only need the allocated IP address
+            association = env[:aws_compute].associate_address(server.id, allocation.body['publicIp'])
+            h = { :public_ip => allocation.body['publicIp'] }
+          end
 
-            if !association.body['return']
-              @logger.debug("Could not associate Elastic IP.")
-              return nil
-            end
+          unless association.body['return']
+            @logger.debug("Could not associate Elastic IP.")
+            terminate(env)
+            raise Errors::FogError,
+                            :message => "Could not allocate Elastic IP."
+          end
 
-            # Save this IP to the data dir so it can be released when the instance is destroyed
-            ip_file = env[:machine].data_dir.join('elastic_ip')
-            ip_file.open('w+') do |f|
-              f.write(h.to_json)
-            end
+          # Save this IP to the data dir so it can be released when the instance is destroyed
+          ip_file = env[:machine].data_dir.join('elastic_ip')
+          ip_file.open('w+') do |f|
+            f.write(h.to_json)
+          end
         end
 
         def terminate(env)
