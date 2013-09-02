@@ -103,6 +103,9 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :user_data
 
+      # Block device mappings
+      #
+      # @return [Array<Hash>]
       attr_accessor :block_device_mapping
 
       # Indicates whether an instance stops or terminates when you initiate shutdown from the instance
@@ -127,7 +130,7 @@ module VagrantPlugins
         @tags                   = {}
         @user_data              = UNSET_VALUE
         @use_iam_profile        = UNSET_VALUE
-        @block_device_mapping   = {}
+        @block_device_mapping   = []
         @elastic_ip             = UNSET_VALUE
         @iam_instance_profile_arn  = UNSET_VALUE
         @iam_instance_profile_name = UNSET_VALUE
@@ -198,6 +201,10 @@ module VagrantPlugins
           # Merge in the tags
           result.tags.merge!(self.tags)
           result.tags.merge!(other.tags)
+
+          # Merge block_device_mapping
+          result.block_device_mapping |= self.block_device_mapping
+          result.block_device_mapping |= other.block_device_mapping
         end
       end
 

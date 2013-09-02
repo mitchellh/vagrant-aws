@@ -31,7 +31,7 @@ describe VagrantPlugins::AWS::Config do
     its("tags")              { should == {} }
     its("user_data")         { should be_nil }
     its("use_iam_profile")   { should be_false }
-    its("block_device_mapping")  {should == {} }
+    its("block_device_mapping")  {should == [] }
     its("elastic_ip")        { should be_nil }
     its("shutdown_behavior") { should == "stop" }
   end
@@ -188,15 +188,19 @@ describe VagrantPlugins::AWS::Config do
       let(:first)  { described_class.new }
       let(:second) { described_class.new }
 
-      it "should merge the tags" do
+      it "should merge the tags and block_device_mappings" do
         first.tags["one"] = "one"
         second.tags["two"] = "two"
+        first.block_device_mapping = [{:one => "one"}]
+        second.block_device_mapping = [{:two => "two"}]
 
         third = first.merge(second)
         third.tags.should == {
           "one" => "one",
           "two" => "two"
         }
+        third.block_device_mapping.index({:one => "one"}).should_not be_nil
+        third.block_device_mapping.index({:two => "two"}).should_not be_nil
       end
     end
   end
