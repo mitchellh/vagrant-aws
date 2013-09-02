@@ -1,4 +1,4 @@
-# 0.3.0 (unreleased)
+# 0.3.0 (September 2, 2013)
 
 * Parallelize multi-machine up on Vagrant 1.2+
 * Show proper configuration errors if an invalid configuration key
