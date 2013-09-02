@@ -82,7 +82,7 @@ module VagrantPlugins
               :tags               => tags,
               :user_data          => user_data,
               :block_device_mapping => block_device_mapping,
-              :instance_initiated_shutdown_behavior => instance_initiated_shutdown_behavior(terminate_on_shutdown)
+              :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil
             }
             if !security_groups.empty?
               security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
@@ -205,9 +205,6 @@ module VagrantPlugins
             end
         end
 
-        def instance_initiated_shutdown_behavior(terminate_on_shutdown)
-          (terminate_on_shutdown == true) ? "terminate" : nil
-        end
         def terminate(env)
           destroy_env = env.dup
           destroy_env.delete(:interrupted)
