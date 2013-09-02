@@ -37,7 +37,7 @@ module VagrantPlugins
           user_data             = region_config.user_data
           block_device_mapping  = region_config.block_device_mapping
           elastic_ip            = region_config.elastic_ip
-          shutdown_behavior     = region_config.shutdown_behavior
+          terminate_on_shutdown = region_config.terminate_on_shutdown
           iam_instance_profile_arn  = region_config.iam_instance_profile_arn
           iam_instance_profile_name = region_config.iam_instance_profile_name
 
@@ -67,7 +67,7 @@ module VagrantPlugins
           env[:ui].info(" -- Security Groups: #{security_groups.inspect}") if !security_groups.empty?
           env[:ui].info(" -- User Data: #{user_data}") if user_data
           env[:ui].info(" -- Block Device Mapping: #{block_device_mapping}") if block_device_mapping
-          env[:ui].info(" -- Shutdown behavior: #{shutdown_behavior}") if shutdown_behavior
+          env[:ui].info(" -- Terminate On Shutdown: #{terminate_on_shutdown}")
 
           begin
             options = {
@@ -82,9 +82,8 @@ module VagrantPlugins
               :tags               => tags,
               :user_data          => user_data,
               :block_device_mapping => block_device_mapping,
-              :instance_initiated_shutdown_behavior => shutdown_behavior
+              :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil
             }
-
             if !security_groups.empty?
               security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
               options[security_group_key] = security_groups

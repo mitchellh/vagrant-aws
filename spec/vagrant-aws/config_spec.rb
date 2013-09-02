@@ -33,7 +33,7 @@ describe VagrantPlugins::AWS::Config do
     its("use_iam_profile")   { should be_false }
     its("block_device_mapping")  {should == [] }
     its("elastic_ip")        { should be_nil }
-    its("shutdown_behavior") { should == "stop" }
+    its("terminate_on_shutdown") { should == false }
   end
 
   describe "overriding defaults" do
@@ -44,7 +44,7 @@ describe VagrantPlugins::AWS::Config do
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
       :instance_type, :keypair_name,
       :region, :secret_access_key, :security_groups,
-      :subnet_id, :tags, :elastic_ip, :shutdown_behavior,
+      :subnet_id, :tags, :elastic_ip, :terminate_on_shutdown,
       :iam_instance_profile_arn, :iam_instance_profile_name,
       :use_iam_profile, :user_data, :block_device_mapping].each do |attribute|
 

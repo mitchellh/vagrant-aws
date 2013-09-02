@@ -110,8 +110,8 @@ module VagrantPlugins
 
       # Indicates whether an instance stops or terminates when you initiate shutdown from the instance
       #
-      # @return [String]
-      attr_accessor :shutdown_behavior
+      # @return [bool]
+      attr_accessor :terminate_on_shutdown
 
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
@@ -134,7 +134,7 @@ module VagrantPlugins
         @elastic_ip             = UNSET_VALUE
         @iam_instance_profile_arn  = UNSET_VALUE
         @iam_instance_profile_name = UNSET_VALUE
-        @shutdown_behavior      = UNSET_VALUE
+        @terminate_on_shutdown  = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -255,8 +255,8 @@ module VagrantPlugins
         # User Data is nil by default
         @user_data = nil if @user_data == UNSET_VALUE
 
-        # default stop
-        @shutdown_behavior = "stop" if @shutdown_behavior == UNSET_VALUE
+        # default false
+        @terminate_on_shutdown = false if @terminate_on_shutdown == UNSET_VALUE
 
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
