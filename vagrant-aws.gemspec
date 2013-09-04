@@ -5,6 +5,7 @@ Gem::Specification.new do |s|
   s.name          = "vagrant-aws"
   s.version       = VagrantPlugins::AWS::VERSION
   s.platform      = Gem::Platform::RUBY
+  s.license       = "MIT"
   s.authors       = "Mitchell Hashimoto"
   s.email         = "mitchell@hashicorp.com"
   s.homepage      = "http://www.vagrantup.com"
