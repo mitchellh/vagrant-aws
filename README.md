@@ -105,7 +105,7 @@ This provider exposes quite a few provider-specific configuration options:
   within a [VPC](http://aws.amazon.com/vpc/)
 * `region` - The region to start the instance in, such as "us-east-1"
 * `secret_access_key` - The secret access key for accessing AWS
-* `security_groups` - An array of security groups for the instance. If this
+* `security_groups` - An array of security group names for the instance. If this
   instance will be launched in VPC, this must be a list of security group
   IDs.
 * `iam_instance_profile_arn` - The Amazon resource name (ARN) of the IAM Instance
