@@ -8,12 +8,34 @@ module VagrantPlugins
       # Include the built-in modules so we can use them as top-level things.
       include Vagrant::Action::Builtin
 
+      # This action is called to halt the remote machine.
+      def self.action_halt
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use Call, IsCreated do |env, b2|
+            if !env[:result]
+              b2.use MessageNotCreated
+              next
+            end
+
+            b2.use ConnectAWS
+            b2.use StopInstance
+          end
+        end
+      end
+
       # This action is called to terminate the remote machine.
       def self.action_destroy
         Vagrant::Action::Builder.new.tap do |b|
           b.use Call, DestroyConfirm do |env, b2|
             if env[:result]
               b2.use ConfigValidate
+              b.use Call, IsCreated do |env, b3|
+                if !env[:result]
+                  b3.use MessageNotCreated
+                  next
+                end
+              end
               b2.use ConnectAWS
               b2.use TerminateInstance
             else
@@ -90,22 +112,34 @@ module VagrantPlugins
         end
       end
 
+      def self.action_prepare_boot
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use TimedProvision
+          b.use SyncFolders
+          b.use WarnNetworks
+        end
+      end
+
       # This action is called to bring the box up from nothing.
       def self.action_up
         Vagrant::Action::Builder.new.tap do |b|
           b.use HandleBoxUrl
           b.use ConfigValidate
           b.use ConnectAWS
-          b.use Call, IsCreated do |env, b2|
-            if env[:result]
-              b2.use MessageAlreadyCreated
-              next
+          b.use Call, IsCreated do |env1, b1|
+            if env1[:result]
+              b1.use Call, IsStopped do |env2, b2|
+                if env2[:result]
+                  b2.use action_prepare_boot
+                  b2.use StartInstance # restart this instance
+                else
+                  b2.use MessageAlreadyCreated # TODO write a better message
+                end
+              end
+            else
+              b1.use action_prepare_boot
+              b1.use RunInstance # launch a new instance
             end
-
-            b2.use TimedProvision
-            b2.use SyncFolders
-            b2.use WarnNetworks
-            b2.use RunInstance
           end
         end
       end
@@ -114,16 +148,19 @@ module VagrantPlugins
       action_root = Pathname.new(File.expand_path("../action", __FILE__))
       autoload :ConnectAWS, action_root.join("connect_aws")
       autoload :IsCreated, action_root.join("is_created")
+      autoload :IsStopped, action_root.join("is_stopped")
       autoload :MessageAlreadyCreated, action_root.join("message_already_created")
       autoload :MessageNotCreated, action_root.join("message_not_created")
       autoload :MessageWillNotDestroy, action_root.join("message_will_not_destroy")
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :ReadState, action_root.join("read_state")
       autoload :RunInstance, action_root.join("run_instance")
+      autoload :StartInstance, action_root.join("start_instance")
+      autoload :StopInstance, action_root.join("stop_instance")
       autoload :SyncFolders, action_root.join("sync_folders")
+      autoload :TerminateInstance, action_root.join("terminate_instance")
       autoload :TimedProvision, action_root.join("timed_provision")
       autoload :WarnNetworks, action_root.join("warn_networks")
-      autoload :TerminateInstance, action_root.join("terminate_instance")
     end
   end
 end
