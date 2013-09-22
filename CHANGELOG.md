@@ -1,6 +1,7 @@
 # 0.4.0 (unreleased)
 
-
+* Handle EIP allocation error (GH #134)
+* Implement halt and reload (GH #31)
 
 # 0.3.0 (September 2, 2013)
 
