@@ -1,7 +1,7 @@
 en:
   vagrant_aws:
-    already_created: |-
-      The machine is already created.
+    already_status: |-
+      The machine is already %{status}.
     launching_instance: |-
       Launching an instance with the following settings...
     launch_no_keypair: |-

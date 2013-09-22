@@ -27,9 +27,12 @@ module VagrantPlugins
           begin
             server.start
 
+            region = env[:machine].provider_config.region
+            region_config = env[:machine].provider_config.get_region_config(region)
+
             # Wait for the instance to be ready first
             env[:metrics]["instance_ready_time"] = Util::Timer.time do
-              tries = timeout / 2
+              tries = region_config.instance_ready_timeout / 2
 
               env[:ui].info(I18n.t("vagrant_aws.waiting_for_ready"))
               begin
@@ -43,7 +46,7 @@ module VagrantPlugins
               rescue Fog::Errors::TimeoutError
                 # Notify the user
                 raise Errors::InstanceReadyTimeout,
-                  timeout: timeout
+                  timeout: region_config.instance_ready_timeout
               end
             end
           rescue Fog::Compute::AWS::Error => e
