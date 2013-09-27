@@ -4,6 +4,7 @@
 * Implement halt and reload (GH #31)
 * rsync ignores Vagrantfile
 * warn if none of the security groups allows incoming SSH
+* bump fog.io to 0.15.0
 
 # 0.3.0 (September 2, 2013)
 
