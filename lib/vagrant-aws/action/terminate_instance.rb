@@ -18,12 +18,12 @@ module VagrantPlugins
           env[:ui].info(I18n.t("vagrant_aws.terminating"))
           server.destroy
           env[:machine].id = nil
-  
+
           # Release the elastic IP
           ip_file = env[:machine].data_dir.join('elastic_ip')
           if ip_file.file?
             release_address(env,ip_file.read)
-            ip_file.delete 
+            ip_file.delete
           end
 
           @app.call(env)
