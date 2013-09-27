@@ -18,12 +18,12 @@ module VagrantPlugins
           region = env[:machine].provider_config.region
 
           # Get the configs
-          region_config     = env[:machine].provider_config.get_region_config(region)
+          region_config = env[:machine].provider_config.get_region_config(region)
 
           # Build the fog config
           fog_config = {
-            :provider              => :aws,
-            :region                => region
+            :provider => :aws,
+            :region   => region
           }
           if region_config.use_iam_profile
             fog_config[:use_iam_profile] = true
