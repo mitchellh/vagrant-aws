@@ -36,6 +36,12 @@ module VagrantPlugins
             end
 
             hostpath  = File.expand_path(data[:hostpath], env[:root_path])
+            
+            #rsync interprets paths with colons as remote locations.
+            #We need to pass the "cygdrive" version for the hostpath on windows.
+            if Vagrant::Util::Platform.windows?
+              hostpath = Vagrant::Util::Subprocess.execute("cygpath", "-u", "-a", hostpath).stdout.chomp
+            end
             guestpath = data[:guestpath]
 
             # Make sure there is a trailing slash on the host path to
