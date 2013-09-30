@@ -113,6 +113,15 @@ module VagrantPlugins
       # @return [bool]
       attr_accessor :terminate_on_shutdown
 
+      # Specifies which address to connect to with ssh
+      # Must be one of:
+      #  - :public_ip_address
+      #  - :dns_name
+      #  - :private_ip_address
+      #
+      # @return [Symbol]
+      attr_accessor :ssh_host_attribute
+
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
         @ami                    = UNSET_VALUE
@@ -135,6 +144,7 @@ module VagrantPlugins
         @iam_instance_profile_arn  = UNSET_VALUE
         @iam_instance_profile_name = UNSET_VALUE
         @terminate_on_shutdown  = UNSET_VALUE
+        @ssh_host_attribute    = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -257,6 +267,9 @@ module VagrantPlugins
 
         # default false
         @terminate_on_shutdown = false if @terminate_on_shutdown == UNSET_VALUE
+
+        # default to nil
+        @ssh_host_attribute = nil if @ssh_host_attribute == UNSET_VALUE
 
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.

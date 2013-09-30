@@ -30,11 +30,15 @@ module VagrantPlugins
           end
 
           # Read the DNS info
+          ssh_host_attribute_override = machine.provider_config.
+              get_region_config(machine.provider_config.region).ssh_host_attribute
           return {
-            :host => server.public_ip_address || server.dns_name || server.private_ip_address,
+            :host => ssh_host_attribute_override ? server.public_send(ssh_host_attribute_override) :
+                server.public_ip_address || server.dns_name || server.private_ip_address,
             :port => 22
           }
         end
+
       end
     end
   end
