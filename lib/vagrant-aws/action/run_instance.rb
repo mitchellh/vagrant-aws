@@ -12,9 +12,25 @@ module VagrantPlugins
       class RunInstance
         include Vagrant::Util::Retryable
 
+        @@instances = 0
+        LIMIT = 10
+
+        def self.update_instances
+          @@instances = @@instances + 1
+        end
+
+        def self.instances
+          @@instances
+        end
+
         def initialize(app, env)
+          RunInstance.update_instances
           @app    = app
+          @instance_no = RunInstance.instances
+          @iteration = 1
           @logger = Log4r::Logger.new("vagrant_aws::action::run_instance")
+          @logger.debug("Instance no - #{@instance_no}")
+          control_vm_creation
         end
 
         def call(env)
@@ -123,7 +139,7 @@ module VagrantPlugins
                 next if env[:interrupted]
 
                 # Wait for the server to be ready
-                server.wait_for(2) { ready? }
+                server.wait_for(10) { ready? }
               end
             rescue Fog::Errors::TimeoutError
               # Delete the instance
@@ -231,6 +247,16 @@ module VagrantPlugins
           destroy_env[:config_validate] = false
           destroy_env[:force_confirm_destroy] = true
           env[:action_runner].run(Action.action_destroy, destroy_env)
+        end
+
+        private
+
+        def control_vm_creation
+          while @instance_no > (LIMIT * @iteration) do
+            @iteration = @iteration + 1
+            @logger.debug("----------------instance_no - #{@instance_no} will wait-----------------")
+            sleep 30
+          end
         end
       end
     end
