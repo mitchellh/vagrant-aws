@@ -1,6 +1,9 @@
 # OS-specific
 .DS_Store
 
+# editors
+*.swp
+
 # Bundler/Rubygems
 *.gem
 .bundle
