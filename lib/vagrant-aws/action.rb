@@ -181,6 +181,7 @@ module VagrantPlugins
       autoload :StopInstance, action_root.join("stop_instance")
       autoload :SyncFolders, action_root.join("sync_folders")
       autoload :TerminateInstance, action_root.join("terminate_instance")
+      autoload :TimedProvision, action_root.join("timed_provision") # some plugins now expect this action to exist
       autoload :WaitForState, action_root.join("wait_for_state")
       autoload :WarnNetworks, action_root.join("warn_networks")
     end
