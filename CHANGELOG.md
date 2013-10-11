@@ -6,6 +6,7 @@
 * warn if none of the security groups allows incoming SSH
 * bump fog.io to 0.15.0
 * Fix rsync on windows (GH #77)
+* Add `ssh_host_attribute` config (GH #143)
 
 # 0.3.0 (September 2, 2013)
 
