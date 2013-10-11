@@ -34,6 +34,7 @@ describe VagrantPlugins::AWS::Config do
     its("block_device_mapping")  {should == [] }
     its("elastic_ip")        { should be_nil }
     its("terminate_on_shutdown") { should == false }
+    its("ssh_host_attribute") { should be_nil }
   end
 
   describe "overriding defaults" do
@@ -42,7 +43,7 @@ describe VagrantPlugins::AWS::Config do
     # each of these attributes to "foo" in isolation, and reads the value
     # and asserts the proper result comes back out.
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
-      :instance_type, :keypair_name,
+      :instance_type, :keypair_name, :ssh_host_attribute,
       :region, :secret_access_key, :security_groups,
       :subnet_id, :tags, :elastic_ip, :terminate_on_shutdown,
       :iam_instance_profile_arn, :iam_instance_profile_name,
