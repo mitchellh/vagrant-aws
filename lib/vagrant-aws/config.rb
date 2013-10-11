@@ -118,6 +118,7 @@ module VagrantPlugins
       #  - :public_ip_address
       #  - :dns_name
       #  - :private_ip_address
+      # This attribute also accepts an array of symbols
       #
       # @return [Symbol]
       attr_accessor :ssh_host_attribute
