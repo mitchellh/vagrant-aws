@@ -144,7 +144,7 @@ module VagrantPlugins
         @iam_instance_profile_arn  = UNSET_VALUE
         @iam_instance_profile_name = UNSET_VALUE
         @terminate_on_shutdown  = UNSET_VALUE
-        @ssh_host_attribute    = UNSET_VALUE
+        @ssh_host_attribute     = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
