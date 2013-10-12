@@ -40,6 +40,7 @@ module VagrantPlugins
           terminate_on_shutdown = region_config.terminate_on_shutdown
           iam_instance_profile_arn  = region_config.iam_instance_profile_arn
           iam_instance_profile_name = region_config.iam_instance_profile_name
+          monitoring            = region_config.monitoring
 
           # If there is no keypair then warn the user
           if !keypair
@@ -68,6 +69,7 @@ module VagrantPlugins
           env[:ui].info(" -- User Data: #{user_data}") if user_data
           env[:ui].info(" -- Block Device Mapping: #{block_device_mapping}") if block_device_mapping
           env[:ui].info(" -- Terminate On Shutdown: #{terminate_on_shutdown}")
+          env[:ui].info(" -- Monitoring: #{monitoring}")
 
           options = {
             :availability_zone         => availability_zone,
@@ -81,7 +83,8 @@ module VagrantPlugins
             :tags                      => tags,
             :user_data                 => user_data,
             :block_device_mapping      => block_device_mapping,
-            :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil
+            :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil,
+            :monitoring                => monitoring
           }
           if !security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
