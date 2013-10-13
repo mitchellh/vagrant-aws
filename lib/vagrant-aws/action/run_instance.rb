@@ -73,33 +73,32 @@ module VagrantPlugins
           env[:ui].info(" -- Monitoring: #{monitoring}")
           env[:ui].info(" -- EBS optimized: #{ebs_optimized}")
 
-          options = {
-            :availability_zone         => availability_zone,
-            :flavor_id                 => instance_type,
-            :image_id                  => ami,
-            :key_name                  => keypair,
-            :private_ip_address        => private_ip_address,
-            :subnet_id                 => subnet_id,
-            :iam_instance_profile_arn  => iam_instance_profile_arn,
-            :iam_instance_profile_name => iam_instance_profile_name,
-            :tags                      => tags,
-            :user_data                 => user_data,
-            :block_device_mapping      => block_device_mapping,
-            :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil,
-            :monitoring                => monitoring,
-            :ebs_optimized             => ebs_optimized
-          }
-          if !security_groups.empty?
-            security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
-            options[security_group_key] = security_groups
-          end
-
           begin
             env[:ui].warn(I18n.t("vagrant_aws.warn_ssh_access")) unless allows_ssh_port?(env, security_groups, subnet_id)
 
             if region_config.spot_instance
               server = server_from_spot_request(env, region_config)
             else
+              options = {
+                :availability_zone         => availability_zone,
+                :flavor_id                 => instance_type,
+                :image_id                  => ami,
+                :key_name                  => keypair,
+                :private_ip_address        => private_ip_address,
+                :subnet_id                 => subnet_id,
+                :iam_instance_profile_arn  => iam_instance_profile_arn,
+                :iam_instance_profile_name => iam_instance_profile_name,
+                :tags                      => tags,
+                :user_data                 => user_data,
+                :block_device_mapping      => block_device_mapping,
+                :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil,
+                :monitoring                => monitoring,
+                :ebs_optimized             => ebs_optimized
+              }
+              if !security_groups.empty?
+                security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
+                options[security_group_key] = security_groups
+              end
               server = env[:aws_compute].servers.create(options)
             end
           rescue Fog::Compute::AWS::NotFound => e
@@ -181,13 +180,19 @@ module VagrantPlugins
           # prepare request args. TODO map all options OR use a different API to launch
           options = {
             'InstanceCount'                                  => 1,
-            'LaunchSpecification.KeyName'                    => config.keypair_name,
-            'LaunchSpecification.Monitoring.Enabled'         => config.monitoring,
+            'ValidUntil'                                     => config.spot_valid_until,
             'LaunchSpecification.Placement.AvailabilityZone' => config.availability_zone,
-            'LaunchSpecification.EbsOptimized'               => config.ebs_optimized,
-            'LaunchSpecification.UserData'                   => config.user_data,
+            'LaunchSpecification.KeyName'                    => config.keypair_name,
+            'LaunchSpecification.PrivateIpAddress'           => config.private_ip_address,
             'LaunchSpecification.SubnetId'                   => config.subnet_id,
-            'ValidUntil'                                     => config.spot_valid_until
+            'LaunchSpecification.IamInstanceProfileArn'      => config.iam_instance_profile_arn,
+            'LaunchSpecification.IamInstanceProfileName'     => config.iam_instance_profile_name,
+            'LaunchSpecification.Tags'                       => config.tags,
+            'LaunchSpecification.UserData'                   => config.user_data,
+            'LaunchSpecification.BlockDeviceMapping'         => config.block_device_mapping,
+            'LaunchSpecification.InstanceInitiatedShutdownBehavior' => config.terminate_on_shutdown ? "terminate" : nil,
+            'LaunchSpecification.Monitoring.Enabled'         => config.monitoring,
+            'LaunchSpecification.EbsOptimized'               => config.ebs_optimized
           }
           security_group_key = config.subnet_id.nil? ? 'LaunchSpecification.SecurityGroup' : 'LaunchSpecification.SecurityGroupId'
           options[security_group_key] = config.security_groups
