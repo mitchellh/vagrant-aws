@@ -97,7 +97,11 @@ module VagrantPlugins
           begin
             env[:ui].warn(I18n.t("vagrant_aws.warn_ssh_access")) unless allows_ssh_port?(env, security_groups, subnet_id)
 
-            server = env[:aws_compute].servers.create(options)
+            if region_config.spot_instance
+              server = server_from_spot_request(env, region_config)
+            else
+              server = env[:aws_compute].servers.create(options)
+            end
           rescue Fog::Compute::AWS::NotFound => e
             # Invalid subnet doesn't have its own error so we catch and
             # check the error message here.
@@ -171,6 +175,67 @@ module VagrantPlugins
           terminate(env) if env[:interrupted]
 
           @app.call(env)
+        end
+
+        def server_from_spot_request(env, config)
+          # prepare request args. TODO map all options OR use a different API to launch
+          options = {
+            'InstanceCount'                                  => 1,
+            'LaunchSpecification.KeyName'                    => config.keypair_name,
+            'LaunchSpecification.Monitoring.Enabled'         => config.monitoring,
+            'LaunchSpecification.Placement.AvailabilityZone' => config.availability_zone,
+            'LaunchSpecification.EbsOptimized'               => config.ebs_optimized,
+            'LaunchSpecification.UserData'                   => config.user_data,
+            'LaunchSpecification.SubnetId'                   => config.subnet_id,
+            'ValidUntil'                                     => config.spot_valid_until
+          }
+          security_group_key = config.subnet_id.nil? ? 'LaunchSpecification.SecurityGroup' : 'LaunchSpecification.SecurityGroupId'
+          options[security_group_key] = config.security_groups
+          options.delete_if { |key, value| value.nil? }
+
+          env[:ui].info(I18n.t("vagrant_aws.launching_spot_instance"))
+          env[:ui].info(" -- Price: #{config.spot_max_price}")
+          env[:ui].info(" -- Valid until: #{config.spot_valid_until}") if config.spot_valid_until
+
+          # create the spot instance
+          spot_req = env[:aws_compute].request_spot_instances(
+            config.ami,
+            config.instance_type,
+            config.spot_max_price,
+            options).body["spotInstanceRequestSet"].first
+
+          spot_request_id = spot_req["spotInstanceRequestId"]
+          @logger.info("Spot request ID: #{spot_request_id}")
+          env[:ui].info("Status: #{spot_req["fault"]["message"]}")
+          status_code = spot_req["fault"]["code"] # fog uses "fault" instead of "status"
+          while true
+            sleep 5 # TODO make it a param
+            break if env[:interrupted]
+            spot_req = env[:aws_compute].describe_spot_instance_requests(
+              'spot-instance-request-id' => [spot_request_id]).body["spotInstanceRequestSet"].first
+            next if spot_req.nil? # are we too fast?
+            # display something whenever the status code changes
+            if status_code != spot_req["fault"]["code"]
+              env[:ui].info("Status: #{spot_req["fault"]["message"]}")
+              status_code = spot_req["fault"]["code"]
+            end
+            spot_state = spot_req["state"].to_sym
+            case spot_state
+            when :not_created, :open
+              @logger.debug("Spot request #{spot_state} #{status_code}, waiting")
+            when :active
+              break; # :)
+            when :closed, :cancelled, :failed
+              @logger.error("Spot request #{spot_state} #{status_code}, aborting")
+              break; # :(
+            else
+              @logger.debug("Unknown spot state #{spot_state} #{status_code}, waiting")
+            end
+          end
+          # cancel the spot request but let the server go thru
+          env[:aws_compute].cancel_spot_instance_requests(spot_request_id)
+          # tries to return a server
+          spot_req["instanceId"] ? env[:aws_compute].servers.get(spot_req["instanceId"]) : nil
         end
 
         def recover(env)
