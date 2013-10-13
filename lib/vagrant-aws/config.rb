@@ -128,6 +128,11 @@ module VagrantPlugins
       # @return [Boolean]
       attr_accessor :monitoring
 
+      # EBS optimized instance
+      #
+      # @return [Boolean]
+      attr_accessor :ebs_optimized
+
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
         @ami                    = UNSET_VALUE
@@ -152,6 +157,7 @@ module VagrantPlugins
         @terminate_on_shutdown  = UNSET_VALUE
         @ssh_host_attribute     = UNSET_VALUE
         @monitoring             = UNSET_VALUE
+        @ebs_optimized          = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -280,6 +286,9 @@ module VagrantPlugins
 
         # default false
         @monitoring = false if @monitoring == UNSET_VALUE
+
+        # default false
+        @ebs_optimized = false if @ebs_optimized == UNSET_VALUE
 
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.

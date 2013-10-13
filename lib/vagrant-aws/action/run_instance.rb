@@ -41,6 +41,7 @@ module VagrantPlugins
           iam_instance_profile_arn  = region_config.iam_instance_profile_arn
           iam_instance_profile_name = region_config.iam_instance_profile_name
           monitoring            = region_config.monitoring
+          ebs_optimized         = region_config.ebs_optimized
 
           # If there is no keypair then warn the user
           if !keypair
@@ -70,6 +71,7 @@ module VagrantPlugins
           env[:ui].info(" -- Block Device Mapping: #{block_device_mapping}") if block_device_mapping
           env[:ui].info(" -- Terminate On Shutdown: #{terminate_on_shutdown}")
           env[:ui].info(" -- Monitoring: #{monitoring}")
+          env[:ui].info(" -- EBS optimized: #{ebs_optimized}")
 
           options = {
             :availability_zone         => availability_zone,
@@ -84,7 +86,8 @@ module VagrantPlugins
             :user_data                 => user_data,
             :block_device_mapping      => block_device_mapping,
             :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil,
-            :monitoring                => monitoring
+            :monitoring                => monitoring,
+            :ebs_optimized             => ebs_optimized
           }
           if !security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
