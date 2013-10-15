@@ -178,6 +178,8 @@ module VagrantPlugins
 
         def server_from_spot_request(env, config)
           # prepare request args. TODO map all options OR use a different API to launch
+          env[:ui].warn("Spot instances don't support Tags") unless config.tags.empty?
+          env[:ui].warn("Spot instances cannot be halted only terminated") if config.terminate_on_shutdown
           options = {
             'InstanceCount'                                  => 1,
             'ValidUntil'                                     => config.spot_valid_until,
@@ -187,10 +189,8 @@ module VagrantPlugins
             'LaunchSpecification.SubnetId'                   => config.subnet_id,
             'LaunchSpecification.IamInstanceProfileArn'      => config.iam_instance_profile_arn,
             'LaunchSpecification.IamInstanceProfileName'     => config.iam_instance_profile_name,
-            'LaunchSpecification.Tags'                       => config.tags,
             'LaunchSpecification.UserData'                   => config.user_data,
             'LaunchSpecification.BlockDeviceMapping'         => config.block_device_mapping,
-            'LaunchSpecification.InstanceInitiatedShutdownBehavior' => config.terminate_on_shutdown ? "terminate" : nil,
             'LaunchSpecification.Monitoring.Enabled'         => config.monitoring,
             'LaunchSpecification.EbsOptimized'               => config.ebs_optimized
           }
