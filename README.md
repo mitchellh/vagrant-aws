@@ -63,13 +63,13 @@ Other commands like `ssh`, `reload`, `destroy` are also available.
 
 ## Documentation
 
-* [Box Format](#Box Format)
-* [Configuration](#Configuration)
-* [Networks](#Networks)
-* [Synced Folders](#Synced Folders)
-* [Vagrantfile Examples](#Vagrantfile Examples)
-* [Development](#Development)
-* [FAQ](#FAQ)
+* [Box Format](#box-format)
+* [Configuration](#configuration)
+* [Networks](#networks)
+* [Synced Folders](#synced-folders)
+* [Vagrantfile Examples](#vagrantfile-examples)
+* [Development](#development)
+* [FAQ](#faq)
 
 ### Box Format
 
@@ -93,7 +93,6 @@ Required options:
 * `keypair_name` - The name of the AWS keypair to use to bootstrap instance.
 
 ```ruby
-  config.vm.provider :aws do |aws, override|
     aws.access_key_id = "YOUR KEY"
     aws.secret_access_key = "YOUR SECRET KEY"
     aws.ami = "ami-deadbeef"
@@ -103,17 +102,17 @@ Required options:
 Optionals:
 * `region` - default *us-east-1* - The region to start the instance in.
 * `availability_zone` - default *nil* -  The availability zone within the region to launch
-  the instance. If nil, it will use the default set by Amazon. Example: `eu-west-1b`.
+  the instance. If nil, it will use the default set by Amazon. Example: **eu-west-1b**.
 * `instance_ready_timeout` - default *120* - The number of seconds to wait for the instance
   to become "ready" in AWS.
-* `instance_type` - default *m1.small* - The type of instance, such as "m1.medium".
+* `instance_type` - default *m1.small* - The type of instance, such as **m1.medium**.
 * `user_data` - default *nil* - AWS user data string. 
 * `monitoring` - default *false* - Enable AWS instance monitoring.
-* `ebs_optimized* - default *false* - Enable optimized EBS volume, check the `instance_type`
+* `ebs_optimized` - default *false* - Enable optimized EBS volume, check the `instance_type`
 for support.
 * `terminate_on_shutdown` - default *false* - If true will terminate the instance on shutdown instead of stop.
-* `ssh_host_attribute` - default *nil* - Specifies which AWS attribute should be used as SSH host, examples: `:private_ip_address`,
- `:public_ip_address` or `:dns_name`.
+* `ssh_host_attribute` - default *nil* - Specifies which AWS attribute should be used as SSH host, examples: **:private_ip_address**,
+ **:public_ip_address** or **:dns_name**.
 * `iam_instance_profile_arn` - default *nil* - The Amazon resource name (ARN) of the IAM Instance
  Profile to associate with the instance.
 * `iam_instance_profile_name` - default *nil* - The name of the IAM Instance Profile to associate
@@ -126,8 +125,9 @@ for support.
 * `elastic_ip` - default *false* - Acquire and attach an elastic IP address ([VPC](http://aws.amazon.com/vpc/)).
 * `private_ip_address` - The private IP address to assign to an instance
   within a [VPC](http://aws.amazon.com/vpc/)
-* `block_device_mapping` - default *[]* - An array of block devices, see [EBS volumes] example.
+* `block_device_mapping` - default *[]* - An array of block devices, see [EBS volumes](#ebs-volumes) example.
 * `tags` - default *{}* - A hash of tags to set on the machine. This can be used to set the instance name:
+
 ```ruby
     aws.tags = { :Name => "foobar" }
 ```
@@ -135,7 +135,7 @@ for support.
 ### Networks
 
 Networking features in the form of `config.vm.network` are not
-supported with `vagrant-aws`, currently. If any of these are
+supported with vagrant-aws, currently. If any of these are
 specified, Vagrant will emit a warning, but will otherwise boot
 the AWS machine.
 
