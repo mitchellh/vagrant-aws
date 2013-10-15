@@ -22,39 +22,22 @@ EC2 and VPC.
 * Minimal synced folder support via `rsync`.
 * Define region-specifc configurations so Vagrant can manage machines
   in multiple regions.
-
-## Usage
-
-Install using standard Vagrant 1.1+ plugin installation methods. After
-installing, `vagrant up` and specify the `aws` provider. An example is
-shown below.
-
-```
-$ vagrant plugin install vagrant-aws
-...
-$ vagrant up --provider=aws
-...
-```
-
-Of course prior to doing this, you'll need to obtain an AWS-compatible
-box file for Vagrant.
+* Support for several AWS features like EIP, tags, block device mappings.
 
 ## Quick Start
 
-After installing the plugin (instructions above), the quickest way to get
-started is to actually use a dummy AWS box and specify all the details
-manually within a `config.vm.provider` block. So first, add the dummy
-box using any name you want:
-
+Install vagrant-aws
+```sh
+$ vagrant plugin install vagrant-aws
 ```
+
+Add a dummy box
+```sh
 $ vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
-...
 ```
 
-And then make a Vagrantfile that looks like the following, filling in
-your information where necessary.
-
-```
+Create your Vagrantfile
+```ruby
 Vagrant.configure("2") do |config|
   config.vm.box = "dummy"
 
@@ -71,20 +54,24 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-And then run `vagrant up --provider=aws`.
+Start the vm
+```sh
+$ vagrant up --provider=aws
+```
 
-This will start an Ubuntu 12.04 instance in the us-east-1 region within
-your account. And assuming your SSH information was filled in properly
-within your Vagrantfile, SSH and provisioning will work as well.
+Other commands like `ssh`, `reload`, `destroy` are also available.
 
-Note that normally a lot of this boilerplate is encoded within the box
-file, but the box file used for the quick start, the "dummy" box, has
-no preconfigured defaults.
+## Documentation
 
-If you have issues with SSH connecting, make sure that the instances
-are being launched with a security group that allows SSH access.
+* [Box Format](#Box Format)
+* [Configuration](#Configuration)
+* [Networks](#Networks)
+* [Synced Folders](#Synced Folders)
+* [Vagrantfile Examples](#Vagrantfile Examples)
+* [Development](#Development)
+* [FAQ](#FAQ)
 
-## Box Format
+### Box Format
 
 Every provider in Vagrant must introduce a custom box format. This
 provider introduces `aws` boxes. You can view an example box in
@@ -95,87 +82,64 @@ The box format is basically just the required `metadata.json` file
 along with a `Vagrantfile` that does default settings for the
 provider-specific configuration for this provider.
 
-## Configuration
+### Configuration
 
-This provider exposes quite a few provider-specific configuration options:
+This provider exposes quite a few provider-specific configuration options.
 
-* `access_key_id` - The access key for accessing AWS
-* `ami` - The AMI id to boot, such as "ami-12345678"
-* `availability_zone` - The availability zone within the region to launch
-  the instance. If nil, it will use the default set by Amazon.
-* `instance_ready_timeout` - The number of seconds to wait for the instance
-  to become "ready" in AWS. Defaults to 120 seconds.
-* `instance_type` - The type of instance, such as "m1.small". The default
-  value of this if not specified is "m1.small".
-* `keypair_name` - The name of the keypair to use to bootstrap AMIs
-   which support it.
+Required options:
+* `access_key_id` - The AWS access key.
+* `secret_access_key` - The AWS secret access key.
+* `ami` - The AMI id to boot.
+* `keypair_name` - The name of the AWS keypair to use to bootstrap instance.
+
+```ruby
+  config.vm.provider :aws do |aws, override|
+    aws.access_key_id = "YOUR KEY"
+    aws.secret_access_key = "YOUR SECRET KEY"
+    aws.ami = "ami-deadbeef"
+    aws.keypair_name = "KEYPAIR NAME"
+```
+
+Optionals:
+* `region` - default *us-east-1* - The region to start the instance in.
+* `availability_zone` - default *nil* -  The availability zone within the region to launch
+  the instance. If nil, it will use the default set by Amazon. Example: `eu-west-1b`.
+* `instance_ready_timeout` - default *120* - The number of seconds to wait for the instance
+  to become "ready" in AWS.
+* `instance_type` - default *m1.small* - The type of instance, such as "m1.medium".
+* `user_data` - default *nil* - AWS user data string. 
+* `monitoring` - default *false* - Enable AWS instance monitoring.
+* `ebs_optimized* - default *false* - Enable optimized EBS volume, check the `instance_type`
+for support.
+* `terminate_on_shutdown` - default *false* - If true will terminate the instance on shutdown instead of stop.
+* `ssh_host_attribute` - default *nil* - Specifies which AWS attribute should be used as SSH host, examples: `:private_ip_address`,
+ `:public_ip_address` or `:dns_name`.
+* `iam_instance_profile_arn` - default *nil* - The Amazon resource name (ARN) of the IAM Instance
+ Profile to associate with the instance.
+* `iam_instance_profile_name` - default *nil* - The name of the IAM Instance Profile to associate
+ with the instance.
+* `use_iam_profile` - default *false* - Enables the use of [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)
+  for credentials.
+* `subnet_id` - default *nil* - The subnet to boot the instance into, for VPC.
+* `security_groups` - default *[]* - An array of security groups for the instance. If this
+  instance will be launched in VPC, this must be a list of security group IDs.
+* `elastic_ip` - default *false* - Acquire and attach an elastic IP address ([VPC](http://aws.amazon.com/vpc/)).
 * `private_ip_address` - The private IP address to assign to an instance
   within a [VPC](http://aws.amazon.com/vpc/)
-* `region` - The region to start the instance in, such as "us-east-1"
-* `secret_access_key` - The secret access key for accessing AWS
-* `security_groups` - An array of security groups for the instance. If this
-  instance will be launched in VPC, this must be a list of security group
-  IDs.
-* `iam_instance_profile_arn` - The Amazon resource name (ARN) of the IAM Instance
-    Profile to associate with the instance
-* `iam_instance_profile_name` - The name of the IAM Instance Profile to associate
-  with the instance
-* `subnet_id` - The subnet to boot the instance into, for VPC.
-* `tags` - A hash of tags to set on the machine.
-* `use_iam_profile` - If true, will use [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)
-  for credentials.
-
-These can be set like typical provider-specific configuration:
-
+* `block_device_mapping` - default *[]* - An array of block devices, see [EBS volumes] example.
+* `tags` - default *{}* - A hash of tags to set on the machine. This can be used to set the instance name:
 ```ruby
-Vagrant.configure("2") do |config|
-  # ... other stuff
-
-  config.vm.provider :aws do |aws|
-    aws.access_key_id = "foo"
-    aws.secret_access_key = "bar"
-  end
-end
+    aws.tags = { :Name => "foobar" }
 ```
 
-In addition to the above top-level configs, you can use the `region_config`
-method to specify region-specific overrides within your Vagrantfile. Note
-that the top-level `region` config must always be specified to choose which
-region you want to actually use, however. This looks like this:
-
-```ruby
-Vagrant.configure("2") do |config|
-  # ... other stuff
-
-  config.vm.provider :aws do |aws|
-    aws.access_key_id = "foo"
-    aws.secret_access_key = "bar"
-    aws.region = "us-east-1"
-
-    # Simple region config
-    aws.region_config "us-east-1", :ami => "ami-12345678"
-
-    # More comprehensive region config
-    aws.region_config "us-west-2" do |region|
-      region.ami = "ami-87654321"
-      region.keypair_name = "company-west"
-    end
-  end
-end
-```
-
-The region-specific configurations will override the top-level
-configurations when that region is used. They otherwise inherit
-the top-level configurations, as you would probably expect.
-
-## Networks
+### Networks
 
 Networking features in the form of `config.vm.network` are not
 supported with `vagrant-aws`, currently. If any of these are
 specified, Vagrant will emit a warning, but will otherwise boot
 the AWS machine.
 
-## Synced Folders
+### Synced Networks
 
 There is minimal support for synced folders. Upon `vagrant up`,
 `vagrant reload`, and `vagrant provision`, the AWS provider will use
@@ -185,55 +149,23 @@ the remote machine over SSH.
 This is good enough for all built-in Vagrant provisioners (shell,
 chef, and puppet) to work!
 
-## Other Examples
+### Vagrantfile Examples
 
-### Tags
+#### VPC
 
-To use tags, simply define a hash of key/value for the tags you want to associate to your instance, like:
+#### EBS volumes
 
-```ruby
-Vagrant.configure("2") do |config|
-  # ... other stuff
-
-  config.vm.provider "aws" do |aws|
-    aws.tags = {
-	  'Name' => 'Some Name',
-	  'Some Key' => 'Some Value'
-    }
-  end
-end
-```
-
-### User data
-
-You can specify user data for the instance being booted.
-
-```ruby
-Vagrant.configure("2") do |config|
-  # ... other stuff
-
-  config.vm.provider "aws" do |aws|
-    # Option 1: a single string
-    aws.user_data = "#!/bin/bash\necho 'got user data' > /tmp/user_data.log\necho"
-
-    # Option 2: use a file
-    aws.user_data = File.read("user_data.txt")
-  end
-end
-```
-
-## Development
+### Development
 
 To work on the `vagrant-aws` plugin, clone this repository out, and use
 [Bundler](http://gembundler.com) to get the dependencies:
 
-```
+```sh
 $ bundle
 ```
 
 Once you have the dependencies, verify the unit tests pass with `rake`:
-
-```
+```sh
 $ bundle exec rake
 ```
 
@@ -245,6 +177,16 @@ and add the following line to your `Vagrantfile`
 Vagrant.require_plugin "vagrant-aws"
 ```
 Use bundler to execute Vagrant:
-```
+```sh
 $ bundle exec vagrant up --provider=aws
 ```
+
+Log output is controlled via the environment variable `VAGRANT_LOG`:
+```sh
+$ VAGRANT_LOG=debug bundle exec vagrant up --provider=aws
+```
+
+### FAQ
+
+1. Which IP is used by the `ssh` command?
+
