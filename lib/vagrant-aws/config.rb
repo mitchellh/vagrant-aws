@@ -68,7 +68,7 @@ module VagrantPlugins
       # be a list of IDs. For EC2, it can be either.
       #
       # @return [Array<String>]
-      attr_accessor :security_groups
+      attr_reader :security_groups
 
       # The Amazon resource name (ARN) of the IAM Instance Profile
       # to associate with the instance.
@@ -165,6 +165,12 @@ module VagrantPlugins
         @__finalized = false
         @__region_config = {}
         @__region_specific = region_specific
+      end
+
+      # set security_groups
+      def security_groups=(value)
+        # convert value to array if necessary
+        @security_groups = value.is_a?(Array) ? value : [value]
       end
 
       # Allows region-specific overrides of any of the settings on this
