@@ -6,7 +6,7 @@
 * Implement halt and reload (GH #31)
 * rsync ignores Vagrantfile
 * warn if none of the security groups allows incoming SSH
-* bump fog.io to 0.15.0
+* bump fog.io to 1.15.0
 * Fix rsync on windows (GH #77)
 * Add `ssh_host_attribute` config (GH #143)
 
