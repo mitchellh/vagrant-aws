@@ -24,16 +24,21 @@ module VagrantPlugins
 
           ssh_info = env[:machine].ssh_info
 
+          unless Vagrant::Util::Which.which('rsync')
+            env[:ui].warn(I18n.t('vagrant_aws.rsync_not_found_warning', :side => "host"))
+            return
+          end
+
+          if env[:machine].communicate.execute('which rsync', :error_check => false) != 0
+            env[:ui].warn(I18n.t('vagrant_aws.rsync_not_found_warning', :side => "guest"))
+            return
+          end
+
           env[:machine].config.vm.synced_folders.each do |id, data|
             data = scoped_hash_override(data, :aws)
 
             # Ignore disabled shared folders
             next if data[:disabled]
-
-            unless Vagrant::Util::Which.which('rsync')
-              env[:ui].warn(I18n.t('vagrant_aws.rsync_not_found_warning'))
-              break
-            end
 
             hostpath  = File.expand_path(data[:hostpath], env[:root_path])
             guestpath = data[:guestpath]
