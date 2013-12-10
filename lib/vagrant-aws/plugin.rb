@@ -13,7 +13,7 @@ end
 module VagrantPlugins
   module AWS
     class Plugin < Vagrant.plugin("2")
-      name "AWS"
+      name "vagrant-aws"
       description <<-DESC
       This plugin installs a provider that allows Vagrant to manage
       machines in AWS (EC2/VPC).
