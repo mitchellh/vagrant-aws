@@ -38,6 +38,7 @@ module VagrantPlugins
               end
               b2.use ConnectAWS
               b2.use TerminateInstance
+              b2.use ProvisionerCleanup if defined?(ProvisionerCleanup)
             else
               b2.use MessageWillNotDestroy
             end
