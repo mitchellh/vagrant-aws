@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = "vagrant-aws"
 
   s.add_runtime_dependency "fog", "~> 1.18.0"
+  s.add_runtime_dependency "unf", "~> 0.1.3"
 
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec-core", "~> 2.12.2"
