@@ -14,17 +14,17 @@ module VagrantPlugins
         def call(env)
           server = env[:aws_compute].servers.get(env[:machine].id)
 
-          # Destroy the server and remove the tracking ID
-          env[:ui].info(I18n.t("vagrant_aws.terminating"))
-          server.destroy
-          env[:machine].id = nil
-
           # Release the elastic IP
           ip_file = env[:machine].data_dir.join('elastic_ip')
           if ip_file.file?
             release_address(env,ip_file.read)
             ip_file.delete
           end
+
+          # Destroy the server and remove the tracking ID
+          env[:ui].info(I18n.t("vagrant_aws.terminating"))
+          server.destroy
+          env[:machine].id = nil
 
           @app.call(env)
         end
