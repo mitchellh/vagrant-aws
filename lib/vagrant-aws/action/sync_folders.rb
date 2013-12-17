@@ -71,11 +71,14 @@ module VagrantPlugins
             env[:machine].communicate.sudo("mkdir -p '#{guestpath}'")
             env[:machine].communicate.sudo(
               "chown #{ssh_info[:username]} '#{guestpath}'")
+ 
+            #collect rsync excludes specified :rsync_excludes=>['path1',...] in synced_folder options
+            excludes = ['.vagrant/', 'Vagrantfile', *Array(data[:rsync_excludes])]
 
             # Rsync over to the guest path using the SSH info
             command = [
               "rsync", "--verbose", "--archive", "-z",
-              "--exclude", ".vagrant/", "--exclude", "Vagrantfile",
+              *excludes.map{|e|['--exclude', e]}.flatten,
               "-e", "ssh -p #{ssh_info[:port]} -o StrictHostKeyChecking=no -i '#{ssh_info[:private_key_path]}'",
               hostpath,
               "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
