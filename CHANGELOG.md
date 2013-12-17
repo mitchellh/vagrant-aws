@@ -1,5 +1,14 @@
 # 0.5.0 (unreleased)
 
+# 0.4.1 (December 17, 2013)
+
+* Update fog.io to 1.18.0
+* Fix sync folder user permissions (GH #175)
+* Fix vagrant < 1.3.0 provisioner compatibility (GH #173)
+* Add vagrant 1.4.0 multiple SSH key support (GH #172)
+* Fix EIP deallocation bug (GH #164)
+* Add (per shared folder) rsync exclude flag (GH #156)
+
 # 0.4.0 (October 11, 2013)
 
 * Handle EIP allocation error (GH #134)
