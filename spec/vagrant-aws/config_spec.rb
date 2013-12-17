@@ -46,7 +46,7 @@ describe VagrantPlugins::AWS::Config do
     # and asserts the proper result comes back out.
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
       :instance_type, :keypair_name, :ssh_host_attribute, :ebs_optimized,
-      :region, :secret_access_key, :security_groups, :monitoring,
+      :region, :secret_access_key, :monitoring,
       :subnet_id, :tags, :elastic_ip, :terminate_on_shutdown,
       :iam_instance_profile_arn, :iam_instance_profile_name,
       :use_iam_profile, :user_data, :block_device_mapping].each do |attribute|
@@ -56,6 +56,11 @@ describe VagrantPlugins::AWS::Config do
         instance.finalize!
         instance.send(attribute).should == "foo"
       end
+    end
+    it "should not default security_groups if overridden" do
+      instance.security_groups = "foo"
+      instance.finalize!
+      instance.security_groups.should == ["foo"]
     end
   end
 
