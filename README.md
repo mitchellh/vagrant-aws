@@ -222,6 +222,20 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+### Disk size
+
+Need more space on your instance disk? Increase the disk size.
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ... other stuff
+
+  config.vm.provider "aws" do |aws|
+    aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 50 }]
+  end
+end
+```
+
 ## Development
 
 To work on the `vagrant-aws` plugin, clone this repository out, and use
