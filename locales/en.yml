@@ -46,7 +46,7 @@ en:
       access_key_id_required: |-
         An access key ID must be specified via "access_key_id"
       ami_required: |-
-        An AMI must be configured via "ami"
+        An AMI must be configured via "ami" (region: #{region})
       private_key_missing: |-
         The specified private key for AWS could not be found
       region_required: |-
@@ -99,7 +99,7 @@ en:
       short_stopping: |-
         stopping
       long_stopping: |-
-        The EC2 instance is stopping. Wait until is completely stopped to 
+        The EC2 instance is stopping. Wait until is completely stopped to
         run `vagrant up` and start it.
 
       short_pending: |-

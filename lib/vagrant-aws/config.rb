@@ -214,7 +214,7 @@ module VagrantPlugins
           # has it.
           new_region_specific = other.instance_variable_get(:@__region_specific)
           result.instance_variable_set(
-            :@__region_specific, new_region_specific || @__region_specific)
+          :@__region_specific, new_region_specific || @__region_specific)
 
           # Go through all the region configs and prepend ours onto
           # theirs.
@@ -338,7 +338,7 @@ module VagrantPlugins
               config.secret_access_key.nil?
           end
 
-          errors << I18n.t("vagrant_aws.config.ami_required") if config.ami.nil?
+          errors << I18n.interpolate("vagrant_aws.config.ami_required", :region => @region)  if config.ami.nil?
         end
 
         { "AWS Provider" => errors }
