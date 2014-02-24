@@ -75,11 +75,15 @@ module VagrantPlugins
             #collect rsync excludes specified :rsync_excludes=>['path1',...] in synced_folder options
             excludes = ['.vagrant/', 'Vagrantfile', *Array(data[:rsync_excludes])].uniq
 
+	    # check for proxy_command directive
+            proxycommand = ssh_info[:proxy_command]
+            sshproxycommand = defined?(proxycommand) ? "-o 'ProxyCommand #{proxycommand}'" : ""
+
             # Rsync over to the guest path using the SSH info
             command = [
               "rsync", "--verbose", "--archive", "-z",
               *excludes.map{|e|['--exclude', e]}.flatten,
-              "-e", "ssh -p #{ssh_info[:port]} -o StrictHostKeyChecking=no #{ssh_key_options(ssh_info)}",
+              "-e", "ssh -p #{ssh_info[:port]} -o StrictHostKeyChecking=no #{ssh_key_options(ssh_info)} #{sshproxycommand}",
               hostpath,
               "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
 
