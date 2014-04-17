@@ -133,6 +133,11 @@ module VagrantPlugins
       # @return [Boolean]
       attr_accessor :ebs_optimized
 
+      # Assigning a public IP address in a VPC
+      #
+      # @return [Boolean]
+      attr_accessor :associate_public_ip
+
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
         @ami                    = UNSET_VALUE
@@ -158,6 +163,7 @@ module VagrantPlugins
         @ssh_host_attribute     = UNSET_VALUE
         @monitoring             = UNSET_VALUE
         @ebs_optimized          = UNSET_VALUE
+        @associate_public_ip    = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -296,6 +302,9 @@ module VagrantPlugins
         # default false
         @ebs_optimized = false if @ebs_optimized == UNSET_VALUE
 
+        # default false
+        @associate_public_ip = false if @associate_public_ip == UNSET_VALUE
+
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
         if !@__region_specific
@@ -336,6 +345,10 @@ module VagrantPlugins
               config.access_key_id.nil?
             errors << I18n.t("vagrant_aws.config.secret_access_key_required") if \
               config.secret_access_key.nil?
+          end
+
+          if config.associate_public_ip && !subnet_id
+            errors << I18n.t("vagrant_aws.config.subnet_id_required_with_public_ip")
           end
 
           errors << I18n.interpolate("vagrant_aws.config.ami_required", :region => @region)  if config.ami.nil?
