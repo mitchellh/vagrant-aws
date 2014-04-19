@@ -37,6 +37,7 @@ describe VagrantPlugins::AWS::Config do
     its("ssh_host_attribute") { should be_nil }
     its("monitoring")        { should == false }
     its("ebs_optimized")     { should == false }
+    its("associate_public_ip")     { should == false }
   end
 
   describe "overriding defaults" do
@@ -46,7 +47,7 @@ describe VagrantPlugins::AWS::Config do
     # and asserts the proper result comes back out.
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
       :instance_type, :keypair_name, :ssh_host_attribute, :ebs_optimized,
-      :region, :secret_access_key, :monitoring,
+      :region, :secret_access_key, :monitoring, :associate_public_ip,
       :subnet_id, :tags, :elastic_ip, :terminate_on_shutdown,
       :iam_instance_profile_arn, :iam_instance_profile_name,
       :use_iam_profile, :user_data, :block_device_mapping].each do |attribute|

@@ -53,6 +53,8 @@ en:
         A region must be specified via "region"
       secret_access_key_required: |-
         A secret access key is required via "secret_access_key"
+      subnet_id_required_with_public_ip: |-
+        If you assign a public IP address to an instance in a VPC, a subnet must be specifed via "subnet_id"
 
     errors:
       fog_error: |-
