@@ -209,6 +209,8 @@ module VagrantPlugins
           end
           @logger.debug("Public IP #{allocation.body['publicIp']}")
 
+          sleep(180)
+
           # Associate the address and save the metadata to a hash
           if domain == 'vpc'
             # VPC requires an allocation ID to assign an IP
