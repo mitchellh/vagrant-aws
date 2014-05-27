@@ -347,7 +347,7 @@ module VagrantPlugins
               config.secret_access_key.nil?
           end
 
-          if config.associate_public_ip && !subnet_id
+          if config.associate_public_ip && !config.subnet_id
             errors << I18n.t("vagrant_aws.config.subnet_id_required_with_public_ip")
           end
 
