@@ -86,7 +86,7 @@ module VagrantPlugins
               "rsync", "--verbose", "--archive", "-z",
               *excludes.map{|e|['--exclude', e]}.flatten,
               "-e", "ssh -p #{ssh_info[:port]} #{ssh_key_options(ssh_info)} " + 
-              ssh_options.map { |ssh_option| "-o '#{ssh_option}' " }.join,
+              ssh_options_to_args(ssh_options).join(' '),
               hostpath,
               "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
 
@@ -104,6 +104,18 @@ module VagrantPlugins
                 :stderr => r.stderr
             end
           end
+        end
+
+        # Generate a ssh(1) command line list of options
+        #
+        # @param [Array] options An array of ssh options. E.g.
+        #   `StrictHostKeyChecking=no` see ssh_config(5) for more
+        # @return [Array] Computed list of command line arguments
+        def ssh_options_to_args(options)
+          # Bail early if we get something that is not an array of options
+          return [] unless options
+
+          return options.map { |o| "-o '#{o}'" }
         end
 
         private
