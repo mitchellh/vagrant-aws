@@ -125,6 +125,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `tags` - A hash of tags to set on the machine.
 * `use_iam_profile` - If true, will use [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)
   for credentials.
+* `block_device_mapping` - Amazon EC2 Block Device Mapping Property
 
 These can be set like typical provider-specific configuration:
 
