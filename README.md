@@ -238,6 +238,20 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+### Elastic Load Balancers
+
+You can automatically attach an instance to an ELB during boot and detach on destroy.
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ... other stuff
+
+  config.vm.provider "aws" do |aws|
+    aws.elb = "production-web"
+  end
+end
+```
+
 ## Development
 
 To work on the `vagrant-aws` plugin, clone this repository out, and use

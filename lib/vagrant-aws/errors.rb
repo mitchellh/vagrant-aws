@@ -25,6 +25,9 @@ module VagrantPlugins
 
       class MkdirError < VagrantAWSError
         error_key(:mkdir_error)
+
+      class ElbDoesNotExistError < VagrantAWSError
+        error_key("elb_does_not_exist")
       end
     end
   end
