@@ -114,9 +114,14 @@ module VagrantPlugins
         end
       end
 
-      def self.action_prepare_boot Vagrant::Action::Builder.new.tap do |b|
-        b.use Provision b.use SyncFolders b.use WarnNetworks b.use
-        ElbRegisterInstance end end
+      def self.action_prepare_boot
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Provision
+          b.use SyncFolders
+          b.use WarnNetworks
+          b.use ElbRegisterInstance
+        end
+      end
 
       # This action is called to bring the box up from nothing.
       def self.action_up
