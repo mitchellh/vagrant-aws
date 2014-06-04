@@ -209,8 +209,6 @@ module VagrantPlugins
           end
           @logger.debug("Public IP #{allocation.body['publicIp']}")
 
-          # Sleep required to correct for any potential latency from the pool of Elastic IP addresses
-          # See: https://forums.aws.amazon.com/message.jspa?messageID=471388
           sleep(180)
 
           # Associate the address and save the metadata to a hash
