@@ -68,6 +68,13 @@ module VagrantPlugins
             end
 
             # Create the guest path
+            # The -p switch is unneeded for WinRM, and fails in Powershell 4+
+            if env[:machine].config.vm.communicator == :winrm
+              env[:machine].communicate.sudo("mkdir '#{guestpath}'")
+            else
+              env[:machine].communicate.sudo("mkdir -p '#{guestpath}'")
+            end
+
             env[:machine].communicate.sudo("mkdir -p '#{guestpath}'")
             env[:machine].communicate.sudo(
               "chown -R #{ssh_info[:username]} '#{guestpath}'")
