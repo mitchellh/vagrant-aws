@@ -149,7 +149,7 @@ module VagrantPlugins
           # Allocate and associate an elastic IP if requested
           if elastic_ip
             domain = subnet_id ? 'vpc' : 'standard'
-            do_elastic_ip(env, domain, server)
+            do_elastic_ip(env, domain, server,elastic_ip)
           end
 
           if !env[:interrupted]
@@ -198,26 +198,31 @@ module VagrantPlugins
           !rules.select { |r| (r["fromPort"]..r["toPort"]).include?(port) }.empty?
         end
 
-        def do_elastic_ip(env, domain, server)
-          begin
-            allocation = env[:aws_compute].allocate_address(domain)
-          rescue
-            @logger.debug("Could not allocate Elastic IP.")
-            terminate(env)
-            raise Errors::FogError,
-                            :message => "Could not allocate Elastic IP."
-          end
-          @logger.debug("Public IP #{allocation.body['publicIp']}")
-
-          # Associate the address and save the metadata to a hash
-          if domain == 'vpc'
-            # VPC requires an allocation ID to assign an IP
-            association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
-            h = { :allocation_id => allocation.body['allocationId'], :association_id => association.body['associationId'], :public_ip => allocation.body['publicIp'] }
+        def do_elastic_ip(env, domain, server, elastic_ip)
+          if(elastic_ip.kind_of?(String))
+            association = env[:aws_compute].associate_address(server.id, elastic_ip)
+            h = { :public_ip => elastic_ip }
           else
-            # Standard EC2 instances only need the allocated IP address
-            association = env[:aws_compute].associate_address(server.id, allocation.body['publicIp'])
-            h = { :public_ip => allocation.body['publicIp'] }
+            begin
+              allocation = env[:aws_compute].allocate_address(domain)
+            rescue
+              @logger.debug("Could not allocate Elastic IP.")
+              terminate(env)
+              raise Errors::FogError,
+                              :message => "Could not allocate Elastic IP."
+            end
+            @logger.debug("Public IP #{allocation.body['publicIp']}")
+
+            # Associate the address and save the metadata to a hash
+            if domain == 'vpc'
+              # VPC requires an allocation ID to assign an IP
+              association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
+              h = { :allocation_id => allocation.body['allocationId'], :association_id => association.body['associationId'], :public_ip => allocation.body['publicIp'] }
+            else
+              # Standard EC2 instances only need the allocated IP address
+              association = env[:aws_compute].associate_address(server.id, allocation.body['publicIp'])
+              h = { :public_ip => allocation.body['publicIp'] }
+            end
           end
 
           unless association.body['return']
