@@ -86,7 +86,7 @@ en:
         Please verify that the machine properly boots. If you need more time
         set the `instance_ready_timeout` configuration on the AWS provider.
       rsync_error: |-
-        There was an error when attempting to rsync a share folder.
+        There was an error when attempting to rsync a shared folder.
         Please inspect the error message below for more info.
 
         Host path: %{hostpath}
