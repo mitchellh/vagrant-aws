@@ -201,7 +201,7 @@ module VagrantPlugins
         def do_elastic_ip(env, domain, server, elastic_ip)
           if(elastic_ip.kind_of?(String))
             association = env[:aws_compute].associate_address(server.id, elastic_ip)
-            h = { :public_ip => elastic_ip }
+            h = { :public_ip => elastic_ip, :is_ip_retain => true }
           else
             begin
               allocation = env[:aws_compute].allocate_address(domain)
@@ -221,7 +221,7 @@ module VagrantPlugins
             else
               # Standard EC2 instances only need the allocated IP address
               association = env[:aws_compute].associate_address(server.id, allocation.body['publicIp'])
-              h = { :public_ip => allocation.body['publicIp'] }
+              h = { :public_ip => allocation.body['publicIp'] ,:is_ip_retain => false }
             end
           end
 
