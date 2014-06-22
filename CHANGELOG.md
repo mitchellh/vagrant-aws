@@ -1,4 +1,4 @@
-# 0.5.0 (unreleased)
+# 0.5.0 (June 22, 2014)
 
 * Support for associating public IPs for VMs inside of VPCs (GH
   [#219](https://github.com/mitchellh/vagrant-aws/pull/219), GH
