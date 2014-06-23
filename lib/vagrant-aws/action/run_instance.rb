@@ -95,11 +95,10 @@ module VagrantPlugins
           if !security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
             options[security_group_key] = security_groups
+            env[:ui].warn(I18n.t("vagrant_aws.warn_ssh_access")) unless allows_ssh_port?(env, security_groups, subnet_id)
           end
 
           begin
-            env[:ui].warn(I18n.t("vagrant_aws.warn_ssh_access")) unless allows_ssh_port?(env, security_groups, subnet_id)
-
             server = env[:aws_compute].servers.create(options)
           rescue Fog::Compute::AWS::NotFound => e
             # Invalid subnet doesn't have its own error so we catch and
