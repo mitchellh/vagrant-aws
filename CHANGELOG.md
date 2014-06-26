@@ -8,6 +8,8 @@
 * rsyncing folders uses `--delete` flag to better emulate "real shared folders
   (GH [#194](https://github.com/mitchellh/vagrant-aws/pull/194))
 * fog gem version bumped to 1.22 (GH [#253](https://github.com/mitchellh/vagrant-aws/pull/253))
+* Simple ELB support (GH [#88](https://github.com/mitchellh/vagrant-aws/pull/88),
+  GH [#238](https://github.com/mitchellh/vagrant-aws/pull/238))
 
 # 0.4.1 (December 17, 2013)
 
