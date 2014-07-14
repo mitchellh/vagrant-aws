@@ -115,8 +115,7 @@ module VagrantPlugins
         end
 
         # This method creates the auto-generated Vagrantfile at the root of the
-        # box. This Vagrantfile contains the MAC address so that the user doesn't
-        # have to worry about it.
+        # box.
         def create_vagrantfile env
           File.open(File.join(env["export.temp_dir"], "Vagrantfile"), "w") do |f|
             f.write(TemplateRenderer.render("vagrant-aws_package_Vagrantfile", {
