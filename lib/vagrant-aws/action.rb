@@ -10,7 +10,6 @@ module VagrantPlugins
 
       def self.action_package
         Vagrant::Action::Builder.new.tap do |b|
-          b.use ConfigValidate
           b.use Call, IsCreated do |env, b2|
             if !env[:result]
               b2.use MessageNotCreated
@@ -20,7 +19,6 @@ module VagrantPlugins
             # Magic time
             b2.use ConnectAWS
             b2.use PackageInstance
-
           end
         end
       end
