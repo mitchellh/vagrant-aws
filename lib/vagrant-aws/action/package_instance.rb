@@ -165,7 +165,7 @@ module VagrantPlugins
         end
 
         def template_root
-          Pathname.new(File.expand_path('../../../../', __FILE__)).join("templates")
+          AWS.source_root.join("templates")
         end
 
       end
