@@ -73,8 +73,6 @@ module VagrantPlugins
           env["package.vagrantfile"] ||= nil
           env["package.output"] ||= "package.box" # This is actually populated!
 
-          # @app.call(env)
-
           # Create the .box 
           begin
 
@@ -94,10 +92,11 @@ module VagrantPlugins
             create_metadata_file(env)
 
             general_call(env)
+            
             # Always call recover to clean up the temp dir
             clean_temp_dir
 
-          rescue Errors::VagrantAWSError => e # Should change this
+          rescue Errors::VagrantAWSError => e
             p "There was an error: #{e}"
           end
 
