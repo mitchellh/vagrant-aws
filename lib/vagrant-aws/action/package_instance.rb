@@ -110,9 +110,9 @@ module VagrantPlugins
         protected
 
         def clean_temp_dir
-          # if @temp_dir && File.exist?(@temp_dir)
-            # FileUtils.rm_rf(@temp_dir)
-          # end
+          if @temp_dir && File.exist?(@temp_dir)
+            FileUtils.rm_rf(@temp_dir)
+          end
         end
 
         # This method creates the auto-generated Vagrantfile at the root of the
