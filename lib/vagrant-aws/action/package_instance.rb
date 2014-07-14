@@ -13,6 +13,10 @@ module VagrantPlugins
         def initialize(app, env)
           @app    = app
           @logger = Log4r::Logger.new("vagrant_aws::action::stop_instance")
+          env["package.include"] ||= []
+          env["package.vagrantfile"] ||= nil
+          env["package.output"] ||= "package.box"
+
         end
 
         alias_method :general_call, :call
@@ -67,11 +71,6 @@ module VagrantPlugins
           rescue Fog::Compute::AWS::Error => e
             raise Errors::FogError, :message => e.message
           end # Begin, end
-            
-          env["package.files"]  ||= {}
-          env["package.include"] ||= []
-          env["package.vagrantfile"] ||= nil
-          env["package.output"] ||= "package.box" # This is actually populated!
 
           # Create the .box 
           begin
