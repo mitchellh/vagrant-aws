@@ -73,31 +73,25 @@ module VagrantPlugins
           end # Begin, end
 
           # Create the .box 
-          begin
+          setup_package_files env
 
-            setup_package_files env
+          # Setup the temporary directory
+          @temp_dir = env[:tmp_path].join(Time.now.to_i.to_s)
+          env["export.temp_dir"] = @temp_dir
+          FileUtils.mkpath(env["export.temp_dir"])
 
-            # Setup the temporary directory
-            @temp_dir = env[:tmp_path].join(Time.now.to_i.to_s)
-            env["export.temp_dir"] = @temp_dir
-            FileUtils.mkpath(env["export.temp_dir"])
+          # Just match up a couple environmental variables so that
+          # the superclass will do the right thing. Then, call the
+          # superclass
+          env["package.directory"] = env["export.temp_dir"]
 
-            # Just match up a couple environmental variables so that
-            # the superclass will do the right thing. Then, call the
-            # superclass
-            env["package.directory"] = env["export.temp_dir"]
+          create_vagrantfile(env)
+          create_metadata_file(env)
 
-            create_vagrantfile(env)
-            create_metadata_file(env)
-
-            general_call(env)
-            
-            # Always call recover to clean up the temp dir
-            clean_temp_dir
-
-          rescue Errors::VagrantAWSError => e
-            p "There was an error: #{e}"
-          end
+          general_call(env)
+          
+          # Always call recover to clean up the temp dir
+          clean_temp_dir
 
         end # End call
 
