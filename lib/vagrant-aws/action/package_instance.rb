@@ -26,11 +26,9 @@ module VagrantPlugins
 
         def initialize(app, env)
           @app    = app
-          @logger = Log4r::Logger.new("vagrant_aws::action::stop_instance")
+          @logger = Log4r::Logger.new("vagrant_aws::action::package_instance")
           env["package.include"] ||= []
-          env["package.vagrantfile"] ||= nil
           env["package.output"] ||= "package.box"
-
         end
 
         alias_method :general_call, :call
@@ -45,7 +43,8 @@ module VagrantPlugins
 
           # Burn instance to an ami
           begin
-            server = env[:aws_compute].servers.get(env[:machine].id)  
+            server = env[:aws_compute].servers.get(env[:machine].id)
+
             env[:ui].info("Burning instance #{server.id} into an ami")
             
             ami_response = server.service.create_image server.id, "#{server.tags["Name"]} Package - #{Time.now.strftime("%Y%m%d-%H%M%S")}", ""
@@ -55,15 +54,22 @@ module VagrantPlugins
             
             # Attempt to burn the aws instance into an AMI within timeout
             env[:metrics]["instance_ready_time"] = Util::Timer.time do
-            
+              
+              # Get the config, to set the ami burn timeout
+              region = env[:machine].provider_config.region
+              region_config = env[:machine].provider_config.get_region_config(region)
+              env[:ui].info "Timeout: #{region_config.instance_package_timeout}"
+              tries = region_config.instance_package_timeout / 2
+
               env[:ui].info("Waiting for the AMI '#{@ami_id}' to burn...")
               begin
-                retryable(:on => Fog::Errors::TimeoutError, :tries => 300) do
+                retryable(:on => Fog::Errors::TimeoutError, :tries => tries) do
                   # If we're interrupted don't worry about waiting
                   next if env[:interrupted]
 
                   # Need to update the ami_obj on each cycle
                   ami_obj = server.service.images.get(@ami_id)
+
                   # Wait for the server to be ready 
                   server.wait_for(2) { 
                     if ami_obj.state == "failed"
@@ -78,11 +84,11 @@ module VagrantPlugins
                   }
                 end
               rescue Fog::Errors::TimeoutError
-                # Notify the user
-                raise Errors::InstanceReadyTimeout,
-                  timeout: region_config.instance_ready_timeout
-              end # Begin, end
-            end # Timer.time end
+                # Notify the user upon timeout
+                raise Errors::InstancePackageTimeout,
+                  timeout: region_config.instance_package_timeout
+              end
+            end
             env[:ui].info("Burn was successfull in #{env[:metrics]["instance_ready_time"].to_i}s")
           rescue Fog::Compute::AWS::Error => e
             raise Errors::FogError, :message => e.message

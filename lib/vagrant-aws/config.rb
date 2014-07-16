@@ -24,6 +24,11 @@ module VagrantPlugins
       # @return [Fixnum]
       attr_accessor :instance_ready_timeout
 
+      # The timeout to wait for an instance to successfully burn into an AMI.
+      #
+      # @return [Fixnum]
+      attr_accessor :instance_package_timeout
+
       # The type of instance to launch, such as "m3.medium"
       #
       # @return [String]
@@ -155,6 +160,7 @@ module VagrantPlugins
         @ami                    = UNSET_VALUE
         @availability_zone      = UNSET_VALUE
         @instance_ready_timeout = UNSET_VALUE
+        @instance_package_timeout = UNSET_VALUE
         @instance_type          = UNSET_VALUE
         @keypair_name           = UNSET_VALUE
         @private_ip_address     = UNSET_VALUE
@@ -269,6 +275,9 @@ module VagrantPlugins
 
         # Set the default timeout for waiting for an instance to be ready
         @instance_ready_timeout = 120 if @instance_ready_timeout == UNSET_VALUE
+
+        # Set the default timeout for waiting for an instance to burn into and ami
+        @instance_package_timeout = 600 if @instance_package_timeout == UNSET_VALUE
 
         # Default instance type is an m3.medium
         @instance_type = "m3.medium" if @instance_type == UNSET_VALUE
