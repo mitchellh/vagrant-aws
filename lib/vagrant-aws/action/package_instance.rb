@@ -40,7 +40,7 @@ module VagrantPlugins
           begin
             server = env[:aws_compute].servers.get(env[:machine].id)
 
-            env[:ui].info("Burning instance #{server.id} into an ami")
+            env[:ui].info(I18n.t("vagrant_aws.packaging_instance", :instance_id => server.id))
             
             ami_response = server.service.create_image server.id, "#{server.tags["Name"]} Package - #{Time.now.strftime("%Y%m%d-%H%M%S")}", ""
 
