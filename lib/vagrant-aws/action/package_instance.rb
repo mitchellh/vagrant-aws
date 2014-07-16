@@ -36,12 +36,7 @@ module VagrantPlugins
           # Initialize metrics if they haven't been
           env[:metrics] ||= {}
 
-          if env[:machine].state.id == :stopped
-            env[:ui].info(I18n.t("vagrant_aws.already_status", :status => env[:machine].state.id))
-            return
-          end
-
-          # Burn instance to an ami
+          # This block attempts to burn the server instance into an AMI
           begin
             server = env[:aws_compute].servers.get(env[:machine].id)
 
