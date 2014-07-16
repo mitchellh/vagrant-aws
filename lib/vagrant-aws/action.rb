@@ -16,7 +16,7 @@ module VagrantPlugins
               next
             end
 
-            # Magic time
+            # Connect to AWS and then Create a package from the server instance
             b2.use ConnectAWS
             b2.use PackageInstance
           end

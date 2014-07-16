@@ -6,7 +6,21 @@ require 'vagrant/action/general/package'
 module VagrantPlugins
   module AWS
     module Action
-      # This packges the running instance.
+      # This action packages a running aws-based server into an
+      # aws-based vagrant box. It does so by burning the associated
+      # vagrant-aws server instance, into an AMI via fog. Upon
+      # successful AMI burning, the action will create a .box tarball
+      # writing a Vagrantfile with the fresh AMI id into it.
+
+      # Vagrant itself comes with a general package action, which 
+      # this plugin action does call. The general action provides
+      # the actual packaging as well as other options such as
+      # --include for including additional files and --vagrantfile
+      # which is pretty much not useful here anyway.
+
+      # The virtualbox package plugin action was loosely used
+      # as a model for this class.
+
       class PackageInstance < Vagrant::Action::General::Package
         include Vagrant::Util::Retryable
 
@@ -33,12 +47,13 @@ module VagrantPlugins
           begin
             server = env[:aws_compute].servers.get(env[:machine].id)  
             env[:ui].info("Burning instance #{server.id} into an ami")
-            ami_response = server.service.create_image server.id, "#{server.tags["Name"]} Package - #{Time.now.strftime("%Y%m%d-%H%M%S")}", "No description..."
-
-            # Find ami object
-            @ami_id = ami_response.data[:body]["imageId"]
-            ami_obj = server.service.images.get(@ami_id)
             
+            ami_response = server.service.create_image server.id, "#{server.tags["Name"]} Package - #{Time.now.strftime("%Y%m%d-%H%M%S")}", ""
+
+            # Find ami id
+            @ami_id = ami_response.data[:body]["imageId"]
+            
+            # Attempt to burn the aws instance into an AMI within timeout
             env[:metrics]["instance_ready_time"] = Util::Timer.time do
             
               env[:ui].info("Waiting for the AMI '#{@ami_id}' to burn...")
@@ -47,7 +62,7 @@ module VagrantPlugins
                   # If we're interrupted don't worry about waiting
                   next if env[:interrupted]
 
-                  # ACTUALLY need to update the ami_obj probably....
+                  # Need to update the ami_obj on each cycle
                   ami_obj = server.service.images.get(@ami_id)
                   # Wait for the server to be ready 
                   server.wait_for(2) { 
@@ -57,10 +72,11 @@ module VagrantPlugins
                         err: ami_obj.state
                       return
                     else
+                      # Successful AMI burn will result in true here
                       ami_obj.ready?
                     end
                   }
-                end # Retryable end
+                end
               rescue Fog::Errors::TimeoutError
                 # Notify the user
                 raise Errors::InstanceReadyTimeout,
@@ -88,6 +104,9 @@ module VagrantPlugins
           create_vagrantfile(env)
           create_metadata_file(env)
 
+          # Make the call to the general Vagrant package action,
+          # it is responsible for creating the .box tarball from 
+          # the package.directory
           general_call(env)
           
           # Always call recover to clean up the temp dir
