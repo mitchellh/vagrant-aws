@@ -53,7 +53,6 @@ module VagrantPlugins
               # Get the config, to set the ami burn timeout
               region = env[:machine].provider_config.region
               region_config = env[:machine].provider_config.get_region_config(region)
-              env[:ui].info "Timeout: #{region_config.instance_package_timeout}"
               tries = region_config.instance_package_timeout / 2
 
               env[:ui].info("Waiting for the AMI '#{@ami_id}' to burn...")
