@@ -26,6 +26,8 @@ en:
       to SSH into it.
     not_created: |-
       Instance is not created. Please run `vagrant up` first.
+    packaging_instance: |-
+      Burning instance %{instance_id} into an ami
     ready: |-
       Machine is booted and ready for use!
     rsync_not_found_warning: |-
