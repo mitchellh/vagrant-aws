@@ -55,7 +55,7 @@ module VagrantPlugins
               region_config = env[:machine].provider_config.get_region_config(region)
               tries = region_config.instance_package_timeout / 2
 
-              env[:ui].info("Waiting for the AMI '#{@ami_id}' to burn...")
+              env[:ui].info(I18n.t("vagrant_aws.burning_ami", :ami_id => @ami_id))
               begin
                 retryable(:on => Fog::Errors::TimeoutError, :tries => tries) do
                   # If we're interrupted don't worry about waiting
@@ -83,7 +83,7 @@ module VagrantPlugins
                   timeout: region_config.instance_package_timeout
               end
             end
-            env[:ui].info("Burn was successfull in #{env[:metrics]["instance_ready_time"].to_i}s")
+            env[:ui].info(I18n.t("vagrant_aws.packaging_instance_complete", :time_seconds => env[:metrics]["instance_ready_time"].to_i))
           rescue Fog::Compute::AWS::Error => e
             raise Errors::FogError, :message => e.message
           end # Begin, end
