@@ -22,6 +22,7 @@ EC2 and VPC.
 * Minimal synced folder support via `rsync`.
 * Define region-specifc configurations so Vagrant can manage machines
   in multiple regions.
+* Package running instances into new vagrant-aws friendly boxes
 
 ## Usage
 
@@ -105,6 +106,8 @@ This provider exposes quite a few provider-specific configuration options:
   the instance. If nil, it will use the default set by Amazon.
 * `instance_ready_timeout` - The number of seconds to wait for the instance
   to become "ready" in AWS. Defaults to 120 seconds.
+* `instance_package_timeout` - The number of seconds to wait for the instance
+  to be burnt into an AMI during packaging. Defaults to 600 seconds.
 * `instance_type` - The type of instance, such as "m1.small". The default
   value of this if not specified is "m1.small".
 * `keypair_name` - The name of the keypair to use to bootstrap AMIs
