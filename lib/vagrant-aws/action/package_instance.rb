@@ -38,10 +38,12 @@ module VagrantPlugins
 
           # This block attempts to burn the server instance into an AMI
           begin
+            # Get the Fog server object for given machine
             server = env[:aws_compute].servers.get(env[:machine].id)
 
             env[:ui].info(I18n.t("vagrant_aws.packaging_instance", :instance_id => server.id))
             
+            # Make the request to AWS to create an AMI from machine's instance
             ami_response = server.service.create_image server.id, "#{server.tags["Name"]} Package - #{Time.now.strftime("%Y%m%d-%H%M%S")}", ""
 
             # Find ami id
@@ -56,6 +58,8 @@ module VagrantPlugins
               tries = region_config.instance_package_timeout / 2
 
               env[:ui].info(I18n.t("vagrant_aws.burning_ami", :ami_id => @ami_id))
+
+              # Check the status of the AMI every 2 seconds until the ami burn timeout has been reached
               begin
                 retryable(:on => Fog::Errors::TimeoutError, :tries => tries) do
                   # If we're interrupted don't worry about waiting
@@ -64,7 +68,7 @@ module VagrantPlugins
                   # Need to update the ami_obj on each cycle
                   ami_obj = server.service.images.get(@ami_id)
 
-                  # Wait for the server to be ready 
+                  # Wait for the server to be ready, raise error if timeout reached 
                   server.wait_for(2) { 
                     if ami_obj.state == "failed"
                       raise Errors::InstancePackageError, 
@@ -86,48 +90,41 @@ module VagrantPlugins
             env[:ui].info(I18n.t("vagrant_aws.packaging_instance_complete", :time_seconds => env[:metrics]["instance_ready_time"].to_i))
           rescue Fog::Compute::AWS::Error => e
             raise Errors::FogError, :message => e.message
-          end # Begin, end
+          end
 
-          # Create the .box 
-          setup_package_files env
+          # Handles inclusions from --include and --vagrantfile options
+          setup_package_files(env)
 
-          # Setup the temporary directory
+          # Setup the temporary directory for the tarball files
           @temp_dir = env[:tmp_path].join(Time.now.to_i.to_s)
           env["export.temp_dir"] = @temp_dir
           FileUtils.mkpath(env["export.temp_dir"])
 
-          # Just match up a couple environmental variables so that
-          # the superclass will do the right thing. Then, call the
-          # superclass
-          env["package.directory"] = env["export.temp_dir"]
-
+          # Create the Vagrantfile and metadata.json files from templates to go in the box
           create_vagrantfile(env)
           create_metadata_file(env)
 
-          # Make the call to the general Vagrant package action,
-          # it is responsible for creating the .box tarball from 
-          # the package.directory
+          # Just match up a couple environmental variables so that
+          # the superclass will do the right thing. Then, call the
+          # superclass to actually create the tarball (.box file)
+          env["package.directory"] = env["export.temp_dir"]
           general_call(env)
           
           # Always call recover to clean up the temp dir
-          clean_temp_dir
-
-        end # End call
-
-        def recover(env)
           clean_temp_dir
         end
 
         protected
 
+        # Cleanup temp dir and files
         def clean_temp_dir
           if @temp_dir && File.exist?(@temp_dir)
             FileUtils.rm_rf(@temp_dir)
           end
         end
 
-        # This method creates the auto-generated Vagrantfile at the root of the
-        # box.
+        # This method generates the Vagrantfile at the root of the box. Taken from 
+        # VagrantPlugins::ProviderVirtualBox::Action::PackageVagrantfile
         def create_vagrantfile env
           File.open(File.join(env["export.temp_dir"], "Vagrantfile"), "w") do |f|
             f.write(TemplateRenderer.render("vagrant-aws_package_Vagrantfile", {
@@ -138,6 +135,7 @@ module VagrantPlugins
           end
         end
 
+        # This method generates the metadata.json file at the root of the box.
         def create_metadata_file env
           File.open(File.join(env["export.temp_dir"], "metadata.json"), "w") do |f|
             f.write(TemplateRenderer.render("metadata.json", {
@@ -146,6 +144,8 @@ module VagrantPlugins
           end
         end
 
+        # Sets up --include and --vagrantfile files which may be added as optional
+        # parameters. Taken from VagrantPlugins::ProviderVirtualBox::Action::SetupPackageFiles
         def setup_package_files(env)
           files = {}
           env["package.include"].each do |file|
@@ -179,10 +179,9 @@ module VagrantPlugins
 
           # Save the mapping
           env["package.files"] = files
-
-          @app.call(env)
         end
 
+        # Used to find the base location of aws-vagrant templates
         def template_root
           AWS.source_root.join("templates")
         end
