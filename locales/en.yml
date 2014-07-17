@@ -2,6 +2,8 @@ en:
   vagrant_aws:
     already_status: |-
       The machine is already %{status}.
+    burning_ami: |-
+      Waiting for the AMI '%{ami_id}' to burn...
     elb:
       adjusting: |-
         Adjusting availability zones of ELB %{elb_name}...
@@ -28,6 +30,8 @@ en:
       Instance is not created. Please run `vagrant up` first.
     packaging_instance: |-
       Burning instance %{instance_id} into an ami
+    packaging_instance_complete: |-
+      Burn was successful in %{time_seconds}s
     ready: |-
       Machine is booted and ready for use!
     rsync_not_found_warning: |-
