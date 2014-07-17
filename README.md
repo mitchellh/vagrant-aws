@@ -22,6 +22,7 @@ EC2 and VPC.
 * Minimal synced folder support via `rsync`.
 * Define region-specific configurations so Vagrant can manage machines
   in multiple regions.
+* Package running instances into new vagrant-aws friendly boxes
 
 ## Usage
 
@@ -106,6 +107,8 @@ This provider exposes quite a few provider-specific configuration options:
   the instance. If nil, it will use the default set by Amazon.
 * `instance_ready_timeout` - The number of seconds to wait for the instance
   to become "ready" in AWS. Defaults to 120 seconds.
+* `instance_package_timeout` - The number of seconds to wait for the instance
+  to be burnt into an AMI during packaging. Defaults to 600 seconds.
 * `instance_type` - The type of instance, such as "m3.medium". The default
   value of this if not specified is "m3.medium".  "m1.small" has been
   deprecated in "us-east-1" and "m3.medium" is the smallest instance
@@ -191,7 +194,7 @@ There is minimal support for synced folders. Upon `vagrant up`,
 the remote machine over SSH.
 
 See [Vagrant Synced folders: rsync](https://docs.vagrantup.com/v2/synced-folders/rsync.html)
-```
+
 
 ## Other Examples
 
