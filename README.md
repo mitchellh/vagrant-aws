@@ -115,7 +115,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `secret_access_key` - The secret access key for accessing AWS
 * `security_groups` - An array of security groups for the instance. If this
   instance will be launched in VPC, this must be a list of security group
-  Name.
+  Name. For a nondefault VPC, you must use security group IDs instead (http://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html).
 * `iam_instance_profile_arn` - The Amazon resource name (ARN) of the IAM Instance
     Profile to associate with the instance
 * `iam_instance_profile_name` - The name of the IAM Instance Profile to associate
