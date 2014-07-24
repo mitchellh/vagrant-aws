@@ -82,11 +82,18 @@ module VagrantPlugins
             #collect rsync excludes specified :rsync_excludes=>['path1',...] in synced_folder options
             excludes = ['.vagrant/', 'Vagrantfile', *Array(data[:rsync_excludes])].uniq
 
+            ssh_options = ["StrictHostKeyChecking=no"]
+	    # Use proxy command if it's set
+            if ssh_info[:proxy_command]
+              ssh_options.push("ProxyCommand #{ssh_info[:proxy_command]}")
+            end
+
             # Rsync over to the guest path using the SSH info
             command = [
-              "rsync", "--verbose", "--archive", "-z",
+              "rsync", "--verbose", "--archive", "-z", "--delete",
               *excludes.map{|e|['--exclude', e]}.flatten,
-              "-e", "ssh -p #{ssh_info[:port]} -o StrictHostKeyChecking=no #{ssh_key_options(ssh_info)}",
+              "-e", "ssh -p #{ssh_info[:port]} #{ssh_key_options(ssh_info)} " + 
+              ssh_options_to_args(ssh_options).join(' '),
               hostpath,
               "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
 
@@ -104,6 +111,18 @@ module VagrantPlugins
                 :stderr => r.stderr
             end
           end
+        end
+
+        # Generate a ssh(1) command line list of options
+        #
+        # @param [Array] options An array of ssh options. E.g.
+        #   `StrictHostKeyChecking=no` see ssh_config(5) for more
+        # @return [Array] Computed list of command line arguments
+        def ssh_options_to_args(options)
+          # Bail early if we get something that is not an array of options
+          return [] unless options
+
+          return options.map { |o| "-o '#{o}'" }
         end
 
         private

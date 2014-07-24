@@ -2,6 +2,18 @@ en:
   vagrant_aws:
     already_status: |-
       The machine is already %{status}.
+    elb:
+      adjusting: |-
+        Adjusting availability zones of ELB %{elb_name}...
+      registering: |-
+        Registering %{instance_id} at ELB %{elb_name}...
+      deregistering: |-
+        Deregistering %{instance_id} from ELB %{elb_name}...
+      ok: |-
+        ok
+      skipped: |-
+        skipped
+
     launching_instance: |-
       Launching an instance with the following settings...
     launch_no_keypair: |-
@@ -46,13 +58,15 @@ en:
       access_key_id_required: |-
         An access key ID must be specified via "access_key_id"
       ami_required: |-
-        An AMI must be configured via "ami"
+        An AMI must be configured via "ami" (region: #{region})
       private_key_missing: |-
         The specified private key for AWS could not be found
       region_required: |-
         A region must be specified via "region"
       secret_access_key_required: |-
         A secret access key is required via "secret_access_key"
+      subnet_id_required_with_public_ip: |-
+        If you assign a public IP address to an instance in a VPC, a subnet must be specifed via "subnet_id"
 
     errors:
       fog_error: |-
@@ -72,7 +86,7 @@ en:
         Please verify that the machine properly boots. If you need more time
         set the `instance_ready_timeout` configuration on the AWS provider.
       rsync_error: |-
-        There was an error when attempting to rsync a share folder.
+        There was an error when attempting to rsync a shared folder.
         Please inspect the error message below for more info.
 
         Host path: %{hostpath}
@@ -84,6 +98,8 @@ en:
 
         Host path: %{hostpath}
         Error: %{err}
+      elb_does_not_exist: |-
+        ELB configured for the instance does not exist
 
     states:
       short_not_created: |-
@@ -99,7 +115,7 @@ en:
       short_stopping: |-
         stopping
       long_stopping: |-
-        The EC2 instance is stopping. Wait until is completely stopped to 
+        The EC2 instance is stopping. Wait until is completely stopped to
         run `vagrant up` and start it.
 
       short_pending: |-

@@ -133,6 +133,17 @@ module VagrantPlugins
       # @return [Boolean]
       attr_accessor :ebs_optimized
 
+      # Assigning a public IP address in a VPC
+      #
+      # @return [Boolean]
+      attr_accessor :associate_public_ip
+
+      # The name of ELB, which an instance should be
+      # attached to
+      #
+      # @return [String]
+      attr_accessor :elb
+
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
         @ami                    = UNSET_VALUE
@@ -158,6 +169,8 @@ module VagrantPlugins
         @ssh_host_attribute     = UNSET_VALUE
         @monitoring             = UNSET_VALUE
         @ebs_optimized          = UNSET_VALUE
+        @associate_public_ip    = UNSET_VALUE
+        @elb                    = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -214,7 +227,7 @@ module VagrantPlugins
           # has it.
           new_region_specific = other.instance_variable_get(:@__region_specific)
           result.instance_variable_set(
-            :@__region_specific, new_region_specific || @__region_specific)
+          :@__region_specific, new_region_specific || @__region_specific)
 
           # Go through all the region configs and prepend ours onto
           # theirs.
@@ -296,6 +309,12 @@ module VagrantPlugins
         # default false
         @ebs_optimized = false if @ebs_optimized == UNSET_VALUE
 
+        # default false
+        @associate_public_ip = false if @associate_public_ip == UNSET_VALUE
+
+        # Don't attach instance to any ELB by default
+        @elb = nil if @elb == UNSET_VALUE
+
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
         if !@__region_specific
@@ -338,7 +357,11 @@ module VagrantPlugins
               config.secret_access_key.nil?
           end
 
-          errors << I18n.t("vagrant_aws.config.ami_required") if config.ami.nil?
+          if config.associate_public_ip && !config.subnet_id
+            errors << I18n.t("vagrant_aws.config.subnet_id_required_with_public_ip")
+          end
+
+          errors << I18n.interpolate("vagrant_aws.config.ami_required", :region => @region)  if config.ami.nil?
         end
 
         { "AWS Provider" => errors }

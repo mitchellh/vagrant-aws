@@ -115,15 +115,17 @@ This provider exposes quite a few provider-specific configuration options:
 * `secret_access_key` - The secret access key for accessing AWS
 * `security_groups` - An array of security groups for the instance. If this
   instance will be launched in VPC, this must be a list of security group
-  IDs.
+  Name.
 * `iam_instance_profile_arn` - The Amazon resource name (ARN) of the IAM Instance
     Profile to associate with the instance
 * `iam_instance_profile_name` - The name of the IAM Instance Profile to associate
   with the instance
 * `subnet_id` - The subnet to boot the instance into, for VPC.
+* `associate_public_ip` - If true, will associate a public IP address to an instance in a VPC.
 * `tags` - A hash of tags to set on the machine.
 * `use_iam_profile` - If true, will use [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)
   for credentials.
+* `block_device_mapping` - Amazon EC2 Block Device Mapping Property
 
 These can be set like typical provider-specific configuration:
 
@@ -218,6 +220,34 @@ Vagrant.configure("2") do |config|
 
     # Option 2: use a file
     aws.user_data = File.read("user_data.txt")
+  end
+end
+```
+
+### Disk size
+
+Need more space on your instance disk? Increase the disk size.
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ... other stuff
+
+  config.vm.provider "aws" do |aws|
+    aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 50 }]
+  end
+end
+```
+
+### Elastic Load Balancers
+
+You can automatically attach an instance to an ELB during boot and detach on destroy.
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ... other stuff
+
+  config.vm.provider "aws" do |aws|
+    aws.elb = "production-web"
   end
 end
 ```

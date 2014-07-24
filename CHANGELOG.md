@@ -1,4 +1,13 @@
-# 0.5.0 (unreleased)
+# 0.5.0 (June 22, 2014)
+
+* Support for associating public IPs for VMs inside of VPCs (GH
+  [#219](https://github.com/mitchellh/vagrant-aws/pull/219), GH
+  [#205](https://github.com/mitchellh/vagrant-aws/issues/205))
+* Bug-fix for per region configs with `associate_public_ip` (GH
+  [#237](https://github.com/mitchellh/vagrant-aws/pull/237))
+* rsyncing folders uses `--delete` flag to better emulate "real shared folders
+  (GH [#194](https://github.com/mitchellh/vagrant-aws/pull/194))
+* fog gem version bumped to 1.22 (GH [#253](https://github.com/mitchellh/vagrant-aws/pull/253))
 
 # 0.4.1 (December 17, 2013)
 
