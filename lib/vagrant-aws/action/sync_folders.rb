@@ -67,15 +67,7 @@ module VagrantPlugins
               end
             end
 
-            # Create the guest path
-            # The -p switch is unneeded for WinRM, and fails in Powershell 4+
-            if env[:machine].config.vm.communicator == :winrm
-              env[:machine].communicate.sudo("mkdir '#{guestpath}'")
-            else
-              env[:machine].communicate.sudo("mkdir -p '#{guestpath}'")
-            end
-
-            env[:machine].communicate.sudo("mkdir -p '#{guestpath}'")
+            env[:machine].communicate.sudo(create_guest_path_command(guestpath, env[:machine].config.vm.communicator))
             env[:machine].communicate.sudo(
               "chown -R #{ssh_info[:username]} '#{guestpath}'")
 
@@ -123,6 +115,23 @@ module VagrantPlugins
           return [] unless options
 
           return options.map { |o| "-o '#{o}'" }
+        end
+
+        # Generate the command to create a filepath
+        #
+        # @param [string] path The path to create
+        # @param [string] communicator The communicator type being used (winrm, ssh)
+        # @return [string] Command to use to create the path
+        def create_guest_path_command(path, communicator)
+          # Create the guest path
+          # The -p switch is unneeded for WinRM, and fails in Powershell 4+
+          if communicator && communicator == :winrm
+            cmd = "mkdir '#{path}'"
+          else
+            cmd = "mkdir -p '#{path}'"
+          end
+
+          cmd
         end
 
         private

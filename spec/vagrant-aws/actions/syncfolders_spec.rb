@@ -25,4 +25,20 @@ describe VagrantPlugins::AWS::Action::SyncFolders do
       it { should eql ["-o 'SHKC=no'", "-o 'Port=222'"] }
     end
   end
+
+  describe '#create_guest_path_command' do
+    subject(:args) { action.create_guest_path_command(path, communicator) }
+
+    context 'communicator is not winrm' do
+      let(:path) { '/tmp2' }
+      let(:communicator) { :ssh }
+      it { should eql "mkdir -p '/tmp2'" }
+    end
+
+    context 'communicator is winrm' do
+      let(:path) { 'C:\tmp2' }
+      let(:communicator) { :winrm }
+      it { should eql "mkdir 'C:\\tmp2'" }
+    end
+  end
 end
