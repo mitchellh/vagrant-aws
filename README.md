@@ -187,6 +187,16 @@ the remote machine over SSH.
 This is good enough for all built-in Vagrant provisioners (shell,
 chef, and puppet) to work!
 
+To exclude files or directories from rsync, use the `rsync_excludes` option. For example, to exclude the "env" directory:
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ... other stuff
+
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync_excludes: "env/"
+end
+```
+
 ## Other Examples
 
 ### Tags
