@@ -39,9 +39,10 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :private_ip_address
 
-      # Acquire and attach an elastic IP address (VPC).
+      # If true, acquire and attach an elastic IP address.
+      # If set to an IP address, assign to the instance.
       #
-      # @return [Boolean]
+      # @return [String]
       attr_accessor :elastic_ip
 
       # The name of the AWS region in which to create the instance.

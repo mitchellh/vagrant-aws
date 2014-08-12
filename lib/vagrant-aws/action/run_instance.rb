@@ -149,7 +149,7 @@ module VagrantPlugins
           # Allocate and associate an elastic IP if requested
           if elastic_ip
             domain = subnet_id ? 'vpc' : 'standard'
-            do_elastic_ip(env, domain, server)
+            do_elastic_ip(env, domain, server, elastic_ip)
           end
 
           if !env[:interrupted]
@@ -198,26 +198,46 @@ module VagrantPlugins
           !rules.select { |r| (r["fromPort"]..r["toPort"]).include?(port) }.empty?
         end
 
-        def do_elastic_ip(env, domain, server)
-          begin
-            allocation = env[:aws_compute].allocate_address(domain)
-          rescue
-            @logger.debug("Could not allocate Elastic IP.")
-            terminate(env)
-            raise Errors::FogError,
-                            :message => "Could not allocate Elastic IP."
+        def do_elastic_ip(env, domain, server, elastic_ip)
+          if elastic_ip =~ /\d+\.\d+\.\d+\.\d+/
+            begin
+              address = env[:aws_compute].addresses.get(elastic_ip)
+            rescue
+              @logger.debug("Could not retrieve Elastic IP.")
+              terminate(env)
+              raise Errors::FogError,
+                              :message => "Could not retrieve Elastic IP."
+            end
+            @logger.debug("Public IP #{address.public_ip}")
+          else
+            begin
+              allocation = env[:aws_compute].allocate_address(domain)
+            rescue
+              @logger.debug("Could not allocate Elastic IP.")
+              terminate(env)
+              raise Errors::FogError,
+                              :message => "Could not allocate Elastic IP."
+            end
+            @logger.debug("Public IP #{allocation.body['publicIp']}")
           end
-          @logger.debug("Public IP #{allocation.body['publicIp']}")
+
+          if address
+            elastic_ip = address.public_ip
+          else
+            elastic_ip = allocation.body['publicIp']
+          end
 
           # Associate the address and save the metadata to a hash
           if domain == 'vpc'
             # VPC requires an allocation ID to assign an IP
             association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
+            # XXX Need to handle the static mode
             h = { :allocation_id => allocation.body['allocationId'], :association_id => association.body['associationId'], :public_ip => allocation.body['publicIp'] }
           else
             # Standard EC2 instances only need the allocated IP address
-            association = env[:aws_compute].associate_address(server.id, allocation.body['publicIp'])
-            h = { :public_ip => allocation.body['publicIp'] }
+            association = env[:aws_compute].associate_address(server.id, elastic_ip)
+            # XXX Restore
+            # h = { :public_ip => allocation.body['publicIp'] }
           end
 
           unless association.body['return']
@@ -228,9 +248,11 @@ module VagrantPlugins
           end
 
           # Save this IP to the data dir so it can be released when the instance is destroyed
-          ip_file = env[:machine].data_dir.join('elastic_ip')
-          ip_file.open('w+') do |f|
-            f.write(h.to_json)
+          if h 
+            ip_file = env[:machine].data_dir.join('elastic_ip')
+            ip_file.open('w+') do |f|
+              f.write(h.to_json)
+            end
           end
         end
 
