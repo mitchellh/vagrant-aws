@@ -105,8 +105,10 @@ This provider exposes quite a few provider-specific configuration options:
   the instance. If nil, it will use the default set by Amazon.
 * `instance_ready_timeout` - The number of seconds to wait for the instance
   to become "ready" in AWS. Defaults to 120 seconds.
-* `instance_type` - The type of instance, such as "m1.small". The default
-  value of this if not specified is "m1.small".
+* `instance_type` - The type of instance, such as "m3.medium". The default
+  value of this if not specified is "m3.medium".  "m1.small" has been
+  deprecated in "us-east-1" and "m3.medium" is the smallest instance
+  type to support both paravirtualization and hvm AMIs
 * `keypair_name` - The name of the keypair to use to bootstrap AMIs
    which support it.
 * `private_ip_address` - The private IP address to assign to an instance
