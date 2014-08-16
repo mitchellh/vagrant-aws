@@ -32,13 +32,17 @@ module VagrantPlugins
         # Release an elastic IP address
         def release_address(env,eip)
           h = JSON.parse(eip)
+          p h
           # Use association_id and allocation_id for VPC, use public IP for EC2
           if h['association_id']
             env[:aws_compute].disassociate_address(nil,h['association_id'])
             env[:aws_compute].release_address(h['allocation_id'])
           else
             env[:aws_compute].disassociate_address(h['public_ip'])
-            env[:aws_compute].release_address(h['public_ip'])
+            # Retain public IP
+            if(!h['is_ip_retain'])
+              env[:aws_compute].release_address(h['public_ip'])
+            end
           end
         end
       end
