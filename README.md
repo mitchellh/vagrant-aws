@@ -124,6 +124,7 @@ This provider exposes quite a few provider-specific configuration options:
   with the instance
 * `subnet_id` - The subnet to boot the instance into, for VPC.
 * `associate_public_ip` - If true, will associate a public IP address to an instance in a VPC.
+* `elastic_ip` - The allocation ID of the Elastic IP address. Only applicable to Elastic IP addresses used in a VPC.
 * `tags` - A hash of tags to set on the machine.
 * `use_iam_profile` - If true, will use [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)
   for credentials.
