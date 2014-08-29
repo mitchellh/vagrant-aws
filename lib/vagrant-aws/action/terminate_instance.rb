@@ -13,14 +13,14 @@ module VagrantPlugins
 
         def call(env)
           server         = env[:aws_compute].servers.get(env[:machine].id)
-          region = env[:machine].provider_config.region
+          region         = env[:machine].provider_config.region
           region_config  = env[:machine].provider_config.get_region_config(region)
 
           elastic_ip     = region_config.elastic_ip
 
           # Release the elastic IP
           ip_file = env[:machine].data_dir.join('elastic_ip')
-          if ip_file.file? and (not elastic_ip or not elastic_ip =~ /\d+\.\d+\.\d+\.\d+/)
+          if ip_file.file?
             release_address(env,ip_file.read)
             ip_file.delete
           end

@@ -202,8 +202,6 @@ module VagrantPlugins
           if elastic_ip =~ /\d+\.\d+\.\d+\.\d+/
             begin
               address = env[:aws_compute].addresses.get(elastic_ip)
-              @logger.debug("******** Got address")
-              @logger.debug(address)
             rescue
               handle_elastic_ip_error(env, "Could not retrieve Elastic IP: #{elastic_ip}")
             end
@@ -220,12 +218,6 @@ module VagrantPlugins
             @logger.debug("Public IP #{allocation.body['publicIp']}")
           end
 
-          if address
-            elastic_ip = address.public_ip
-          else
-            elastic_ip = allocation.body['publicIp']
-          end
-
           # Associate the address and save the metadata to a hash
           h = nil
           if domain == 'vpc'
@@ -237,7 +229,6 @@ module VagrantPlugins
               # Only store release data for an allocated address
               h = { :allocation_id => allocation.body['allocationId'], :association_id => association.body['associationId'], :public_ip => allocation.body['publicIp'] }
             end
-            # XXX Need to handle the static mode
           else
             # Standard EC2 instances only need the allocated IP address
             if address
