@@ -20,7 +20,7 @@ describe VagrantPlugins::AWS::Config do
     its("availability_zone") { should be_nil }
     its("instance_ready_timeout") { should == 120 }
     its("instance_package_timeout") { should == 600 }
-    its("instance_type")     { should == "m1.small" }
+    its("instance_type")     { should == "m3.medium" }
     its("keypair_name")      { should be_nil }
     its("private_ip_address") { should be_nil }
     its("region")            { should == "us-east-1" }

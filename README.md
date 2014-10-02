@@ -108,8 +108,10 @@ This provider exposes quite a few provider-specific configuration options:
   to become "ready" in AWS. Defaults to 120 seconds.
 * `instance_package_timeout` - The number of seconds to wait for the instance
   to be burnt into an AMI during packaging. Defaults to 600 seconds.
-* `instance_type` - The type of instance, such as "m1.small". The default
-  value of this if not specified is "m1.small".
+* `instance_type` - The type of instance, such as "m3.medium". The default
+  value of this if not specified is "m3.medium".  "m1.small" has been
+  deprecated in "us-east-1" and "m3.medium" is the smallest instance
+  type to support both paravirtualization and hvm AMIs
 * `keypair_name` - The name of the keypair to use to bootstrap AMIs
    which support it.
 * `private_ip_address` - The private IP address to assign to an instance
@@ -189,6 +191,16 @@ the remote machine over SSH.
 
 This is good enough for all built-in Vagrant provisioners (shell,
 chef, and puppet) to work!
+
+To exclude files or directories from rsync, use the `rsync_excludes` option. For example, to exclude the "bar" and "foo" directories:
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ... other stuff
+
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", :rsync_excludes => ['bar/', 'foo/']
+end
+```
 
 ## Other Examples
 
