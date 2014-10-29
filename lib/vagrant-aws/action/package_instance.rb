@@ -70,6 +70,9 @@ module VagrantPlugins
 
                   # Wait for the server to be ready, raise error if timeout reached 
                   server.wait_for(2) { 
+                    if ami_obj.nil?
+                      return false
+                    end
                     if ami_obj.state == "failed"
                       raise Errors::InstancePackageError, 
                         ami_id: ami_obj.id,
