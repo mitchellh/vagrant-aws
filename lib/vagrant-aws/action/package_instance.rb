@@ -71,7 +71,7 @@ module VagrantPlugins
                   # Wait for the server to be ready, raise error if timeout reached 
                   server.wait_for(2) { 
                     if ami_obj.nil?
-                      env[:ui].warn(I18n.t("vagrant_aws.errors.fog_error", :message => "Empty (nil) response from AWS."))
+                      env[:ui].warn(I18n.t("vagrant_aws.errors.fog_error", :message => "Empty (nil) response from AWS. Expected: \{\"requestId\"=>\"foo\", \"imageId\"=>\"bar\"\}. AMI data #{ami_response.data[:body].to_s}"))
                       next
                     end
                     if ami_obj.state == "failed"
