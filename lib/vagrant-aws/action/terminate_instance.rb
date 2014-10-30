@@ -23,6 +23,9 @@ module VagrantPlugins
 
           # Destroy the server and remove the tracking ID
           env[:ui].info(I18n.t("vagrant_aws.terminating"))
+          if server.nil?
+            raise Errors::FogError, :message => "Machine id: #{env[:machine].id}, Machine state: #{env[:machine].state}"
+          end
           server.destroy
           env[:machine].id = nil
 
