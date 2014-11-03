@@ -44,7 +44,7 @@ module VagrantPlugins
             env[:ui].info(I18n.t("vagrant_aws.packaging_instance", :instance_id => server.id))
             
             # Make the request to AWS to create an AMI from machine's instance
-            ami_response = server.service.create_image server.id, "#{server.tags["Name"]} Package - #{Time.now.strftime("%Y%m%d-%H%M%S")}", ""
+            ami_response = server.service.create_image server.id, "#{server.tags["Name"]} Package - #{Time.now.to_i}", ""
 
             # Find ami id
             @ami_id = ami_response.data[:body]["imageId"]
