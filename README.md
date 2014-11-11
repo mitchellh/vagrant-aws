@@ -20,7 +20,7 @@ EC2 and VPC.
 * SSH into the instances.
 * Provision the instances with any built-in Vagrant provisioner.
 * Minimal synced folder support via `rsync`.
-* Define region-specifc configurations so Vagrant can manage machines
+* Define region-specific configurations so Vagrant can manage machines
   in multiple regions.
 
 ## Usage
