@@ -24,9 +24,17 @@ module VagrantPlugins
 
           ssh_info = env[:machine].ssh_info
 
-          unless Vagrant::Util::Which.which('rsync')
-            env[:ui].warn(I18n.t('vagrant_aws.rsync_not_found_warning', :side => "host"))
-            return
+          if env[:machine].guest.capability?(:rsync_installed)
+            installed = env[:machine].guest.capability(:rsync_installed)
+            if !installed
+              can_install = env[:machine].guest.capability?(:rsync_install)
+              if !can_install
+                env[:ui].warn(I18n.t('vagrant_aws.rsync_not_found_warning', :side => "host"))
+                return
+              end
+              env[:machine].ui.info I18n.t("vagrant.rsync_installing")
+              env[:machine].guest.capability(:rsync_install)
+            end
           end
 
           if env[:machine].communicate.execute('which rsync', :error_check => false) != 0
