@@ -65,6 +65,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :secret_access_key
 
+      # The token associated with the key for accessing AWS.
+      #
+      # @return [String]
+      attr_accessor :session_token
+
       # The security groups to set on the instance. For VPC this must
       # be a list of IDs. For EC2, it can be either.
       #
@@ -157,6 +162,7 @@ module VagrantPlugins
         @endpoint               = UNSET_VALUE
         @version                = UNSET_VALUE
         @secret_access_key      = UNSET_VALUE
+        @session_token          = UNSET_VALUE
         @security_groups        = UNSET_VALUE
         @subnet_id              = UNSET_VALUE
         @tags                   = {}
@@ -256,6 +262,7 @@ module VagrantPlugins
         # will default to nil if the environment variables are not present.
         @access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
         @secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
+        @session_token     = ENV['AWS_SESSION_TOKEN'] if @session_token == UNSET_VALUE
 
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
