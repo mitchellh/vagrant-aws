@@ -2,6 +2,8 @@ en:
   vagrant_aws:
     already_status: |-
       The machine is already %{status}.
+    burning_ami: |-
+      Waiting for the AMI '%{ami_id}' to burn...
     elb:
       adjusting: |-
         Adjusting availability zones of ELB %{elb_name}...
@@ -26,6 +28,10 @@ en:
       to SSH into it.
     not_created: |-
       Instance is not created. Please run `vagrant up` first.
+    packaging_instance: |-
+      Burning instance %{instance_id} into an ami
+    packaging_instance_complete: |-
+      Burn was successful in %{time_seconds}s
     ready: |-
       Machine is booted and ready for use!
     rsync_not_found_warning: |-
@@ -85,6 +91,17 @@ en:
         set waiting for the instance to become ready is %{timeout} seconds.
         Please verify that the machine properly boots. If you need more time
         set the `instance_ready_timeout` configuration on the AWS provider.
+      instance_package_error: |-
+        There was an error packaging the instance. See details below for more info.
+
+        AMI Id: %{ami_id}
+        Error: %{err}
+      instance_package_timeout: |-
+        The AMI failed to become "ready" in AWS. The timeout currently
+        set waiting for the instance to become ready is %{timeout} seconds. For 
+        larger instances AMI burning may take long periods of time. Please
+        ensure the timeout is set high enough, it can be changed by adjusting
+        the `instance_package_timeout` configuration on the AWS provider.
       rsync_error: |-
         There was an error when attempting to rsync a shared folder.
         Please inspect the error message below for more info.

@@ -19,6 +19,14 @@ module VagrantPlugins
         error_key(:instance_ready_timeout)
       end
 
+      class InstancePackageError < VagrantAWSError
+        error_key(:instance_package_error)
+      end
+
+      class InstancePackageTimeout < VagrantAWSError
+        error_key(:instance_package_timeout)
+      end
+
       class RsyncError < VagrantAWSError
         error_key(:rsync_error)
       end

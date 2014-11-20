@@ -8,6 +8,21 @@ module VagrantPlugins
       # Include the built-in modules so we can use them as top-level things.
       include Vagrant::Action::Builtin
 
+      def self.action_package
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Call, IsCreated do |env, b2|
+            if !env[:result]
+              b2.use MessageNotCreated
+              next
+            end
+
+            # Connect to AWS and then Create a package from the server instance
+            b2.use ConnectAWS
+            b2.use PackageInstance
+          end
+        end
+      end
+
       # This action is called to halt the remote machine.
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
@@ -177,6 +192,7 @@ module VagrantPlugins
       autoload :MessageAlreadyCreated, action_root.join("message_already_created")
       autoload :MessageNotCreated, action_root.join("message_not_created")
       autoload :MessageWillNotDestroy, action_root.join("message_will_not_destroy")
+      autoload :PackageInstance, action_root.join("package_instance")
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :ReadState, action_root.join("read_state")
       autoload :RunInstance, action_root.join("run_instance")
