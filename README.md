@@ -20,7 +20,7 @@ EC2 and VPC.
 * SSH into the instances.
 * Provision the instances with any built-in Vagrant provisioner.
 * Minimal synced folder support via `rsync`.
-* Define region-specifc configurations so Vagrant can manage machines
+* Define region-specific configurations so Vagrant can manage machines
   in multiple regions.
 * Package running instances into new vagrant-aws friendly boxes
 
@@ -117,6 +117,9 @@ This provider exposes quite a few provider-specific configuration options:
    which support it.
 * `private_ip_address` - The private IP address to assign to an instance
   within a [VPC](http://aws.amazon.com/vpc/)
+* `elastic_ip` - Can be set to 'true', or to an existing Elastic IP address. 
+  If true, allocate a new Elastic IP address to the instance. If set
+  to an existing Elastic IP address, assign the address to the instance.
 * `region` - The region to start the instance in, such as "us-east-1"
 * `secret_access_key` - The secret access key for accessing AWS
 * `security_groups` - An array of security groups for the instance. If this

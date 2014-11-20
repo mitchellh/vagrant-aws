@@ -1,3 +1,7 @@
+# 0.5.1 
+
+* Support static Elastic IP addresses.
+
 # 0.5.0 (June 22, 2014)
 
 * Support for associating public IPs for VMs inside of VPCs (GH
