@@ -62,7 +62,8 @@ Vagrant.configure("2") do |config|
   config.vm.provider :aws do |aws, override|
     aws.access_key_id = "YOUR KEY"
     aws.secret_access_key = "YOUR SECRET KEY"
-    aws.session_token = "Session Token"
+    aws.session_token = "SESSION TOKEN"
+    aws.keypair_name = "KEYPAIR NAME"
 
     aws.ami = "ami-7747d01e"
 
