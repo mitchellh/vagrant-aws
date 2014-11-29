@@ -132,7 +132,7 @@ module VagrantPlugins
                 next if env[:interrupted]
 
                 # Wait for the server to be ready
-                server.wait_for(2) { ready? }
+                server.wait_for(2, 5) { ready? }
               end
             rescue Fog::Errors::TimeoutError
               # Delete the instance
