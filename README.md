@@ -189,17 +189,7 @@ There is minimal support for synced folders. Upon `vagrant up`,
 `rsync` (if available) to uni-directionally sync the folder to
 the remote machine over SSH.
 
-This is good enough for all built-in Vagrant provisioners (shell,
-chef, and puppet) to work!
-
-To exclude files or directories from rsync, use the `rsync_excludes` option. For example, to exclude the "bar" and "foo" directories:
-
-```ruby
-Vagrant.configure("2") do |config|
-  # ... other stuff
-
-  config.vm.synced_folder ".", "/vagrant", type: "rsync", :rsync_excludes => ['bar/', 'foo/']
-end
+See [Vagrant Synced folders: rsync](https://docs.vagrantup.com/v2/synced-folders/rsync.html)
 ```
 
 ## Other Examples
