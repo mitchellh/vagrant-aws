@@ -126,7 +126,7 @@ module VagrantPlugins
       # This action is called to bring the box up from nothing.
       def self.action_up
         Vagrant::Action::Builder.new.tap do |b|
-          b.use HandleBoxUrl
+          b.use HandleBox
           b.use ConfigValidate
           b.use ConnectAWS
           b.use Call, IsCreated do |env1, b1|
