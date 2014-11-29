@@ -30,16 +30,16 @@ module VagrantPlugins
           b.use Call, DestroyConfirm do |env, b2|
             if env[:result]
               b2.use ConfigValidate
-              b.use Call, IsCreated do |env2, b3|
+              b2.use Call, IsCreated do |env2, b3|
                 if !env2[:result]
                   b3.use MessageNotCreated
                   next
                 end
+                b2.use ConnectAWS
+                b2.use ElbDeregisterInstance
+                b2.use TerminateInstance
+                b2.use ProvisionerCleanup if defined?(ProvisionerCleanup)
               end
-              b2.use ConnectAWS
-              b2.use ElbDeregisterInstance
-              b2.use TerminateInstance
-              b2.use ProvisionerCleanup if defined?(ProvisionerCleanup)
             else
               b2.use MessageWillNotDestroy
             end
