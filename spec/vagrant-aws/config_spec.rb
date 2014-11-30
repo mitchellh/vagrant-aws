@@ -19,6 +19,7 @@ describe VagrantPlugins::AWS::Config do
     its("ami")               { should be_nil }
     its("availability_zone") { should be_nil }
     its("instance_ready_timeout") { should == 120 }
+    its("instance_package_timeout") { should == 600 }
     its("instance_type")     { should == "m3.medium" }
     its("keypair_name")      { should be_nil }
     its("private_ip_address") { should be_nil }
@@ -47,9 +48,9 @@ describe VagrantPlugins::AWS::Config do
     # each of these attributes to "foo" in isolation, and reads the value
     # and asserts the proper result comes back out.
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
-      :instance_type, :keypair_name, :ssh_host_attribute, :ebs_optimized,
-      :region, :secret_access_key, :session_token, :monitoring, :associate_public_ip,
-      :subnet_id, :tags, :elastic_ip, :terminate_on_shutdown,
+      :instance_package_timeout, :instance_type, :keypair_name, :ssh_host_attribute,
+      :ebs_optimized, :region, :secret_access_key, :session_token, :monitoring,
+      :associate_public_ip, :subnet_id, :tags, :elastic_ip, :terminate_on_shutdown,
       :iam_instance_profile_arn, :iam_instance_profile_name,
       :use_iam_profile, :user_data, :block_device_mapping].each do |attribute|
 
