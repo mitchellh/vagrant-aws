@@ -156,34 +156,34 @@ module VagrantPlugins
       attr_accessor :elb
 
       def initialize(region_specific=false)
-        @access_key_id          = UNSET_VALUE
-        @ami                    = UNSET_VALUE
-        @availability_zone      = UNSET_VALUE
-        @instance_ready_timeout = UNSET_VALUE
-        @instance_package_timeout = UNSET_VALUE
-        @instance_type          = UNSET_VALUE
-        @keypair_name           = UNSET_VALUE
-        @private_ip_address     = UNSET_VALUE
-        @region                 = UNSET_VALUE
-        @endpoint               = UNSET_VALUE
-        @version                = UNSET_VALUE
-        @secret_access_key      = UNSET_VALUE
-        @session_token          = UNSET_VALUE
-        @security_groups        = UNSET_VALUE
-        @subnet_id              = UNSET_VALUE
-        @tags                   = {}
-        @user_data              = UNSET_VALUE
-        @use_iam_profile        = UNSET_VALUE
-        @block_device_mapping   = []
-        @elastic_ip             = UNSET_VALUE
+        @access_key_id             = UNSET_VALUE
+        @ami                       = UNSET_VALUE
+        @availability_zone         = UNSET_VALUE
+        @instance_ready_timeout    = UNSET_VALUE
+        @instance_package_timeout  = UNSET_VALUE
+        @instance_type             = UNSET_VALUE
+        @keypair_name              = UNSET_VALUE
+        @private_ip_address        = UNSET_VALUE
+        @region                    = UNSET_VALUE
+        @endpoint                  = UNSET_VALUE
+        @version                   = UNSET_VALUE
+        @secret_access_key         = UNSET_VALUE
+        @session_token             = UNSET_VALUE
+        @security_groups           = UNSET_VALUE
+        @subnet_id                 = UNSET_VALUE
+        @tags                      = {}
+        @user_data                 = UNSET_VALUE
+        @use_iam_profile           = UNSET_VALUE
+        @block_device_mapping      = []
+        @elastic_ip                = UNSET_VALUE
         @iam_instance_profile_arn  = UNSET_VALUE
         @iam_instance_profile_name = UNSET_VALUE
-        @terminate_on_shutdown  = UNSET_VALUE
-        @ssh_host_attribute     = UNSET_VALUE
-        @monitoring             = UNSET_VALUE
-        @ebs_optimized          = UNSET_VALUE
-        @associate_public_ip    = UNSET_VALUE
-        @elb                    = UNSET_VALUE
+        @terminate_on_shutdown     = UNSET_VALUE
+        @ssh_host_attribute        = UNSET_VALUE
+        @monitoring                = UNSET_VALUE
+        @ebs_optimized             = UNSET_VALUE
+        @associate_public_ip       = UNSET_VALUE
+        @elb                       = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
