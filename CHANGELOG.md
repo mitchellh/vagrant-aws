@@ -1,6 +1,7 @@
-# 0.5.1 
+# 0.6.0 (December 13, 2014)
 
 * Support static Elastic IP addresses.
+* Support for creating AMIs with the `vagrant package`
 
 # 0.5.0 (June 22, 2014)
 
