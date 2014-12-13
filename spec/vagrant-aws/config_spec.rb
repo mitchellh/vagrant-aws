@@ -115,7 +115,7 @@ describe VagrantPlugins::AWS::Config do
       instance.keypair_name      = config_keypair_name
       instance.region            = config_region
       instance.secret_access_key = config_secret_access_key
-      instance.session_token     = session_token
+      instance.session_token     = config_session_token
     end
 
     it "should raise an exception if not finalized" do
@@ -141,7 +141,7 @@ describe VagrantPlugins::AWS::Config do
       its("keypair_name")      { should == config_keypair_name }
       its("region")            { should == config_region }
       its("secret_access_key") { should == config_secret_access_key }
-      its("session_token")     { should == session_token }
+      its("session_token")     { should == config_session_token }
     end
 
     context "with a specific config set" do
@@ -166,7 +166,7 @@ describe VagrantPlugins::AWS::Config do
       its("keypair_name")      { should == config_keypair_name }
       its("region")            { should == region_name }
       its("secret_access_key") { should == config_secret_access_key }
-      its("session_token")     { should == session_token }
+      its("session_token")     { should == config_session_token }
     end
 
     describe "inheritance of parent config" do
