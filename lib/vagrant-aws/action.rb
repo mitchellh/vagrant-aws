@@ -143,6 +143,7 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use HandleBox
           b.use ConfigValidate
+          b.use BoxCheckOutdated
           b.use ConnectAWS
           b.use Call, IsCreated do |env1, b1|
             if env1[:result]
