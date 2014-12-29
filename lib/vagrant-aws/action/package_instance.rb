@@ -74,11 +74,9 @@ module VagrantPlugins
                       raise Errors::InstancePackageError, 
                         ami_id: ami_obj.id,
                         err: ami_obj.state
-                      return
-                    else
-                      # Successful AMI burn will result in true here
-                      ami_obj.ready?
                     end
+
+                    ami_obj.ready?
                   }
                 end
               rescue Fog::Errors::TimeoutError
