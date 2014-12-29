@@ -103,6 +103,11 @@ module VagrantPlugins
       # @return [Hash<String, String>]
       attr_accessor :tags
 
+      # The tags for the AMI generated with package.
+      #
+      # @return [Hash<String, String>]
+      attr_accessor :package_tags
+
       # Use IAM Instance Role for authentication to AWS instead of an
       # explicit access_id and secret_access_key
       #
@@ -172,6 +177,7 @@ module VagrantPlugins
         @security_groups           = UNSET_VALUE
         @subnet_id                 = UNSET_VALUE
         @tags                      = {}
+        @package_tags              = {}
         @user_data                 = UNSET_VALUE
         @use_iam_profile           = UNSET_VALUE
         @block_device_mapping      = []
@@ -256,6 +262,10 @@ module VagrantPlugins
           # Merge in the tags
           result.tags.merge!(self.tags)
           result.tags.merge!(other.tags)
+
+          # Merge in the package tags
+          result.package_tags.merge!(self.package_tags)
+          result.package_tags.merge!(other.package_tags)
 
           # Merge block_device_mapping
           result.block_device_mapping |= self.block_device_mapping
