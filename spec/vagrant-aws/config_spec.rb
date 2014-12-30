@@ -31,6 +31,7 @@ describe VagrantPlugins::AWS::Config do
     its("iam_instance_profile_arn") { should be_nil }
     its("iam_instance_profile_name") { should be_nil }
     its("tags")              { should == {} }
+    its("package_tags")      { should == {} }
     its("user_data")         { should be_nil }
     its("use_iam_profile")   { should be_false }
     its("block_device_mapping")  {should == [] }
@@ -50,8 +51,8 @@ describe VagrantPlugins::AWS::Config do
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
       :instance_package_timeout, :instance_type, :keypair_name, :ssh_host_attribute,
       :ebs_optimized, :region, :secret_access_key, :session_token, :monitoring,
-      :associate_public_ip, :subnet_id, :tags, :elastic_ip, :terminate_on_shutdown,
-      :iam_instance_profile_arn, :iam_instance_profile_name,
+      :associate_public_ip, :subnet_id, :tags, :package_tags :elastic_ip,
+      :terminate_on_shutdown, :iam_instance_profile_arn, :iam_instance_profile_name,
       :use_iam_profile, :user_data, :block_device_mapping].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
@@ -209,6 +210,8 @@ describe VagrantPlugins::AWS::Config do
       it "should merge the tags and block_device_mappings" do
         first.tags["one"] = "one"
         second.tags["two"] = "two"
+        first.package_tags["three"] = "three"
+        second.package_tags["four"] = "four"
         first.block_device_mapping = [{:one => "one"}]
         second.block_device_mapping = [{:two => "two"}]
 
@@ -216,6 +219,10 @@ describe VagrantPlugins::AWS::Config do
         third.tags.should == {
           "one" => "one",
           "two" => "two"
+        }
+        third.package_tags.should == {
+          "three" => "three",
+          "four" => "four"
         }
         third.block_device_mapping.index({:one => "one"}).should_not be_nil
         third.block_device_mapping.index({:two => "two"}).should_not be_nil
