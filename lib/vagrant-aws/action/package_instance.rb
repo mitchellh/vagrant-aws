@@ -58,8 +58,9 @@ module VagrantPlugins
               tries = region_config.instance_package_timeout / 2
 
               env[:ui].info(I18n.t("vagrant_aws.burning_ami", :ami_id => @ami_id))
-
-              server.service.create_tags(@ami_id, region_config.package_tags)
+              if !region_config.package_tags.empty?
+                server.service.create_tags(@ami_id, region_config.package_tags)
+              end
 
               # Check the status of the AMI every 2 seconds until the ami burn timeout has been reached
               begin
