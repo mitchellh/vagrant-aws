@@ -1,4 +1,5 @@
 require "vagrant-aws/config"
+require 'rspec/its'
 
 describe VagrantPlugins::AWS::Config do
   let(:instance) { described_class.new }
@@ -32,7 +33,7 @@ describe VagrantPlugins::AWS::Config do
     its("iam_instance_profile_name") { should be_nil }
     its("tags")              { should == {} }
     its("user_data")         { should be_nil }
-    its("use_iam_profile")   { should be_false }
+    its("use_iam_profile")   { should be false }
     its("block_device_mapping")  {should == [] }
     its("elastic_ip")        { should be_nil }
     its("terminate_on_shutdown") { should == false }
