@@ -1,3 +1,5 @@
+require 'vagrant-aws'
+require 'vagrant-aws/plugin'
 require "vagrant-aws/config"
 require 'rspec/its'
 
@@ -27,6 +29,7 @@ describe VagrantPlugins::AWS::Config do
     its("region")            { should == "us-east-1" }
     its("secret_access_key") { should be_nil }
     its("session_token") { should be_nil }
+    its("credential_file") { should be_nil }
     its("security_groups")   { should == [] }
     its("subnet_id")         { should be_nil }
     its("iam_instance_profile_arn") { should be_nil }
@@ -49,11 +52,12 @@ describe VagrantPlugins::AWS::Config do
     # each of these attributes to "foo" in isolation, and reads the value
     # and asserts the proper result comes back out.
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
-      :instance_package_timeout, :instance_type, :keypair_name, :ssh_host_attribute,
-      :ebs_optimized, :region, :secret_access_key, :session_token, :monitoring,
-      :associate_public_ip, :subnet_id, :tags, :elastic_ip, :terminate_on_shutdown,
-      :iam_instance_profile_arn, :iam_instance_profile_name,
-      :use_iam_profile, :user_data, :block_device_mapping].each do |attribute|
+      :instance_package_timeout, :instance_type, :keypair_name,
+      :ssh_host_attribute, :ebs_optimized, :region, :secret_access_key,
+      :session_token, :credential_file, :monitoring, :associate_public_ip,
+      :subnet_id, :tags, :elastic_ip, :terminate_on_shutdown,
+      :iam_instance_profile_arn, :iam_instance_profile_name, :use_iam_profile,
+      :user_data, :block_device_mapping].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
         instance.send("#{attribute}=".to_sym, "foo")
@@ -76,6 +80,7 @@ describe VagrantPlugins::AWS::Config do
         end
       end
 
+      its("credential_file")   { should be_nil }
       its("access_key_id")     { should be_nil }
       its("secret_access_key") { should be_nil }
       its("session_token")     { should be_nil }
@@ -86,6 +91,7 @@ describe VagrantPlugins::AWS::Config do
         ENV.stub(:[]).with("AWS_ACCESS_KEY").and_return("access_key")
         ENV.stub(:[]).with("AWS_SECRET_KEY").and_return("secret_key")
         ENV.stub(:[]).with("AWS_SESSION_TOKEN").and_return("session_token")
+        ENV.stub(:[]).with("AWS_CREDENTIAL_FILE").and_return(nil)
       end
 
       subject do
@@ -97,6 +103,7 @@ describe VagrantPlugins::AWS::Config do
       its("access_key_id")     { should == "access_key" }
       its("secret_access_key") { should == "secret_key" }
       its("session_token")     { should == "session_token" }
+      its("credential_file")   { should be_nil }
     end
   end
 
@@ -108,6 +115,7 @@ describe VagrantPlugins::AWS::Config do
     let(:config_region)            { "foo" }
     let(:config_secret_access_key) { "foo" }
     let(:config_session_token)     { "foo" }
+    let(:config_credential_file)   { nil }
 
     def set_test_values(instance)
       instance.access_key_id     = config_access_key_id
@@ -117,6 +125,7 @@ describe VagrantPlugins::AWS::Config do
       instance.region            = config_region
       instance.secret_access_key = config_secret_access_key
       instance.session_token     = config_session_token
+      instance.credential_file   = config_credential_file
     end
 
     it "should raise an exception if not finalized" do
@@ -143,6 +152,7 @@ describe VagrantPlugins::AWS::Config do
       its("region")            { should == config_region }
       its("secret_access_key") { should == config_secret_access_key }
       its("session_token")     { should == config_session_token }
+      its("credential_file")   { should == config_credential_file }
     end
 
     context "with a specific config set" do
@@ -168,6 +178,26 @@ describe VagrantPlugins::AWS::Config do
       its("region")            { should == region_name }
       its("secret_access_key") { should == config_secret_access_key }
       its("session_token")     { should == config_session_token }
+      its("credential_file")   { should == config_credential_file }
+    end
+
+    context "with conflicting config options" do
+      before(:each) do
+        VagrantPlugins::AWS::Plugin.setup_i18n
+        set_test_values(instance)
+        instance.finalize!
+        @config = instance.get_region_config("us-east-1")
+      end
+
+      it "should throw error if keys & credential_file is defined" do
+        @config.access_key_id = "access_key"
+        @config.secret_access_key = "secret key"
+        @config.session_token = "token"
+        @config.credential_file = "credential file"
+
+        errors = instance.validate(nil)
+        errors['AWS Provider'].length.should eq(3)
+      end
     end
 
     describe "inheritance of parent config" do
