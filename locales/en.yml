@@ -73,6 +73,12 @@ en:
         A secret access key is required via "secret_access_key"
       subnet_id_required_with_public_ip: |-
         If you assign a public IP address to an instance in a VPC, a subnet must be specifed via "subnet_id"
+      access_key_id_cred_path_conflict: |-
+        Either "access_key_id" or "credential_file" must be specifed, not both
+      secret_access_key_cred_path_conflict: |-
+        Either "secret_access_key" or "credential_file" must be specifed, not both
+      session_token_cred_path_conflict: |-
+        Either "session_token" or "credential_file" must be specifed, not both
 
     errors:
       fog_error: |-

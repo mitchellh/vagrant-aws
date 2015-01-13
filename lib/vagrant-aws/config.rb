@@ -1,4 +1,6 @@
 require "vagrant"
+require "log4r"
+require "aws/core"
 
 module VagrantPlugins
   module AWS
@@ -74,6 +76,11 @@ module VagrantPlugins
       #
       # @return [String]
       attr_accessor :session_token
+
+      # Path to file containing AWS credentials
+      #
+      # @return [String]
+      attr_accessor :credential_file
 
       # The security groups to set on the instance. For VPC this must
       # be a list of IDs. For EC2, it can be either.
@@ -156,6 +163,8 @@ module VagrantPlugins
       attr_accessor :elb
 
       def initialize(region_specific=false)
+        @logger = Log4r::Logger.new("vagrant_aws::config")
+
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
         @availability_zone         = UNSET_VALUE
@@ -169,6 +178,7 @@ module VagrantPlugins
         @version                   = UNSET_VALUE
         @secret_access_key         = UNSET_VALUE
         @session_token             = UNSET_VALUE
+        @credential_file           = UNSET_VALUE
         @security_groups           = UNSET_VALUE
         @subnet_id                 = UNSET_VALUE
         @tags                      = {}
@@ -266,9 +276,43 @@ module VagrantPlugins
       def finalize!
         # Try to get access keys from standard AWS environment variables; they
         # will default to nil if the environment variables are not present.
-        @access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
-        @secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
-        @session_token     = ENV['AWS_SESSION_TOKEN'] if @session_token == UNSET_VALUE
+
+        @credential_file  = ENV['AWS_CREDENTIAL_FILE'] if @credential_file == UNSET_VALUE
+
+        unless @credential_file.nil?
+          path = File.expand_path(@credential_file)
+
+          @logger.info("Loading AWS credentials from #{path}")
+          if !File.exist?(path)
+            @logger.warn("Provided credential file #{path} doesn't exist")
+
+            @access_key_id     = nil
+            @secret_access_key = nil
+            @session_token     = nil
+          else
+            provider = ::AWS::Core::CredentialProviders::SharedCredentialFileProvider.new(
+              :path => path
+            )
+            credentials = provider.get_credentials()
+
+            @logger.debug("Loaded credentials via AWS SDK: #{credentials}")
+
+            @access_key_id = credentials[:access_key_id]
+            @secret_access_key = credentials[:secret_access_key]
+            @session_token = credentials[:session_token]
+          end
+        else
+          @logger.debug("Using AWS credentials provided directly")
+
+          @access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
+          @secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
+          @session_token     = ENV['AWS_SESSION_TOKEN'] if @session_token  == UNSET_VALUE
+        end
+
+        _ = '<empty>'
+        @logger.debug("Using AWS access key: #{@access_key_id||_}")
+        @logger.debug("Using AWS secret key: #{@secret_access_key||_}")
+        @logger.debug("Using AWS session token: #{@session_token||_}")
 
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
@@ -366,6 +410,21 @@ module VagrantPlugins
           # Get the configuration for the region we're using and validate only
           # that region.
           config = get_region_config(@region)
+
+          # TODO - lifecycle misunderstanding, it's always defined (even when loaded from file as above)
+          if !config.credential_file.nil?
+            if !config.access_key_id.nil?
+              errors << I18n.t("vagrant_aws.config.access_key_id_cred_path_conflict")
+            end
+
+            if !config.secret_access_key.nil?
+              errors << I18n.t("vagrant_aws.config.secret_access_key_cred_path_conflict")
+            end
+
+            if !config.session_token.nil?
+              errors << I18n.t("vagrant_aws.config.session_token_cred_path_conflict")
+            end
+          end
 
           if !config.use_iam_profile
             errors << I18n.t("vagrant_aws.config.access_key_id_required") if \
