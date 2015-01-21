@@ -119,7 +119,8 @@ module VagrantPlugins
       # @return [Array<Hash>]
       attr_accessor :block_device_mapping
 
-      # Indicates whether an instance stops or terminates when you initiate shutdown from the instance
+      # Indicates whether an instance stops or terminates when you initiate
+      # shutdown from the instance
       #
       # @return [bool]
       attr_accessor :terminate_on_shutdown
@@ -155,7 +156,7 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :elb
 
-      def initialize(region_specific=false)
+      def initialize(region_specific = false)
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
         @availability_zone         = UNSET_VALUE
@@ -212,7 +213,7 @@ module VagrantPlugins
       # @param [Hash] attributes Direct attributes to set on the configuration
       #   as a shortcut instead of specifying a full block.
       # @yield [config] Yields a new AWS configuration.
-      def region_config(region, attributes=nil, &block)
+      def region_config(region, attributes = nil, &block)
         # Append the block to the list of region configs for that region.
         # We'll evaluate these upon finalization.
         @__region_config[region] ||= []
@@ -367,7 +368,7 @@ module VagrantPlugins
           # that region.
           config = get_region_config(@region)
 
-          if !config.use_iam_profile
+          unless config.use_iam_profile
             errors << I18n.t("vagrant_aws.config.access_key_id_required") if \
               config.access_key_id.nil?
             errors << I18n.t("vagrant_aws.config.secret_access_key_required") if \

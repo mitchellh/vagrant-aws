@@ -37,7 +37,7 @@ module VagrantPlugins
           ssh_attrs = (Array(ssh_host_attribute) + ssh_attrs).uniq if ssh_host_attribute
           # try each attribute, get out on first value
           host_value = nil
-          while !host_value and attr_name = ssh_attrs.shift
+          while !host_value && attr_name = ssh_attrs.shift
             begin
               host_value = server.send(attr_name)
             rescue NoMethodError

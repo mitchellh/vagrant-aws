@@ -57,7 +57,7 @@ module VagrantPlugins
         # Some constants, such as "true" resolve to booleans, so the
         # above error checking doesn't catch it. This will check to make
         # sure that the log level is an integer, as Log4r requires.
-        level = nil if !level.is_a?(Integer)
+        level = nil unless level.is_a?(Integer)
 
         # Set the logging level on all "vagrant" namespaced
         # logs as long as we have a valid level.

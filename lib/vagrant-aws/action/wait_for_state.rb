@@ -24,9 +24,7 @@ module VagrantPlugins
             @logger.info("Waiting for machine to reach state #{@state}")
             begin
               Timeout.timeout(@timeout) do
-                until env[:machine].state.id == @state
-                  sleep 2
-                end
+                sleep 2 until env[:machine].state.id == @state
               end
             rescue Timeout::Error
               env[:result] = false # couldn't reach state in time
