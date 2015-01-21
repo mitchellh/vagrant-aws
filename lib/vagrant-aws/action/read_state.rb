@@ -30,7 +30,7 @@ module VagrantPlugins
           end
 
           # Return the state
-          return server.state.to_sym
+          server.state.to_sym
         end
       end
     end

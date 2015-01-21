@@ -45,9 +45,7 @@ module VagrantPlugins
           associate_public_ip   = region_config.associate_public_ip
 
           # If there is no keypair then warn the user
-          if !keypair
-            env[:ui].warn(I18n.t("vagrant_aws.launch_no_keypair"))
-          end
+          env[:ui].warn(I18n.t("vagrant_aws.launch_no_keypair")) unless keypair?
 
           # If there is a subnet ID then warn the user
           if subnet_id && !elastic_ip
@@ -67,7 +65,7 @@ module VagrantPlugins
           env[:ui].info(" -- Private IP: #{private_ip_address}") if private_ip_address
           env[:ui].info(" -- Elastic IP: #{elastic_ip}") if elastic_ip
           env[:ui].info(" -- User Data: yes") if user_data
-          env[:ui].info(" -- Security Groups: #{security_groups.inspect}") if !security_groups.empty?
+          env[:ui].info(" -- Security Groups: #{security_groups.inspect}") unless security_groups.empty?
           env[:ui].info(" -- User Data: #{user_data}") if user_data
           env[:ui].info(" -- Block Device Mapping: #{block_device_mapping}") if block_device_mapping
           env[:ui].info(" -- Terminate On Shutdown: #{terminate_on_shutdown}")
@@ -92,7 +90,7 @@ module VagrantPlugins
             :ebs_optimized             => ebs_optimized,
             :associate_public_ip        => associate_public_ip
           }
-          if !security_groups.empty?
+          unless security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
             options[security_group_key] = security_groups
             env[:ui].warn(I18n.t("vagrant_aws.warn_ssh_access")) unless allows_ssh_port?(env, security_groups, subnet_id)
@@ -151,11 +149,11 @@ module VagrantPlugins
             do_elastic_ip(env, domain, server, elastic_ip)
           end
 
-          if !env[:interrupted]
+          unless env[:interrupted]
             env[:metrics]["instance_ssh_time"] = Util::Timer.time do
               # Wait for SSH to be ready.
               env[:ui].info(I18n.t("vagrant_aws.waiting_for_ssh"))
-              while true
+              loop do
                 # If we're interrupted then just back out
                 break if env[:interrupted]
                 break if env[:machine].communicate.ready?
@@ -178,10 +176,8 @@ module VagrantPlugins
         def recover(env)
           return if env["vagrant.error"].is_a?(Vagrant::Errors::VagrantError)
 
-          if env[:machine].provider.state.id != :not_created
-            # Undo the import
-            terminate(env)
-          end
+          # Undo the import
+          terminate(env) if env[:machine].provider.state.id != :not_created
         end
 
         def allows_ssh_port?(env, test_sec_groups, is_vpc)
@@ -246,7 +242,7 @@ module VagrantPlugins
           end
 
           # Save this IP to the data dir so it can be released when the instance is destroyed
-          if h 
+          if h
             ip_file = env[:machine].data_dir.join('elastic_ip')
             ip_file.open('w+') do |f|
               f.write(h.to_json)
@@ -254,7 +250,7 @@ module VagrantPlugins
           end
         end
 
-        def handle_elastic_ip_error(env, message) 
+        def handle_elastic_ip_error(env, message)
           @logger.debug(message)
           terminate(env)
           raise Errors::FogError,

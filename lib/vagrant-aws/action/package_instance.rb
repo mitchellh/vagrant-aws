@@ -12,7 +12,7 @@ module VagrantPlugins
       # successful AMI burning, the action will create a .box tarball
       # writing a Vagrantfile with the fresh AMI id into it.
 
-      # Vagrant itself comes with a general package action, which 
+      # Vagrant itself comes with a general package action, which
       # this plugin action does call. The general action provides
       # the actual packaging as well as other options such as
       # --include for including additional files and --vagrantfile
@@ -42,16 +42,16 @@ module VagrantPlugins
             server = env[:aws_compute].servers.get(env[:machine].id)
 
             env[:ui].info(I18n.t("vagrant_aws.packaging_instance", :instance_id => server.id))
-            
+
             # Make the request to AWS to create an AMI from machine's instance
             ami_response = server.service.create_image server.id, "#{server.tags["Name"]} Package - #{Time.now.strftime("%Y%m%d-%H%M%S")}", ""
 
             # Find ami id
             @ami_id = ami_response.data[:body]["imageId"]
-            
+
             # Attempt to burn the aws instance into an AMI within timeout
             env[:metrics]["instance_ready_time"] = Util::Timer.time do
-              
+
               # Get the config, to set the ami burn timeout
               region = env[:machine].provider_config.region
               region_config = env[:machine].provider_config.get_region_config(region)
@@ -68,10 +68,10 @@ module VagrantPlugins
                   # Need to update the ami_obj on each cycle
                   ami_obj = server.service.images.get(@ami_id)
 
-                  # Wait for the server to be ready, raise error if timeout reached 
-                  server.wait_for(2) { 
+                  # Wait for the server to be ready, raise error if timeout reached
+                  server.wait_for(2) do
                     if ami_obj.state == "failed"
-                      raise Errors::InstancePackageError, 
+                      raise Errors::InstancePackageError,
                         ami_id: ami_obj.id,
                         err: ami_obj.state
                       return
@@ -79,7 +79,7 @@ module VagrantPlugins
                       # Successful AMI burn will result in true here
                       ami_obj.ready?
                     end
-                  }
+                  end
                 end
               rescue Fog::Errors::TimeoutError
                 # Notify the user upon timeout
@@ -109,7 +109,7 @@ module VagrantPlugins
           # superclass to actually create the tarball (.box file)
           env["package.directory"] = env["export.temp_dir"]
           general_call(env)
-          
+
           # Always call recover to clean up the temp dir
           clean_temp_dir
         end
@@ -123,7 +123,7 @@ module VagrantPlugins
           end
         end
 
-        # This method generates the Vagrantfile at the root of the box. Taken from 
+        # This method generates the Vagrantfile at the root of the box. Taken from
         # VagrantPlugins::ProviderVirtualBox::Action::PackageVagrantfile
         def create_vagrantfile env
           File.open(File.join(env["export.temp_dir"], "Vagrantfile"), "w") do |f|
