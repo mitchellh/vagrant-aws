@@ -8,3 +8,7 @@ group :development do
   # Vagrant environment itself using `vagrant plugin`.
   gem "vagrant", :git => "https://github.com/mitchellh/vagrant.git"
 end
+
+group :plugins do
+  gem "vagrant-aws" , path: "."
+end
