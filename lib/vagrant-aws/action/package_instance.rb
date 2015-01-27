@@ -48,7 +48,7 @@ module VagrantPlugins
 
             # Find ami id
             @ami_id = ami_response.data[:body]["imageId"]
-            
+
             # Attempt to burn the aws instance into an AMI within timeout
             env[:metrics]["instance_ready_time"] = Util::Timer.time do
               
@@ -58,6 +58,9 @@ module VagrantPlugins
               tries = region_config.instance_package_timeout / 2
 
               env[:ui].info(I18n.t("vagrant_aws.burning_ami", :ami_id => @ami_id))
+              if !region_config.package_tags.empty?
+                server.service.create_tags(@ami_id, region_config.package_tags)
+              end
 
               # Check the status of the AMI every 2 seconds until the ami burn timeout has been reached
               begin
@@ -69,16 +72,14 @@ module VagrantPlugins
                   ami_obj = server.service.images.get(@ami_id)
 
                   # Wait for the server to be ready, raise error if timeout reached 
-                  server.wait_for(2) { 
+                  server.wait_for(2) {
                     if ami_obj.state == "failed"
                       raise Errors::InstancePackageError, 
                         ami_id: ami_obj.id,
                         err: ami_obj.state
-                      return
-                    else
-                      # Successful AMI burn will result in true here
-                      ami_obj.ready?
                     end
+
+                    ami_obj.ready?
                   }
                 end
               rescue Fog::Errors::TimeoutError
