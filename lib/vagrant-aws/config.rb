@@ -19,6 +19,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :availability_zone
 
+      # The placement group to launch the instance into. If nil, it will
+      # not use a placement group
+      #
+      # @return [String]
+      attr_accessor :placement_group
+
       # The timeout to wait for an instance to become ready.
       #
       # @return [Fixnum]
@@ -164,6 +170,7 @@ module VagrantPlugins
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
         @availability_zone         = UNSET_VALUE
+        @placement_group           = UNSET_VALUE
         @instance_ready_timeout    = UNSET_VALUE
         @instance_package_timeout  = UNSET_VALUE
         @instance_type             = UNSET_VALUE
@@ -305,6 +312,7 @@ module VagrantPlugins
         # generally defaults to this as well.
         @region = "us-east-1" if @region == UNSET_VALUE
         @availability_zone = nil if @availability_zone == UNSET_VALUE
+        @placement_group = nil if @placement_group == UNSET_VALUE
         @endpoint = nil if @endpoint == UNSET_VALUE
         @version = nil if @version == UNSET_VALUE
 
