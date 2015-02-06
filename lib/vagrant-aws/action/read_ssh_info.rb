@@ -33,7 +33,7 @@ module VagrantPlugins
           ssh_host_attribute = machine.provider_config.
               get_region_config(machine.provider_config.region).ssh_host_attribute
           # default host attributes to try. NOTE: Order matters!
-          ssh_attrs = [:public_ip_address, :dns_name, :private_ip_address]
+          ssh_attrs = [:dns_name, :public_ip_address, :private_ip_address]
           ssh_attrs = (Array(ssh_host_attribute) + ssh_attrs).uniq if ssh_host_attribute
           # try each attribute, get out on first value
           host_value = nil
