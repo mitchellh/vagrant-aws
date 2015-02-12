@@ -148,7 +148,7 @@ module VagrantPlugins
       # be attached to instance
       #
       # @return [Array<Hash>]
-      attr_accessor :network_interfaces
+      attr_accessor :additional_network_interfaces
 
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
@@ -177,7 +177,7 @@ module VagrantPlugins
         @ebs_optimized          = UNSET_VALUE
         @associate_public_ip    = UNSET_VALUE
         @elb                    = UNSET_VALUE
-        @network_interfaces     = []
+        @additional_network_interfaces     = []
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
