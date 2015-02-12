@@ -144,6 +144,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :elb
 
+      # The additional network adapters which should
+      # be attached to instance
+      #
+      # @return [Array<Hash>]
+      attr_accessor :network_interfaces
+
       def initialize(region_specific=false)
         @access_key_id          = UNSET_VALUE
         @ami                    = UNSET_VALUE
@@ -171,6 +177,7 @@ module VagrantPlugins
         @ebs_optimized          = UNSET_VALUE
         @associate_public_ip    = UNSET_VALUE
         @elb                    = UNSET_VALUE
+        @network_interfaces     = []
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -362,7 +369,7 @@ module VagrantPlugins
           end
 
           errors << I18n.interpolate("vagrant_aws.config.ami_required", :region => @region)  if config.ami.nil?
-        end
+        end        
 
         { "AWS Provider" => errors }
       end

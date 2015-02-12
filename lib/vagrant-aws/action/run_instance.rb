@@ -43,6 +43,7 @@ module VagrantPlugins
           monitoring            = region_config.monitoring
           ebs_optimized         = region_config.ebs_optimized
           associate_public_ip   = region_config.associate_public_ip
+          network_interfaces    = region_config.network_interfaces
 
           # If there is no keypair then warn the user
           if !keypair
@@ -90,7 +91,8 @@ module VagrantPlugins
             :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil,
             :monitoring                => monitoring,
             :ebs_optimized             => ebs_optimized,
-            :associate_public_ip        => associate_public_ip
+            :associate_public_ip        => associate_public_ip,
+            :network_interfaces         => network_interfaces
           }
           if !security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
