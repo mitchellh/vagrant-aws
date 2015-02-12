@@ -8,6 +8,21 @@ module VagrantPlugins
       # Include the built-in modules so we can use them as top-level things.
       include Vagrant::Action::Builtin
 
+      def self.action_package
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Call, IsCreated do |env, b2|
+            if !env[:result]
+              b2.use MessageNotCreated
+              next
+            end
+
+            # Connect to AWS and then Create a package from the server instance
+            b2.use ConnectAWS
+            b2.use PackageInstance
+          end
+        end
+      end
+
       # This action is called to halt the remote machine.
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
@@ -30,16 +45,16 @@ module VagrantPlugins
           b.use Call, DestroyConfirm do |env, b2|
             if env[:result]
               b2.use ConfigValidate
-              b.use Call, IsCreated do |env2, b3|
+              b2.use Call, IsCreated do |env2, b3|
                 if !env2[:result]
                   b3.use MessageNotCreated
                   next
                 end
+                b3.use ConnectAWS
+                b3.use ElbDeregisterInstance
+                b3.use TerminateInstance
+                b3.use ProvisionerCleanup if defined?(ProvisionerCleanup)
               end
-              b2.use ConnectAWS
-              b2.use ElbDeregisterInstance
-              b2.use TerminateInstance
-              b2.use ProvisionerCleanup if defined?(ProvisionerCleanup)
             else
               b2.use MessageWillNotDestroy
             end
@@ -58,7 +73,6 @@ module VagrantPlugins
             end
 
             b2.use Provision
-            b2.use SyncFolders
           end
         end
       end
@@ -117,7 +131,7 @@ module VagrantPlugins
       def self.action_prepare_boot
         Vagrant::Action::Builder.new.tap do |b|
           b.use Provision
-          b.use SyncFolders
+          b.use SyncedFolders
           b.use WarnNetworks
           b.use ElbRegisterInstance
         end
@@ -126,8 +140,9 @@ module VagrantPlugins
       # This action is called to bring the box up from nothing.
       def self.action_up
         Vagrant::Action::Builder.new.tap do |b|
-          b.use HandleBoxUrl
+          b.use HandleBox
           b.use ConfigValidate
+          b.use BoxCheckOutdated
           b.use ConnectAWS
           b.use Call, IsCreated do |env1, b1|
             if env1[:result]
@@ -178,12 +193,12 @@ module VagrantPlugins
       autoload :MessageAlreadyCreated, action_root.join("message_already_created")
       autoload :MessageNotCreated, action_root.join("message_not_created")
       autoload :MessageWillNotDestroy, action_root.join("message_will_not_destroy")
+      autoload :PackageInstance, action_root.join("package_instance")
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :ReadState, action_root.join("read_state")
       autoload :RunInstance, action_root.join("run_instance")
       autoload :StartInstance, action_root.join("start_instance")
       autoload :StopInstance, action_root.join("stop_instance")
-      autoload :SyncFolders, action_root.join("sync_folders")
       autoload :TerminateInstance, action_root.join("terminate_instance")
       autoload :TimedProvision, action_root.join("timed_provision") # some plugins now expect this action to exist
       autoload :WaitForState, action_root.join("wait_for_state")

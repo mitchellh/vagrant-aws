@@ -1,3 +1,8 @@
+# 0.6.0 (December 13, 2014)
+
+* Support static Elastic IP addresses.
+* Support for creating AMIs with the `vagrant package`
+
 # 0.5.0 (June 22, 2014)
 
 * Support for associating public IPs for VMs inside of VPCs (GH
@@ -8,6 +13,8 @@
 * rsyncing folders uses `--delete` flag to better emulate "real shared folders
   (GH [#194](https://github.com/mitchellh/vagrant-aws/pull/194))
 * fog gem version bumped to 1.22 (GH [#253](https://github.com/mitchellh/vagrant-aws/pull/253))
+* Simple ELB support (GH [#88](https://github.com/mitchellh/vagrant-aws/pull/88),
+  GH [#238](https://github.com/mitchellh/vagrant-aws/pull/238))
 
 # 0.4.1 (December 17, 2013)
 

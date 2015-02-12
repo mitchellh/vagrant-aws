@@ -95,11 +95,10 @@ module VagrantPlugins
           if !security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
             options[security_group_key] = security_groups
+            env[:ui].warn(I18n.t("vagrant_aws.warn_ssh_access")) unless allows_ssh_port?(env, security_groups, subnet_id)
           end
 
           begin
-            env[:ui].warn(I18n.t("vagrant_aws.warn_ssh_access")) unless allows_ssh_port?(env, security_groups, subnet_id)
-
             server = env[:aws_compute].servers.create(options)
           rescue Fog::Compute::AWS::NotFound => e
             # Invalid subnet doesn't have its own error so we catch and
@@ -132,7 +131,7 @@ module VagrantPlugins
                 next if env[:interrupted]
 
                 # Wait for the server to be ready
-                server.wait_for(2) { ready? }
+                server.wait_for(2, 5) { ready? }
               end
             rescue Fog::Errors::TimeoutError
               # Delete the instance
@@ -149,7 +148,7 @@ module VagrantPlugins
           # Allocate and associate an elastic IP if requested
           if elastic_ip
             domain = subnet_id ? 'vpc' : 'standard'
-            do_elastic_ip(env, domain, server)
+            do_elastic_ip(env, domain, server, elastic_ip)
           end
 
           if !env[:interrupted]
@@ -198,26 +197,45 @@ module VagrantPlugins
           !rules.select { |r| (r["fromPort"]..r["toPort"]).include?(port) }.empty?
         end
 
-        def do_elastic_ip(env, domain, server)
-          begin
-            allocation = env[:aws_compute].allocate_address(domain)
-          rescue
-            @logger.debug("Could not allocate Elastic IP.")
-            terminate(env)
-            raise Errors::FogError,
-                            :message => "Could not allocate Elastic IP."
+        def do_elastic_ip(env, domain, server, elastic_ip)
+          if elastic_ip =~ /\d+\.\d+\.\d+\.\d+/
+            begin
+              address = env[:aws_compute].addresses.get(elastic_ip)
+            rescue
+              handle_elastic_ip_error(env, "Could not retrieve Elastic IP: #{elastic_ip}")
+            end
+            if address.nil?
+              handle_elastic_ip_error(env, "Elastic IP not available: #{elastic_ip}")
+            end
+            @logger.debug("Public IP #{address.public_ip}")
+          else
+            begin
+              allocation = env[:aws_compute].allocate_address(domain)
+            rescue
+              handle_elastic_ip_error(env, "Could not allocate Elastic IP.")
+            end
+            @logger.debug("Public IP #{allocation.body['publicIp']}")
           end
-          @logger.debug("Public IP #{allocation.body['publicIp']}")
 
           # Associate the address and save the metadata to a hash
+          h = nil
           if domain == 'vpc'
             # VPC requires an allocation ID to assign an IP
-            association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
-            h = { :allocation_id => allocation.body['allocationId'], :association_id => association.body['associationId'], :public_ip => allocation.body['publicIp'] }
+            if address
+              association = env[:aws_compute].associate_address(server.id, nil, nil, address.allocation_id)
+            else
+              association = env[:aws_compute].associate_address(server.id, nil, nil, allocation.body['allocationId'])
+              # Only store release data for an allocated address
+              h = { :allocation_id => allocation.body['allocationId'], :association_id => association.body['associationId'], :public_ip => allocation.body['publicIp'] }
+            end
           else
             # Standard EC2 instances only need the allocated IP address
-            association = env[:aws_compute].associate_address(server.id, allocation.body['publicIp'])
-            h = { :public_ip => allocation.body['publicIp'] }
+            if address
+              association = env[:aws_compute].associate_address(server.id, address.public_ip)
+            else
+              association = env[:aws_compute].associate_address(server.id, allocation.body['publicIp'])
+              h = { :public_ip => allocation.body['publicIp'] }
+            end
           end
 
           unless association.body['return']
@@ -228,10 +246,19 @@ module VagrantPlugins
           end
 
           # Save this IP to the data dir so it can be released when the instance is destroyed
-          ip_file = env[:machine].data_dir.join('elastic_ip')
-          ip_file.open('w+') do |f|
-            f.write(h.to_json)
+          if h 
+            ip_file = env[:machine].data_dir.join('elastic_ip')
+            ip_file.open('w+') do |f|
+              f.write(h.to_json)
+            end
           end
+        end
+
+        def handle_elastic_ip_error(env, message) 
+          @logger.debug(message)
+          terminate(env)
+          raise Errors::FogError,
+                          :message => message
         end
 
         def terminate(env)

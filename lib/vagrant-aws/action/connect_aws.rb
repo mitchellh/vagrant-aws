@@ -30,6 +30,7 @@ module VagrantPlugins
           else
             fog_config[:aws_access_key_id] = region_config.access_key_id
             fog_config[:aws_secret_access_key] = region_config.secret_access_key
+            fog_config[:aws_session_token] = region_config.session_token
           end
 
           fog_config[:endpoint] = region_config.endpoint if region_config.endpoint
@@ -37,7 +38,7 @@ module VagrantPlugins
 
           @logger.info("Connecting to AWS...")
           env[:aws_compute] = Fog::Compute.new(fog_config)
-          env[:aws_elb]     = Fog::AWS::ELB.new(fog_config.except(:provider))
+          env[:aws_elb]     = Fog::AWS::ELB.new(fog_config.except(:provider, :endpoint))
 
           @app.call(env)
         end

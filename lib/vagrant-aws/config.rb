@@ -24,6 +24,11 @@ module VagrantPlugins
       # @return [Fixnum]
       attr_accessor :instance_ready_timeout
 
+      # The timeout to wait for an instance to successfully burn into an AMI.
+      #
+      # @return [Fixnum]
+      attr_accessor :instance_package_timeout
+
       # The type of instance to launch, such as "m3.medium"
       #
       # @return [String]
@@ -39,9 +44,10 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :private_ip_address
 
-      # Acquire and attach an elastic IP address (VPC).
+      # If true, acquire and attach an elastic IP address.
+      # If set to an IP address, assign to the instance.
       #
-      # @return [Boolean]
+      # @return [String]
       attr_accessor :elastic_ip
 
       # The name of the AWS region in which to create the instance.
@@ -63,6 +69,11 @@ module VagrantPlugins
       #
       # @return [String]
       attr_accessor :secret_access_key
+
+      # The token associated with the key for accessing AWS.
+      #
+      # @return [String]
+      attr_accessor :session_token
 
       # The security groups to set on the instance. For VPC this must
       # be a list of IDs. For EC2, it can be either.
@@ -91,6 +102,11 @@ module VagrantPlugins
       #
       # @return [Hash<String, String>]
       attr_accessor :tags
+
+      # The tags for the AMI generated with package.
+      #
+      # @return [Hash<String, String>]
+      attr_accessor :package_tags
 
       # Use IAM Instance Role for authentication to AWS instead of an
       # explicit access_id and secret_access_key
@@ -151,32 +167,35 @@ module VagrantPlugins
       attr_accessor :additional_network_interfaces
 
       def initialize(region_specific=false)
-        @access_key_id          = UNSET_VALUE
-        @ami                    = UNSET_VALUE
-        @availability_zone      = UNSET_VALUE
-        @instance_ready_timeout = UNSET_VALUE
-        @instance_type          = UNSET_VALUE
-        @keypair_name           = UNSET_VALUE
-        @private_ip_address     = UNSET_VALUE
-        @region                 = UNSET_VALUE
-        @endpoint               = UNSET_VALUE
-        @version                = UNSET_VALUE
-        @secret_access_key      = UNSET_VALUE
-        @security_groups        = UNSET_VALUE
-        @subnet_id              = UNSET_VALUE
-        @tags                   = {}
-        @user_data              = UNSET_VALUE
-        @use_iam_profile        = UNSET_VALUE
-        @block_device_mapping   = []
-        @elastic_ip             = UNSET_VALUE
+        @access_key_id             = UNSET_VALUE
+        @ami                       = UNSET_VALUE
+        @availability_zone         = UNSET_VALUE
+        @instance_ready_timeout    = UNSET_VALUE
+        @instance_package_timeout  = UNSET_VALUE
+        @instance_type             = UNSET_VALUE
+        @keypair_name              = UNSET_VALUE
+        @private_ip_address        = UNSET_VALUE
+        @region                    = UNSET_VALUE
+        @endpoint                  = UNSET_VALUE
+        @version                   = UNSET_VALUE
+        @secret_access_key         = UNSET_VALUE
+        @session_token             = UNSET_VALUE
+        @security_groups           = UNSET_VALUE
+        @subnet_id                 = UNSET_VALUE
+        @tags                      = {}
+        @package_tags              = {}
+        @user_data                 = UNSET_VALUE
+        @use_iam_profile           = UNSET_VALUE
+        @block_device_mapping      = []
+        @elastic_ip                = UNSET_VALUE
         @iam_instance_profile_arn  = UNSET_VALUE
         @iam_instance_profile_name = UNSET_VALUE
-        @terminate_on_shutdown  = UNSET_VALUE
-        @ssh_host_attribute     = UNSET_VALUE
-        @monitoring             = UNSET_VALUE
-        @ebs_optimized          = UNSET_VALUE
-        @associate_public_ip    = UNSET_VALUE
-        @elb                    = UNSET_VALUE
+        @terminate_on_shutdown     = UNSET_VALUE
+        @ssh_host_attribute        = UNSET_VALUE
+        @monitoring                = UNSET_VALUE
+        @ebs_optimized             = UNSET_VALUE
+        @associate_public_ip       = UNSET_VALUE
+        @elb                       = UNSET_VALUE
         @additional_network_interfaces     = []
 
         # Internal state (prefix with __ so they aren't automatically
@@ -251,6 +270,10 @@ module VagrantPlugins
           result.tags.merge!(self.tags)
           result.tags.merge!(other.tags)
 
+          # Merge in the package tags
+          result.package_tags.merge!(self.package_tags)
+          result.package_tags.merge!(other.package_tags)
+
           # Merge block_device_mapping
           result.block_device_mapping |= self.block_device_mapping
           result.block_device_mapping |= other.block_device_mapping
@@ -262,12 +285,16 @@ module VagrantPlugins
         # will default to nil if the environment variables are not present.
         @access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
         @secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
+        @session_token     = ENV['AWS_SESSION_TOKEN'] if @session_token == UNSET_VALUE
 
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
 
         # Set the default timeout for waiting for an instance to be ready
         @instance_ready_timeout = 120 if @instance_ready_timeout == UNSET_VALUE
+
+        # Set the default timeout for waiting for an instance to burn into and ami
+        @instance_package_timeout = 600 if @instance_package_timeout == UNSET_VALUE
 
         # Default instance type is an m3.medium
         @instance_type = "m3.medium" if @instance_type == UNSET_VALUE

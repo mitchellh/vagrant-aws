@@ -1,4 +1,5 @@
 # Vagrant AWS Provider
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/mitchellh/vagrant-aws?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 <span class="badges">
 [![Gem Version](https://badge.fury.io/rb/vagrant-aws.png)][gem]
@@ -20,8 +21,9 @@ EC2 and VPC.
 * SSH into the instances.
 * Provision the instances with any built-in Vagrant provisioner.
 * Minimal synced folder support via `rsync`.
-* Define region-specifc configurations so Vagrant can manage machines
+* Define region-specific configurations so Vagrant can manage machines
   in multiple regions.
+* Package running instances into new vagrant-aws friendly boxes
 
 ## Usage
 
@@ -61,6 +63,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider :aws do |aws, override|
     aws.access_key_id = "YOUR KEY"
     aws.secret_access_key = "YOUR SECRET KEY"
+    aws.session_token = "SESSION TOKEN"
     aws.keypair_name = "KEYPAIR NAME"
 
     aws.ami = "ami-7747d01e"
@@ -105,19 +108,25 @@ This provider exposes quite a few provider-specific configuration options:
   the instance. If nil, it will use the default set by Amazon.
 * `instance_ready_timeout` - The number of seconds to wait for the instance
   to become "ready" in AWS. Defaults to 120 seconds.
+* `instance_package_timeout` - The number of seconds to wait for the instance
+  to be burnt into an AMI during packaging. Defaults to 600 seconds.
 * `instance_type` - The type of instance, such as "m3.medium". The default
   value of this if not specified is "m3.medium".  "m1.small" has been
   deprecated in "us-east-1" and "m3.medium" is the smallest instance
   type to support both paravirtualization and hvm AMIs
 * `keypair_name` - The name of the keypair to use to bootstrap AMIs
    which support it.
+* `session_token` - The session token provided by STS
 * `private_ip_address` - The private IP address to assign to an instance
   within a [VPC](http://aws.amazon.com/vpc/)
+* `elastic_ip` - Can be set to 'true', or to an existing Elastic IP address. 
+  If true, allocate a new Elastic IP address to the instance. If set
+  to an existing Elastic IP address, assign the address to the instance.
 * `region` - The region to start the instance in, such as "us-east-1"
 * `secret_access_key` - The secret access key for accessing AWS
 * `security_groups` - An array of security groups for the instance. If this
   instance will be launched in VPC, this must be a list of security group
-  Name.
+  Name. For a nondefault VPC, you must use security group IDs instead (http://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html).
 * `iam_instance_profile_arn` - The Amazon resource name (ARN) of the IAM Instance
     Profile to associate with the instance
 * `iam_instance_profile_name` - The name of the IAM Instance Profile to associate
@@ -125,9 +134,11 @@ This provider exposes quite a few provider-specific configuration options:
 * `subnet_id` - The subnet to boot the instance into, for VPC.
 * `associate_public_ip` - If true, will associate a public IP address to an instance in a VPC.
 * `tags` - A hash of tags to set on the machine.
+* `package_tags` - A hash of tags to set on the ami generated during the package operation.
 * `use_iam_profile` - If true, will use [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)
   for credentials.
 * `block_device_mapping` - Amazon EC2 Block Device Mapping Property
+* `elb` - The ELB name to attach to the instance.
 
 These can be set like typical provider-specific configuration:
 
@@ -186,18 +197,8 @@ There is minimal support for synced folders. Upon `vagrant up`,
 `rsync` (if available) to uni-directionally sync the folder to
 the remote machine over SSH.
 
-This is good enough for all built-in Vagrant provisioners (shell,
-chef, and puppet) to work!
+See [Vagrant Synced folders: rsync](https://docs.vagrantup.com/v2/synced-folders/rsync.html)
 
-To exclude files or directories from rsync, use the `rsync_excludes` option. For example, to exclude the "bar" and "foo" directories:
-
-```ruby
-Vagrant.configure("2") do |config|
-  # ... other stuff
-
-  config.vm.synced_folder ".", "/vagrant", type: "rsync", :rsync_excludes => ['bar/', 'foo/']
-end
-```
 
 ## Other Examples
 
@@ -250,7 +251,7 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-### Elastic Load Balancers
+### ELB (Elastic Load Balancers)
 
 You can automatically attach an instance to an ELB during boot and detach on destroy.
 
