@@ -4,7 +4,7 @@ module VagrantPlugins
   module AWS
     module Action      
       class RegisterAdditionalNetworkInterfaces
-        include ElasticLoadBalancer
+        include NetworkAdapter
 
         def initialize(app, env)
           @app    = app
@@ -18,6 +18,10 @@ module VagrantPlugins
           interfaces = env[:machine].provider_config.additional_network_interfaces
 
           interfaces.each do |intf|
+            env[:ui].info(I18n.t("vagrant_aws.creating_network_interface"))
+            env[:ui].info(" -- Device Index: #{intf[:device_index]}")
+            env[:ui].info(" -- Subnet ID: #{intf[:subnet_id]}")
+            env[:ui].info(" -- Security Groups: #{intf[:security_groups]}")
           	register_adapter env, intf[:device_index], intf[:subnet_id], intf[:security_groups], env[:machine].id
           end            
           
