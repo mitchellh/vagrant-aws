@@ -6,6 +6,13 @@ module VagrantPlugins
 		interface = env[:aws_compute].network_interfaces.create(:subnet_id => subnet_id, :group_set => security_groups )
 		env[:aws_compute].attach_network_interface(interface.network_interface_id, instance_id, device_index)
       end
+
+      def destroy_adapter(env, device_index, instance_id)       
+		interface = env[:aws_compute].network_interfaces.all('attachment.instance-id' => instance_id, 'attachment.device-index' => device_index ).first
+		env[:aws_compute].detach_network_interface(interface.attachment['attachmentId'], true)
+		interface.wait_for { attachment.nil? || attachment == {} }
+		interface.destroy
+      end     
      
     end
   end

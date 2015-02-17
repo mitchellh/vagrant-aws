@@ -61,6 +61,8 @@ en:
       was declined.
     creating_network_interface: |-
       Creating additional network interface with the following settings...
+    destroy_network_interface: |-
+      Destroying additional network interface...
 
     config:
       access_key_id_required: |-
