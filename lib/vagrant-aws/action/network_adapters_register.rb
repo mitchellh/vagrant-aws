@@ -22,7 +22,8 @@ module VagrantPlugins
             env[:ui].info(" -- Device Index: #{intf[:device_index]}")
             env[:ui].info(" -- Subnet ID: #{intf[:subnet_id]}")
             env[:ui].info(" -- Security Groups: #{intf[:security_groups]}")
-          	register_adapter env, intf[:device_index], intf[:subnet_id], intf[:security_groups], env[:machine].id
+            env[:ui].info(" -- IP: #{intf[:private_ip_address]}")
+          	register_adapter env, intf[:device_index], intf[:subnet_id], intf[:security_groups], intf[:private_ip_address], env[:machine].id
           end            
           
         end

@@ -282,8 +282,17 @@ Vagrant.configure("2") do |config|
 
     # add additonal interfaces after boot
     aws.additional_network_interfaces = [
-      { :device_index => 1, :subnet_id => 'subnet-2f76b4e7', :security_groups => ['sg-b2a58ce3', 'sg-008f7950']}
-      { :device_index => 2, :subnet_id => 'subnet-e9725abc', :security_groups => ['sg-0ded8ff6']}
+      { 
+        :device_index => 1, 
+        :subnet_id => 'subnet-2f76b4e7', 
+        :security_groups => ['sg-b2a58ce3', 'sg-008f7950'],
+        :private_ip_address => '172.16.110.200' #optional
+      },
+      { 
+        :device_index => 2, 
+        :subnet_id => 'subnet-e9725abc', 
+        :security_groups => ['sg-0ded8ff6']
+      }
     ]
   end
 end
