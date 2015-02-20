@@ -139,6 +139,7 @@ This provider exposes quite a few provider-specific configuration options:
   for credentials.
 * `block_device_mapping` - Amazon EC2 Block Device Mapping Property
 * `elb` - The ELB name to attach to the instance.
+* `additional_network_interfaces` - An array of the extra network interfaces to create and attach once the machine is up
 
 These can be set like typical provider-specific configuration:
 
@@ -265,6 +266,38 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+### Additional Network Adapters
+
+You can add extra network adapters to your instance after boot.
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ... other stuff
+
+  config.vm.provider "aws" do |aws|
+
+    # subnet & security groups for primary network interface with device index 0
+    aws.subnet_id = 'subnet-caba8084'
+    aws.security_groups = 'sg-edb6e09b'
+
+    # add additonal interfaces after boot
+    aws.additional_network_interfaces = [
+      { 
+        :device_index => 1, 
+        :subnet_id => 'subnet-2f76b4e7', 
+        :security_groups => ['sg-b2a58ce3', 'sg-008f7950'],
+        :private_ip_address => '172.16.110.200' #optional
+      },
+      { 
+        :device_index => 2, 
+        :subnet_id => 'subnet-e9725abc', 
+        :security_groups => ['sg-0ded8ff6']
+      }
+    ]
+  end
+end
+```
+
 ## Development
 
 To work on the `vagrant-aws` plugin, clone this repository out, and use
@@ -283,10 +316,7 @@ $ bundle exec rake
 If those pass, you're ready to start developing the plugin. You can test
 the plugin without installing it into your Vagrant environment by just
 creating a `Vagrantfile` in the top level of this directory (it is gitignored)
-and add the following line to your `Vagrantfile` 
-```ruby
-Vagrant.require_plugin "vagrant-aws"
-```
+
 Use bundler to execute Vagrant:
 ```
 $ bundle exec vagrant up --provider=aws

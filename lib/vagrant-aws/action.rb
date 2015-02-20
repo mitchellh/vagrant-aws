@@ -51,8 +51,9 @@ module VagrantPlugins
                   next
                 end
                 b3.use ConnectAWS
-                b3.use ElbDeregisterInstance
-                b3.use TerminateInstance
+                b3.use DestroyAdditionalNetworkInterfaces
+                b3.use ElbDeregisterInstance                
+                b3.use TerminateInstance                
                 b3.use ProvisionerCleanup if defined?(ProvisionerCleanup)
               end
             else
@@ -157,6 +158,7 @@ module VagrantPlugins
             else
               b1.use action_prepare_boot
               b1.use RunInstance # launch a new instance
+              b1.use RegisterAdditionalNetworkInterfaces
             end
           end
         end
@@ -204,6 +206,8 @@ module VagrantPlugins
       autoload :WarnNetworks, action_root.join("warn_networks")
       autoload :ElbRegisterInstance, action_root.join("elb_register_instance")
       autoload :ElbDeregisterInstance, action_root.join("elb_deregister_instance")
+      autoload :RegisterAdditionalNetworkInterfaces, action_root.join("network_adapters_register")
+      autoload :DestroyAdditionalNetworkInterfaces, action_root.join("network_adapters_destroy")
     end
   end
 end

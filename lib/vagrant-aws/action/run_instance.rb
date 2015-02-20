@@ -42,7 +42,7 @@ module VagrantPlugins
           iam_instance_profile_name = region_config.iam_instance_profile_name
           monitoring            = region_config.monitoring
           ebs_optimized         = region_config.ebs_optimized
-          associate_public_ip   = region_config.associate_public_ip
+          associate_public_ip   = region_config.associate_public_ip          
 
           # If there is no keypair then warn the user
           if !keypair
@@ -90,7 +90,7 @@ module VagrantPlugins
             :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil,
             :monitoring                => monitoring,
             :ebs_optimized             => ebs_optimized,
-            :associate_public_ip        => associate_public_ip
+            :associate_public_ip        => associate_public_ip            
           }
           if !security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
