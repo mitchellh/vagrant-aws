@@ -41,9 +41,9 @@ module VagrantPlugins
 		interface = env[:aws_compute].create_network_interface(
 			subnet_id,
 			options
-		)
+		).body['networkInterface']
 		
-		env[:aws_compute].attach_network_interface(interface.network_interface_id, instance_id, device_index)
+		env[:aws_compute].attach_network_interface(interface['networkInterfaceId'], instance_id, device_index)
       end      
 
       def destroy_adapter(env, device_index, instance_id)       
