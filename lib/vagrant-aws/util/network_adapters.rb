@@ -35,8 +35,8 @@ module VagrantPlugins
       def register_adapter(env, device_index, subnet_id, security_groups, private_ip_address, instance_id)       
 		
 		options = {}
-		options.merge security_group_attributes(security_groups)
-		options.merge ip_attributes(private_ip_address)
+		options.merge! security_group_attributes(security_groups)
+		options.merge! ip_attributes(private_ip_address)
 
 		interface = env[:aws_compute].create_network_interface(
 			subnet_id,
