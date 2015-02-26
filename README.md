@@ -133,6 +133,13 @@ This provider exposes quite a few provider-specific configuration options:
   with the instance
 * `subnet_id` - The subnet to boot the instance into, for VPC.
 * `associate_public_ip` - If true, will associate a public IP address to an instance in a VPC.
+* `ssh_host_attribute` - If `:public_ip_address`, `:dns_name`, or
+  `:private_ip_address`, will use the public IP address, DNS name, or private
+  IP address, respectively, to SSH to the instance. By default Vagrant uses the
+  first of these (in this order) that is known. However, this can lead to
+  connection issues if, e.g., you are assigning a public IP address but your
+  security groups prevent public SSH access and require you to SSH in via the
+  private IP address; specify `:private_ip_address` in this case.
 * `tags` - A hash of tags to set on the machine.
 * `package_tags` - A hash of tags to set on the ami generated during the package operation.
 * `use_iam_profile` - If true, will use [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)
