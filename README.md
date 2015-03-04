@@ -139,6 +139,7 @@ This provider exposes quite a few provider-specific configuration options:
   for credentials.
 * `block_device_mapping` - Amazon EC2 Block Device Mapping Property
 * `elb` - The ELB name to attach to the instance.
+* `ssh_host_attribute` - Specifies which address to connect to with ssh, must be one of `:public_ip_address`, `:dns_name` and `:private_ip_address`. Can take an array.
 
 These can be set like typical provider-specific configuration:
 
