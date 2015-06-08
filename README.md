@@ -139,6 +139,8 @@ This provider exposes quite a few provider-specific configuration options:
   for credentials.
 * `block_device_mapping` - Amazon EC2 Block Device Mapping Property
 * `elb` - The ELB name to attach to the instance.
+* `terminate_on_shutdown` - Indicates whether an instance stops or terminates
+  when you initiate shutdown from the instance.
 
 These can be set like typical provider-specific configuration:
 
