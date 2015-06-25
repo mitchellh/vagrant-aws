@@ -45,6 +45,7 @@ module VagrantPlugins
           source_dest_check     = region_config.source_dest_check
           associate_public_ip   = region_config.associate_public_ip
           kernel_id             = region_config.kernel_id
+          tenancy               = region_config.tenancy
 
           # If there is no keypair then warn the user
           if !keypair
@@ -77,6 +78,7 @@ module VagrantPlugins
           env[:ui].info(" -- EBS optimized: #{ebs_optimized}")
           env[:ui].info(" -- Source Destination check: #{source_dest_check}")
           env[:ui].info(" -- Assigning a public IP address in a VPC: #{associate_public_ip}")
+          env[:ui].info(" -- VPC tenancy specification: #{tenancy}")
 
           options = {
             :availability_zone         => availability_zone,
@@ -95,8 +97,10 @@ module VagrantPlugins
             :ebs_optimized             => ebs_optimized,
             :associate_public_ip       => associate_public_ip,
             :kernel_id                 => kernel_id,
-            :associate_public_ip       => associate_public_ip
+            :associate_public_ip       => associate_public_ip,
+            :tenancy                   => tenancy
           }
+
           if !security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
             options[security_group_key] = security_groups

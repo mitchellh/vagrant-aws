@@ -45,6 +45,7 @@ describe VagrantPlugins::AWS::Config do
     its("source_dest_check")       { should be_nil }
     its("associate_public_ip")     { should == false }
     its("unregister_elb_from_az") { should == true }
+    its("tenancy")     { should == "default" }
   end
 
   describe "overriding defaults" do
