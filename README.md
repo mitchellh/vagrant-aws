@@ -133,6 +133,7 @@ This provider exposes quite a few provider-specific configuration options:
   with the instance
 * `subnet_id` - The subnet to boot the instance into, for VPC.
 * `associate_public_ip` - If true, will associate a public IP address to an instance in a VPC.
+* `tenancy` - When running in a VPC configure the tenancy of the instance.  Supports 'default' and 'dedicated'.
 * `tags` - A hash of tags to set on the machine.
 * `package_tags` - A hash of tags to set on the ami generated during the package operation.
 * `use_iam_profile` - If true, will use [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)

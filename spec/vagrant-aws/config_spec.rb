@@ -42,6 +42,7 @@ describe VagrantPlugins::AWS::Config do
     its("monitoring")        { should == false }
     its("ebs_optimized")     { should == false }
     its("associate_public_ip")     { should == false }
+    its("tenancy")     { should == "default" }
   end
 
   describe "overriding defaults" do

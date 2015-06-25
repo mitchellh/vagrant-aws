@@ -43,6 +43,7 @@ module VagrantPlugins
           monitoring            = region_config.monitoring
           ebs_optimized         = region_config.ebs_optimized
           associate_public_ip   = region_config.associate_public_ip
+          tenancy               = region_config.tenancy
 
           # If there is no keypair then warn the user
           if !keypair
@@ -74,6 +75,7 @@ module VagrantPlugins
           env[:ui].info(" -- Monitoring: #{monitoring}")
           env[:ui].info(" -- EBS optimized: #{ebs_optimized}")
           env[:ui].info(" -- Assigning a public IP address in a VPC: #{associate_public_ip}")
+          env[:ui].info(" -- VPC tenancy specification: #{tenancy}")
 
           options = {
             :availability_zone         => availability_zone,
@@ -90,7 +92,8 @@ module VagrantPlugins
             :instance_initiated_shutdown_behavior => terminate_on_shutdown == true ? "terminate" : nil,
             :monitoring                => monitoring,
             :ebs_optimized             => ebs_optimized,
-            :associate_public_ip        => associate_public_ip
+            :associate_public_ip       => associate_public_ip,
+            :tenancy                   => tenancy
           }
           if !security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
