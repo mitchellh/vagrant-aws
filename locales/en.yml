@@ -39,6 +39,9 @@ en:
       Make sure rsync is installed and the binary can be found in the PATH.
     rsync_folder: |-
       Rsyncing folder: %{hostpath} => %{guestpath}
+    source_dest_checks_no_vpc: |-
+      Warning! Ignoring source_dest_checks flag as it can only be configured on
+      a VPC instance.
     starting: |-
       Starting the instance...
     stopping: |-
