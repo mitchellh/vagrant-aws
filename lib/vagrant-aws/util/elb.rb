@@ -20,7 +20,9 @@ module VagrantPlugins
         if elb.instances.include? instance_id
           elb.deregister_instances([instance_id])
           env[:ui].info I18n.t("vagrant_aws.elb.ok"), :prefix => false
-          adjust_availability_zones env, elb
+          if env[:unregisterELBFromAz]
+            adjust_availability_zones env, elb
+          end
         else
           env[:ui].info I18n.t("vagrant_aws.elb.skipped"), :prefix => false
         end

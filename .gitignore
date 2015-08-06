@@ -3,6 +3,7 @@
 
 # editors
 *.swp
+.idea
 
 # Bundler/Rubygems
 *.gem
