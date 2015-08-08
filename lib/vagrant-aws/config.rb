@@ -398,7 +398,7 @@ module VagrantPlugins
             errors << I18n.t("vagrant_aws.config.subnet_id_required_with_public_ip")
           end
 
-          errors << I18n.interpolate("vagrant_aws.config.ami_required", :region => @region)  if config.ami.nil?
+          errors << I18n.t("vagrant_aws.config.ami_required", :region => @region)  if config.ami.nil?
         end
 
         { "AWS Provider" => errors }
