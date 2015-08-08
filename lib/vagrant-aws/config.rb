@@ -160,6 +160,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :elb
 
+      # Kernel Id
+      #
+      # @return [String]
+      attr_accessor :kernel_id
+
+
       def initialize(region_specific=false)
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
@@ -190,6 +196,7 @@ module VagrantPlugins
         @ebs_optimized             = UNSET_VALUE
         @associate_public_ip       = UNSET_VALUE
         @elb                       = UNSET_VALUE
+        @kernel_id                 = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -341,6 +348,9 @@ module VagrantPlugins
 
         # Don't attach instance to any ELB by default
         @elb = nil if @elb == UNSET_VALUE
+
+        # default to nil
+        @kernel_id = nil if @kernel_id == UNSET_VALUE
 
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
