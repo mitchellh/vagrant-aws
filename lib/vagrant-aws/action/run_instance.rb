@@ -155,10 +155,23 @@ module VagrantPlugins
             env[:metrics]["instance_ssh_time"] = Util::Timer.time do
               # Wait for SSH to be ready.
               env[:ui].info(I18n.t("vagrant_aws.waiting_for_ssh"))
+              network_ready_retries = 0
+              network_ready_retries_max = 10
               while true
                 # If we're interrupted then just back out
                 break if env[:interrupted]
-                break if env[:machine].communicate.ready?
+                # When an ec2 instance comes up, it's networking may not be ready
+                # by the time we connect.
+                begin
+                  break if env[:machine].communicate.ready?
+                rescue Exception => e
+                  if network_ready_retries < network_ready_retries_max then
+                    network_ready_retries += 1
+                    @logger.warn(I18n.t("vagrant_aws.waiting_for_ssh, retrying"))
+                  else
+                    raise e
+                  end
+                end
                 sleep 2
               end
             end
