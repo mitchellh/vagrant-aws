@@ -348,7 +348,7 @@ module VagrantPlugins
         # Don't attach instance to any ELB by default
         @elb = nil if @elb == UNSET_VALUE
 
-        @unregisterELBFromAz = true if @unregisterELBFromAz == UNSET_VALUE
+        @unregister_ELB_from_Az = true if @unregister_ELB_from_Az == UNSET_VALUE
 
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
