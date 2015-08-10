@@ -28,6 +28,7 @@ module VagrantPlugins
           region_config         = env[:machine].provider_config.get_region_config(region)
           ami                   = region_config.ami
           availability_zone     = region_config.availability_zone
+          placement_group       = region_config.placement_group
           instance_type         = region_config.instance_type
           keypair               = region_config.keypair_name
           private_ip_address    = region_config.private_ip_address
@@ -61,6 +62,7 @@ module VagrantPlugins
           env[:ui].info(" -- AMI: #{ami}")
           env[:ui].info(" -- Region: #{region}")
           env[:ui].info(" -- Availability Zone: #{availability_zone}") if availability_zone
+          env[:ui].info(" -- Placement Group: #{placement_group}") if placement_group
           env[:ui].info(" -- Keypair: #{keypair}") if keypair
           env[:ui].info(" -- Subnet ID: #{subnet_id}") if subnet_id
           env[:ui].info(" -- IAM Instance Profile ARN: #{iam_instance_profile_arn}") if iam_instance_profile_arn
@@ -78,6 +80,7 @@ module VagrantPlugins
 
           options = {
             :availability_zone         => availability_zone,
+            :placement_group           => placement_group,
             :flavor_id                 => instance_type,
             :image_id                  => ami,
             :key_name                  => keypair,
