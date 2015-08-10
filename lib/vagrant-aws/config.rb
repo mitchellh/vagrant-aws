@@ -162,7 +162,7 @@ module VagrantPlugins
 
       # Disable unregisering ELB's from AZ - useful in case of not using default VPC
       # @return [Boolean]
-      attr_accessor :unregisterELBFromAz
+      attr_accessor :unregister_ELB_from_Az
 
 
       def initialize(region_specific=false)
@@ -195,7 +195,7 @@ module VagrantPlugins
         @ebs_optimized             = UNSET_VALUE
         @associate_public_ip       = UNSET_VALUE
         @elb                       = UNSET_VALUE
-        @unregisterELBFromAz       = UNSET_VALUE
+        @unregister_ELB_from_Az       = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)

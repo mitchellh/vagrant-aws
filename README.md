@@ -139,6 +139,7 @@ This provider exposes quite a few provider-specific configuration options:
   for credentials.
 * `block_device_mapping` - Amazon EC2 Block Device Mapping Property
 * `elb` - The ELB name to attach to the instance.
+* `unregisterElbFromAz` - Removes the ELB from the AZ on removal of the last instance if true (default). In non default VPC this has to be false.
 
 These can be set like typical provider-specific configuration:
 
