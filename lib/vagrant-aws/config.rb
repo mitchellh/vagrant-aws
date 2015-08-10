@@ -164,6 +164,11 @@ module VagrantPlugins
       # @return [Boolean]
       attr_accessor :unregister_ELB_from_Az
 
+      # Kernel Id
+      #
+      # @return [String]
+      attr_accessor :kernel_id
+
 
       def initialize(region_specific=false)
         @access_key_id             = UNSET_VALUE
@@ -196,6 +201,7 @@ module VagrantPlugins
         @associate_public_ip       = UNSET_VALUE
         @elb                       = UNSET_VALUE
         @unregister_ELB_from_Az       = UNSET_VALUE
+        @kernel_id                 = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -350,6 +356,9 @@ module VagrantPlugins
 
         @unregister_ELB_from_Az = true if @unregister_ELB_from_Az == UNSET_VALUE
 
+        # default to nil
+        @kernel_id = nil if @kernel_id == UNSET_VALUE
+
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
         if !@__region_specific
@@ -396,7 +405,7 @@ module VagrantPlugins
             errors << I18n.t("vagrant_aws.config.subnet_id_required_with_public_ip")
           end
 
-          errors << I18n.interpolate("vagrant_aws.config.ami_required", :region => @region)  if config.ami.nil?
+          errors << I18n.t("vagrant_aws.config.ami_required", :region => @region)  if config.ami.nil?
         end
 
         { "AWS Provider" => errors }
