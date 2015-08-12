@@ -32,7 +32,7 @@ module VagrantPlugins
 
             # Wait for the instance to be ready first
             env[:metrics]["instance_ready_time"] = Util::Timer.time do
-                tries = region_config.instance_ready_timeout / region_config.instance_check_interval
+                tries = region_config.instance_ready_timeout / 2
 
               env[:ui].info(I18n.t("vagrant_aws.waiting_for_ready"))
               begin
@@ -41,7 +41,7 @@ module VagrantPlugins
                   next if env[:interrupted]
 
                   # Wait for the server to be ready
-                  server.wait_for(region_config.instance_check_interval) { ready? }
+                  server.wait_for(2) { ready? }
                 end
               rescue Fog::Errors::TimeoutError
                 # Notify the user
