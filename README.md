@@ -108,6 +108,8 @@ This provider exposes quite a few provider-specific configuration options:
   the instance. If nil, it will use the default set by Amazon.
 * `instance_ready_timeout` - The number of seconds to wait for the instance
   to become "ready" in AWS. Defaults to 120 seconds.
+* `instance_check_interval` - The number of seconds to wait to check the instance's
+ state
 * `instance_package_timeout` - The number of seconds to wait for the instance
   to be burnt into an AMI during packaging. Defaults to 600 seconds.
 * `instance_type` - The type of instance, such as "m3.medium". The default

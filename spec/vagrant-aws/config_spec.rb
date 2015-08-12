@@ -20,6 +20,7 @@ describe VagrantPlugins::AWS::Config do
     its("ami")               { should be_nil }
     its("availability_zone") { should be_nil }
     its("instance_ready_timeout") { should == 120 }
+    its("instance_check_interval") { should == 2 }
     its("instance_package_timeout") { should == 600 }
     its("instance_type")     { should == "m3.medium" }
     its("keypair_name")      { should be_nil }

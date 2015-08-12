@@ -24,6 +24,11 @@ module VagrantPlugins
       # @return [Fixnum]
       attr_accessor :instance_ready_timeout
 
+      # The interval to wait for checking an instance's state.
+      #
+      # @return [Fixnum]
+      attr_accessor :instance_check_interval
+
       # The timeout to wait for an instance to successfully burn into an AMI.
       #
       # @return [Fixnum]
@@ -170,6 +175,7 @@ module VagrantPlugins
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
         @availability_zone         = UNSET_VALUE
+        @instance_check_interval   = UNSET_VALUE
         @instance_ready_timeout    = UNSET_VALUE
         @instance_package_timeout  = UNSET_VALUE
         @instance_type             = UNSET_VALUE
@@ -292,6 +298,9 @@ module VagrantPlugins
 
         # Set the default timeout for waiting for an instance to be ready
         @instance_ready_timeout = 120 if @instance_ready_timeout == UNSET_VALUE
+
+        # Set the default interval to check instance state
+        @instance_check_interval = 2 if @instance_check_interval == UNSET_VALUE
 
         # Set the default timeout for waiting for an instance to burn into and ami
         @instance_package_timeout = 600 if @instance_package_timeout == UNSET_VALUE
