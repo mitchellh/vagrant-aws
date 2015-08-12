@@ -32,7 +32,7 @@ module VagrantPlugins
 
             # Wait for the instance to be ready first
             env[:metrics]["instance_ready_time"] = Util::Timer.time do
-              tries = region_config.instance_ready_timeout / 2
+                tries = region_config.instance_ready_timeout / 2
 
               env[:ui].info(I18n.t("vagrant_aws.waiting_for_ready"))
               begin

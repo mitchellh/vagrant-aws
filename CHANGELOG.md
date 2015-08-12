@@ -1,3 +1,7 @@
+# 0.6.1
+
+* Added configurable instance state check interval
+
 # 0.6.0 (December 13, 2014)
 
 * Support static Elastic IP addresses.
