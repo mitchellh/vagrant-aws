@@ -42,7 +42,7 @@ describe VagrantPlugins::AWS::Config do
     its("monitoring")        { should == false }
     its("ebs_optimized")     { should == false }
     its("associate_public_ip")     { should == false }
-    its("unregister_ELB_from_Az") { should == true }
+    its("unregister_elb_from_az") { should == true }
   end
 
   describe "overriding defaults" do

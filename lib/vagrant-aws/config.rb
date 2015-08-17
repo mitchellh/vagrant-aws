@@ -162,7 +162,7 @@ module VagrantPlugins
 
       # Disable unregisering ELB's from AZ - useful in case of not using default VPC
       # @return [Boolean]
-      attr_accessor :unregister_ELB_from_Az
+      attr_accessor :unregister_elb_from_az
 
       # Kernel Id
       #
@@ -200,7 +200,7 @@ module VagrantPlugins
         @ebs_optimized             = UNSET_VALUE
         @associate_public_ip       = UNSET_VALUE
         @elb                       = UNSET_VALUE
-        @unregister_ELB_from_Az       = UNSET_VALUE
+        @unregister_elb_from_az       = UNSET_VALUE
         @kernel_id                 = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
@@ -354,7 +354,7 @@ module VagrantPlugins
         # Don't attach instance to any ELB by default
         @elb = nil if @elb == UNSET_VALUE
 
-        @unregister_ELB_from_Az = true if @unregister_ELB_from_Az == UNSET_VALUE
+        @unregister_elb_from_az = true if @unregister_elb_from_az == UNSET_VALUE
 
         # default to nil
         @kernel_id = nil if @kernel_id == UNSET_VALUE
