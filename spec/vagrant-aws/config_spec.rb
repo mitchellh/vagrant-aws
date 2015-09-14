@@ -42,6 +42,7 @@ describe VagrantPlugins::AWS::Config do
     its("ssh_host_attribute") { should be_nil }
     its("monitoring")        { should == false }
     its("ebs_optimized")     { should == false }
+    its("source_dest_check")       { should be_nil }
     its("associate_public_ip")     { should == false }
     its("unregister_elb_from_az") { should == true }
   end
@@ -56,7 +57,8 @@ describe VagrantPlugins::AWS::Config do
       :ebs_optimized, :region, :secret_access_key, :session_token, :monitoring,
       :associate_public_ip, :subnet_id, :tags, :package_tags, :elastic_ip,
       :terminate_on_shutdown, :iam_instance_profile_arn, :iam_instance_profile_name,
-      :use_iam_profile, :user_data, :block_device_mapping].each do |attribute|
+      :use_iam_profile, :user_data, :block_device_mapping,
+      :source_dest_check].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
         instance.send("#{attribute}=".to_sym, "foo")
