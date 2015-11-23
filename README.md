@@ -118,6 +118,7 @@ This provider exposes quite a few provider-specific configuration options:
   type to support both paravirtualization and hvm AMIs
 * `keypair_name` - The name of the keypair to use to bootstrap AMIs
    which support it.
+* `monitoring` - Set to "true" to enable detailed monitoring.
 * `session_token` - The session token provided by STS
 * `private_ip_address` - The private IP address to assign to an instance
   within a [VPC](http://aws.amazon.com/vpc/)
