@@ -108,7 +108,12 @@ module VagrantPlugins
           end
 
           begin
-            server = env[:aws_compute].servers.create(options)
+            server = if region_config.spot_instance
+                       server_from_spot_request(env, region_config)
+                     else
+                       env[:aws_compute].servers.create(options)
+                     end
+            raise Errors::FogError, :message => "server is nil" unless server
           rescue Fog::Compute::AWS::NotFound => e
             # Invalid subnet doesn't have its own error so we catch and
             # check the error message here.
@@ -129,6 +134,10 @@ module VagrantPlugins
           # Immediately save the ID since it is created at this point.
           env[:machine].id = server.id
 
+	  # Spot Instances don't support tagging arguments on creation
+	  # Retrospectively tag the server to handle this
+	  env[:aws_compute].create_tags(server.id,tags)
+		  
           # Wait for the instance to be ready first
           env[:metrics]["instance_ready_time"] = Util::Timer.time do
             tries = region_config.instance_ready_timeout / 2
@@ -211,6 +220,75 @@ module VagrantPlugins
           terminate(env) if env[:interrupted]
 
           @app.call(env)
+        end
+
+        # returns a fog server or nil
+        def server_from_spot_request(env, config)
+          # prepare request args
+          options = {
+            'InstanceCount'                                  => 1,
+            'LaunchSpecification.KeyName'                    => config.keypair_name,
+            'LaunchSpecification.Placement.AvailabilityZone' => config.availability_zone,
+            'LaunchSpecification.UserData'                   => config.user_data,
+            'LaunchSpecification.SubnetId'                   => config.subnet_id,
+			'LaunchSpecification.BlockDeviceMapping'		 => config.block_device_mapping,
+            'ValidUntil'                                     => config.spot_valid_until
+          }
+          security_group_key = config.subnet_id.nil? ? 'LaunchSpecification.SecurityGroup' : 'LaunchSpecification.SecurityGroupId'
+          options[security_group_key] = config.security_groups
+          options.delete_if { |key, value| value.nil? }
+
+          env[:ui].info(I18n.t("vagrant_aws.launching_spot_instance"))
+          env[:ui].info(" -- Price: #{config.spot_max_price}")
+          env[:ui].info(" -- Valid until: #{config.spot_valid_until}") if config.spot_valid_until
+          env[:ui].info(" -- Monitoring: #{config.monitoring}") if config.monitoring
+
+          # create the spot instance
+          spot_req = env[:aws_compute].request_spot_instances(
+            config.ami,
+            config.instance_type,
+            config.spot_max_price,
+            options).body["spotInstanceRequestSet"].first
+
+          spot_request_id = spot_req["spotInstanceRequestId"]
+          @logger.info("Spot request ID: #{spot_request_id}")
+
+          # initialize state
+          status_code = ""
+          while true
+            sleep 5 # TODO make it a param
+
+            raise Errors::FogError, :message => "Interrupted" if env[:interrupted]
+            spot_req = env[:aws_compute].describe_spot_instance_requests(
+              'spot-instance-request-id' => [spot_request_id]).body["spotInstanceRequestSet"].first
+
+            # waiting for spot request ready
+            next unless spot_req
+
+            # display something whenever the status code changes
+            if status_code != spot_req["state"]
+              env[:ui].info(spot_req["fault"]["message"])
+              status_code = spot_req["state"]
+            end
+            spot_state = spot_req["state"].to_sym
+            case spot_state
+            when :not_created, :open
+              @logger.debug("Spot request #{spot_state} #{status_code}, waiting")
+            when :active
+              break; # :)
+            when :closed, :cancelled, :failed
+              msg = "Spot request #{spot_state} #{status_code}, aborting"
+              @logger.error(msg)
+              raise Errors::FogError, :message => msg
+            else
+              @logger.debug("Unknown spot state #{spot_state} #{status_code}, waiting")
+            end
+          end
+          # cancel the spot request but let the server go thru
+          env[:aws_compute].cancel_spot_instance_requests(spot_request_id)
+          server = env[:aws_compute].servers.get(spot_req["instanceId"])
+          env[:aws_compute].create_tags(server.identity, config.tags)
+          server
         end
 
         def recover(env)

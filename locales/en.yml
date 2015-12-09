@@ -18,6 +18,8 @@ en:
 
     launching_instance: |-
       Launching an instance with the following settings...
+    launching_spot_instance: |-
+      Launching a spot request instance with the following settings...
     launch_no_keypair: |-
       Warning! You didn't specify a keypair to launch your instance with.
       This can sometimes result in not being able to access your instance.
@@ -68,6 +70,8 @@ en:
         An access key ID must be specified via "access_key_id"
       ami_required: |-
         An AMI must be configured via "ami" (region: #{region})
+      spot_price_required: |-
+        Spot request is missing "spot_max_price"
       private_key_missing: |-
         The specified private key for AWS could not be found
       region_required: |-

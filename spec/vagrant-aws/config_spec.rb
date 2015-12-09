@@ -37,6 +37,9 @@ describe VagrantPlugins::AWS::Config do
     its("user_data")         { should be_nil }
     its("use_iam_profile")   { should be false }
     its("block_device_mapping")  {should == [] }
+    its("spot_instance")     { should be_false }
+    its("spot_max_price")    { should be_nil }
+    its("spot_valid_until")  { should be_nil }
     its("elastic_ip")        { should be_nil }
     its("terminate_on_shutdown") { should == false }
     its("ssh_host_attribute") { should be_nil }
