@@ -153,6 +153,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `unregister_elb_from_az` - Removes the ELB from the AZ on removal of the last instance if true (default). In non default VPC this has to be false.
 * `terminate_on_shutdown` - Indicates whether an instance stops or terminates
   when you initiate shutdown from the instance.
+* `endpoint` - The endpoint URL for connecting to AWS (or an AWS-like service). Only required for non AWS clouds, such as [eucalyptus](https://github.com/eucalyptus/eucalyptus/wiki).
 
 These can be set like typical provider-specific configuration:
 
