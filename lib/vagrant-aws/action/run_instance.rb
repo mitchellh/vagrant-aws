@@ -255,6 +255,10 @@ module VagrantPlugins
             @logger.debug("Public IP #{allocation.body['publicIp']}")
           end
 
+          # Sleep required to correct for any potential latency from the pool of Elastic IP addresses
+          # See: https://forums.aws.amazon.com/message.jspa?messageID=471388
+          sleep(180)
+
           # Associate the address and save the metadata to a hash
           h = nil
           if domain == 'vpc'
