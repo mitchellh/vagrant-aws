@@ -1,5 +1,5 @@
 module VagrantPlugins
   module AWS
-    VERSION = '0.6.2.spot'
+    VERSION = '0.7.0.spot'
   end
 end
