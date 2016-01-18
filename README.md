@@ -156,7 +156,7 @@ This provider exposes quite a few provider-specific configuration options:
   when you initiate shutdown from the instance.
   
 * `spot_instance` - Boolean value; indicates whether the config is for a spot instance, or on-demand. For more information about spot instances, see the [AWS Documentation](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-spot-instances-work.html)
-* `max_spot_price` - Decimal value; state the maximum bid for your spot instance. Ignored if `spot_instance` is not true.
+* `spot_max_price` - Decimal value; state the maximum bid for your spot instance. Ignored if `spot_instance` is not true.
 * `spot_valid_until` - Timestamp; when this spot instance request should expire, destroying any related instances. Ignored if `spot_instance` is not true.
 
 These can be set like typical provider-specific configuration:
