@@ -316,13 +316,9 @@ module VagrantPlugins
       end
 
       def finalize!
-        # Try to get access keys from standard AWS environment variables; they
-        # will default to nil if the environment variables are not present.
-        #@access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
-        #@secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
-        #@session_token     = ENV['AWS_SESSION_TOKEN'] if @session_token == UNSET_VALUE
-        puts "----------------------------------------"
-        #
+        # If access_key_id or secret_access_key were not specified in Vagrantfile
+        # then try to read from environment variables first, and if it fails from
+        # the AWS folder.
         if @access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE
           @aws_profile = 'default' if @aws_profile == UNSET_VALUE
           @aws_dir = ENV['HOME'] + '/.aws/' if @aws_dir == UNSET_VALUE
@@ -332,12 +328,6 @@ module VagrantPlugins
           @aws_dir = nil
           @session_token = nil
         end
-        puts "'" + @region.to_s + "'"
-        puts "'" + @access_key_id.to_s + "'"
-        puts "'" + @secret_access_key.to_s + "'"
-        puts "'" + @session_token.to_s + "'"
-        #
-        puts "----------------------------------------"
 
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
@@ -500,14 +490,9 @@ module VagrantPlugins
         # read from environment variables
         aws_region, aws_id, aws_secret, aws_token = read_aws_environment()
         # if nothing there, then read from files
-        if not is_aws_configured(aws_id, aws_secret, aws_region)
+        if aws_id.to_s == '' or aws_secret.to_s == '' or aws_region.to_s == ''
           aws_region, aws_id, aws_secret, aws_token = read_aws_files(profile, location)
         end
-        #if not is_aws_configured(aws_id, aws_secret, aws_region)
-        #  msg = "One or more of the needed AWS credentials are missing."
-        #  msg += " Does profile '" + profile + "' exists at " + location + " ?"
-        #  raise Exception.new(msg)
-        #end
         aws_region = nil if aws_region == ''
         aws_id     = nil if aws_id == ''
         aws_secret = nil if aws_secret == ''
@@ -573,10 +558,6 @@ module VagrantPlugins
         return aws_region, aws_id, aws_secret, aws_token
       end
 
-      def is_aws_configured(aws_id, aws_secret, aws_region)
-        return true if aws_id.to_s != '' and aws_secret.to_s != '' and aws_region.to_s != ''
-        return false
-      end
     end
 
 
