@@ -509,9 +509,9 @@ module VagrantPlugins
         aws_config = location + 'config'
         aws_creds = location + 'credentials'
 
-        # profile line to match
+        # profile line to match in .aws/config
         pat = ''
-        if profile == '' or profile == 'default'
+        if profile == 'default'
           pat = '\[default\]'
         else
           pat = '\[profile ' + profile + '\]'
@@ -525,13 +525,8 @@ module VagrantPlugins
           aws_region = ''
         end
 
-        # profile line to match
-        pat = ''
-        if profile == '' or profile == 'default'
-          pat = '\[default\]'
-        else
-          pat = '\[' + profile + '\]'
-        end
+        # profile line to match in .aws/credentials
+        pat = '\[' + profile + '\]'
         # read credentials file for selected profile
         begin
           aws_token = ''
