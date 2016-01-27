@@ -185,6 +185,16 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :tenancy
 
+      # The directory where AWS files are stored (usually $HOME/.aws)
+      #
+      # @return [String]
+      attr_accessor :aws_dir
+
+      # The selected AWS named profile (as defined in $HOME/.aws/* files)
+      #
+      # @return [String]
+      attr_accessor :aws_profile
+
       def initialize(region_specific=false)
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
@@ -220,6 +230,8 @@ module VagrantPlugins
         @unregister_elb_from_az    = UNSET_VALUE
         @kernel_id                 = UNSET_VALUE
         @tenancy                   = UNSET_VALUE
+        @aws_dir                   = UNSET_VALUE
+        @aws_profile               = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -306,9 +318,22 @@ module VagrantPlugins
       def finalize!
         # Try to get access keys from standard AWS environment variables; they
         # will default to nil if the environment variables are not present.
-        @access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
-        @secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
-        @session_token     = ENV['AWS_SESSION_TOKEN'] if @session_token == UNSET_VALUE
+        #@access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
+        #@secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
+        #@session_token     = ENV['AWS_SESSION_TOKEN'] if @session_token == UNSET_VALUE
+        puts "----------------------------------------"
+        #
+        if @access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE
+          @region, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
+        else
+          @session_token = nil
+        end
+        puts "'" + @region.to_s + "'"
+        puts "'" + @access_key_id.to_s + "'"
+        puts "'" + @secret_access_key.to_s + "'"
+        puts "'" + @session_token.to_s + "'"
+        #
+        puts "----------------------------------------"
 
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
@@ -449,5 +474,105 @@ module VagrantPlugins
         @__compiled_region_configs[name] || self
       end
     end
+
+
+    class Credentials < Vagrant.plugin("2", :config)
+      # This module reads AWS config and credentials from environment variables
+      # or, if these are not defined, by reading the corresponding files. So the
+      # behaviour is all-or-nothing (ie: no mixing between vars and files).
+      # It allows choosing a profile (by default it's [default]) and an "info"
+      # directory (by default $HOME/.aws).
+      # Supported information: region, aws_access_key_id, aws_secret_access_key,
+      # and aws_session_token.
+      #
+      # AWS credentials specification:
+      # http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files
+
+      def get_aws_info(profile = nil, location = nil)
+        # read from environment variables
+        aws_region, aws_id, aws_secret, aws_token = read_aws_environment()
+        # if nothing there, then read from files
+        if not is_aws_configured(aws_id, aws_secret)
+          profile = 'default' if profile == nil or profile == UNSET_VALUE
+          location = ENV['HOME'] + '/.aws/' if location == nil or location == UNSET_VALUE
+          aws_region, aws_id, aws_secret, aws_token = read_aws_files(profile, location)
+        end
+        if not is_aws_configured(aws_id, aws_secret)
+          msg = "One or more of the needed AWS credentials are missing."
+          msg += " Does profile '" + profile + "' exists at " + location + " ?"
+          raise Exception.new(msg)
+        end
+        aws_region = nil if aws_region == ''
+        aws_id     = nil if aws_id == ''
+        aws_secret = nil if aws_secret == ''
+        aws_token  = nil if aws_token == ''
+
+        return aws_region, aws_id, aws_secret, aws_token
+      end
+
+
+      private
+
+      def read_aws_files(profile, location)
+        # file location
+        aws_config = location + 'config'
+        aws_creds = location + 'credentials'
+
+        # profile line to match
+        pat = ''
+        if profile == '' or profile == 'default'
+          pat = '\[default\]'
+        else
+          pat = '\[profile ' + profile + '\]'
+        end
+        # read config file for selected profile
+        begin
+          data = File.read(aws_config)
+          regex = Regexp.new('^' + pat + '$\n^region\s*=\s*(.*)$')
+          aws_region = regex.match(data)[1]
+        rescue
+          aws_region = ''
+        end
+
+        # profile line to match
+        pat = ''
+        if profile == '' or profile == 'default'
+          pat = '\[default\]'
+        else
+          pat = '\[' + profile + '\]'
+        end
+        # read credentials file for selected profile
+        begin
+          aws_token = ''
+          data = File.read(aws_creds)
+          regex = Regexp.new('^' + pat + '$\n^aws_access_key_id\s*=\s*(.*)$\naws_secret_access_key\s*=\s*(.*)$(\n^aws_session_token\s*=\s*(.*)$)?')
+          matches = regex.match(data)
+          aws_id = matches[1]
+          aws_secret = matches[2]
+          aws_token = matches[4]
+        rescue
+          aws_id = ''
+          aws_secret = ''
+        end
+
+        return aws_region, aws_id, aws_secret, aws_token
+      end
+
+      def read_aws_environment()
+        aws_region = ENV['AWS_DEFAULT_REGION']
+        aws_id = ENV['AWS_ACCESS_KEY_ID']
+        aws_secret = ENV['AWS_SECRET_ACCESS_KEY']
+        aws_token = ENV['AWS_SESSION_TOKEN']
+
+        return aws_region, aws_id, aws_secret, aws_token
+      end
+
+      def is_aws_configured(aws_id, aws_secret)
+        return true if aws_id.to_s != '' and aws_secret.to_s != ''
+        return false
+      end
+    end
+
+
   end
 end

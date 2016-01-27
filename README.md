@@ -87,6 +87,11 @@ no preconfigured defaults.
 If you have issues with SSH connecting, make sure that the instances
 are being launched with a security group that allows SSH access.
 
+Note: if you don't configure `aws.access_key_id` or `aws_secret_access_key`
+it will attempt to read credentials from environment variables first and then
+from `$HOME/.aws/`. You can choose your AWS profile and files location by using
+`aws.aws_profile` and `aws.aws_dir`.
+
 ## Box Format
 
 Every provider in Vagrant must introduce a custom box format. This
@@ -106,6 +111,8 @@ This provider exposes quite a few provider-specific configuration options:
 * `ami` - The AMI id to boot, such as "ami-12345678"
 * `availability_zone` - The availability zone within the region to launch
   the instance. If nil, it will use the default set by Amazon.
+* `aws_profile` - AWS profile in your config files. Defaults to *default*.
+* `aws_dir` - AWS config and credentials location. Defaults to *$HOME/.aws/*.
 * `instance_ready_timeout` - The number of seconds to wait for the instance
   to become "ready" in AWS. Defaults to 120 seconds.
 * `instance_check_interval` - The number of seconds to wait to check the instance's
