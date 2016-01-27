@@ -90,7 +90,8 @@ are being launched with a security group that allows SSH access.
 Note: if you don't configure `aws.access_key_id` or `aws_secret_access_key`
 it will attempt to read credentials from environment variables first and then
 from `$HOME/.aws/`. You can choose your AWS profile and files location by using
-`aws.aws_profile` and `aws.aws_dir`.
+`aws.aws_profile` and `aws.aws_dir`, however environment variables will always
+have precedence as defined by the [AWS documentation](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
 
 ## Box Format
 

@@ -76,6 +76,9 @@ en:
         A secret access key is required via "secret_access_key"
       subnet_id_required_with_public_ip: |-
         If you assign a public IP address to an instance in a VPC, a subnet must be specifed via "subnet_id"
+      aws_info_required: |-
+        One or more of the needed AWS credentials are missing. No environment variables
+        are set nor profile '%{profile}' exists at '%{location}'
 
     errors:
       fog_error: |-

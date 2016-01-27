@@ -324,8 +324,12 @@ module VagrantPlugins
         puts "----------------------------------------"
         #
         if @access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE
+          @aws_profile = 'default' if @aws_profile == UNSET_VALUE
+          @aws_dir = ENV['HOME'] + '/.aws/' if @aws_dir == UNSET_VALUE
           @region, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
         else
+          @aws_profile = nil
+          @aws_dir = nil
           @session_token = nil
         end
         puts "'" + @region.to_s + "'"
@@ -439,6 +443,10 @@ module VagrantPlugins
       def validate(machine)
         errors = _detected_errors
 
+        errors << I18n.t("vagrant_aws.config.aws_info_required",
+          :profile => @aws_profile, :location => @aws_dir) if \
+          @aws_profile and (@access_key_id.nil? or @secret_access_key.nil? or @region.nil?)
+
         errors << I18n.t("vagrant_aws.config.region_required") if @region.nil?
 
         if @region
@@ -488,20 +496,18 @@ module VagrantPlugins
       # AWS credentials specification:
       # http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files
 
-      def get_aws_info(profile = nil, location = nil)
+      def get_aws_info(profile, location)
         # read from environment variables
         aws_region, aws_id, aws_secret, aws_token = read_aws_environment()
         # if nothing there, then read from files
-        if not is_aws_configured(aws_id, aws_secret)
-          profile = 'default' if profile == nil or profile == UNSET_VALUE
-          location = ENV['HOME'] + '/.aws/' if location == nil or location == UNSET_VALUE
+        if not is_aws_configured(aws_id, aws_secret, aws_region)
           aws_region, aws_id, aws_secret, aws_token = read_aws_files(profile, location)
         end
-        if not is_aws_configured(aws_id, aws_secret)
-          msg = "One or more of the needed AWS credentials are missing."
-          msg += " Does profile '" + profile + "' exists at " + location + " ?"
-          raise Exception.new(msg)
-        end
+        #if not is_aws_configured(aws_id, aws_secret, aws_region)
+        #  msg = "One or more of the needed AWS credentials are missing."
+        #  msg += " Does profile '" + profile + "' exists at " + location + " ?"
+        #  raise Exception.new(msg)
+        #end
         aws_region = nil if aws_region == ''
         aws_id     = nil if aws_id == ''
         aws_secret = nil if aws_secret == ''
@@ -567,8 +573,8 @@ module VagrantPlugins
         return aws_region, aws_id, aws_secret, aws_token
       end
 
-      def is_aws_configured(aws_id, aws_secret)
-        return true if aws_id.to_s != '' and aws_secret.to_s != ''
+      def is_aws_configured(aws_id, aws_secret, aws_region)
+        return true if aws_id.to_s != '' and aws_secret.to_s != '' and aws_region.to_s != ''
         return false
       end
     end
