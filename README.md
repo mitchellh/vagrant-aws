@@ -92,6 +92,13 @@ it will attempt to read credentials from environment variables first and then
 from `$HOME/.aws/`. You can choose your AWS profile and files location by using
 `aws.aws_profile` and `aws.aws_dir`, however environment variables will always
 have precedence as defined by the [AWS documentation](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
+To use profile `vagrantDev` from your AWS files:
+```ruby
+  # this first line can actually be omitted
+  aws.aws_dir = ENV['HOME'] + "/.aws/"
+  aws.aws_profile = "vagrantDev"
+```
+
 
 ## Box Format
 
