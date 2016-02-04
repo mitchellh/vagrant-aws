@@ -62,6 +62,10 @@ describe VagrantPlugins::AWS::Config do
       :source_dest_check].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
+        # but these should always come together, so you need to set them all or nothing
+        instance.send("access_key_id=".to_sym, "foo")
+        instance.send("secret_access_key=".to_sym, "foo")
+        instance.send("session_token=".to_sym, "foo")
         instance.send("#{attribute}=".to_sym, "foo")
         instance.finalize!
         instance.send(attribute).should == "foo"
@@ -89,8 +93,8 @@ describe VagrantPlugins::AWS::Config do
 
     context "with EC2 credential environment variables" do
       before :each do
-        ENV.stub(:[]).with("AWS_ACCESS_KEY").and_return("access_key")
-        ENV.stub(:[]).with("AWS_SECRET_KEY").and_return("secret_key")
+        ENV.stub(:[]).with("AWS_ACCESS_KEY_ID").and_return("access_key")
+        ENV.stub(:[]).with("AWS_SECRET_ACCESS_KEY").and_return("secret_key")
         ENV.stub(:[]).with("AWS_SESSION_TOKEN").and_return("session_token")
       end
 
@@ -187,6 +191,7 @@ describe VagrantPlugins::AWS::Config do
 
         # Set some top-level values
         instance.access_key_id = "parent"
+        instance.secret_access_key = "parent"
         instance.ami = "parent"
 
         # Finalize and get the region
@@ -195,6 +200,7 @@ describe VagrantPlugins::AWS::Config do
       end
 
       its("access_key_id") { should == "parent" }
+      its("secret_access_key") { should == "parent" }
       its("ami")           { should == "child" }
     end
 

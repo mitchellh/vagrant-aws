@@ -321,12 +321,12 @@ module VagrantPlugins
         # the AWS folder.
         if @access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE
           @aws_profile = 'default' if @aws_profile == UNSET_VALUE
-          @aws_dir = ENV['HOME'] + '/.aws/' if @aws_dir == UNSET_VALUE
+          @aws_dir = ENV['HOME'].to_s + '/.aws/' if @aws_dir == UNSET_VALUE
           @region, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
+          @region = UNSET_VALUE if @region.nil?
         else
           @aws_profile = nil
           @aws_dir = nil
-          @session_token = nil
         end
 
         # AMI must be nil, since we can't default that
@@ -490,7 +490,8 @@ module VagrantPlugins
         # read from environment variables
         aws_region, aws_id, aws_secret, aws_token = read_aws_environment()
         # if nothing there, then read from files
-        if aws_id.to_s == '' or aws_secret.to_s == '' or aws_region.to_s == ''
+        # it doesn't check aws_region since Config#finalize sets one by default
+        if aws_id.to_s == '' or aws_secret.to_s == ''
           aws_region, aws_id, aws_secret, aws_token = read_aws_files(profile, location)
         end
         aws_region = nil if aws_region == ''
