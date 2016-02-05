@@ -485,14 +485,22 @@ module VagrantPlugins
       #
       # AWS credentials specification:
       # http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files
+      # http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
 
       def get_aws_info(profile, location)
-        # read from environment variables
+        # read credentials from environment variables
         aws_region, aws_id, aws_secret, aws_token = read_aws_environment()
         # if nothing there, then read from files
-        # it doesn't check aws_region since Config#finalize sets one by default
+        # (the _if_ doesn't check aws_region since Config#finalize sets one by default)
         if aws_id.to_s == '' or aws_secret.to_s == ''
-          aws_region, aws_id, aws_secret, aws_token = read_aws_files(profile, location)
+          # check if there are env variables for credential location, if so use then
+          aws_config = ENV['AWS_CONFIG_FILE'].to_s
+          aws_creds = ENV['AWS_SHARED_CREDENTIALS_FILE'].to_s
+          if aws_config == '' or aws_creds == ''
+            aws_config = location + 'config'
+            aws_creds = location + 'credentials'
+          end
+          aws_region, aws_id, aws_secret, aws_token = read_aws_files(profile, aws_config, aws_creds)
         end
         aws_region = nil if aws_region == ''
         aws_id     = nil if aws_id == ''
@@ -505,12 +513,8 @@ module VagrantPlugins
 
       private
 
-      def read_aws_files(profile, location)
-        # file location
-        aws_config = location + 'config'
-        aws_creds = location + 'credentials'
-
-        # profile line to match in .aws/config
+      def read_aws_files(profile, aws_config, aws_creds)
+        # profile line to match in the config file
         pat = ''
         if profile == 'default'
           pat = '\[default\]'
@@ -526,7 +530,7 @@ module VagrantPlugins
           aws_region = ''
         end
 
-        # profile line to match in .aws/credentials
+        # profile line to match in the credentials file
         pat = '\[' + profile + '\]'
         # read credentials file for selected profile
         begin

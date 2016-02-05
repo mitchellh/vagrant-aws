@@ -188,7 +188,7 @@ aws_session_token= TOKuser3
       its("region")               { should == "env_region" }
     end
 
-    context "without EC2 credential environment variables but with AWS_SHARED_CREDENTIALS_FILE set" do
+    context "without EC2 credential environment variables but with AWS_CONFIG_FILE and AWS_SHARED_CREDENTIALS_FILE set" do
       subject do
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
@@ -206,7 +206,7 @@ aws_session_token= TOKuser3
       its("region")                { should == "sh-region" }
     end
 
-    context "without EC2 credential environment variables and fallback to default profile" do
+    context "without any credential environment variables and fallback to default profile at default location" do
       subject do
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
@@ -219,7 +219,7 @@ aws_session_token= TOKuser3
       its("session_token")         { should be_nil }
     end
 
-    context "without EC2 credential environment variables and chosing a profile" do
+    context "without any credential environment variables and chosing a profile" do
       subject do
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
