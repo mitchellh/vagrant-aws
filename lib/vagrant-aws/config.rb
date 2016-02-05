@@ -330,6 +330,9 @@ module VagrantPlugins
           @aws_dir = nil
         end
 
+        # session token must be set to nil, empty string isn't enough!
+        @session_token = nil if @session_token == UNSET_VALUE
+
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
 
