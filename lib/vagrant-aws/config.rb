@@ -475,17 +475,22 @@ module VagrantPlugins
 
 
     class Credentials < Vagrant.plugin("2", :config)
-      # This module reads AWS config and credentials from environment variables
-      # or, if these are not defined, by reading the corresponding files. So the
-      # behaviour is all-or-nothing (ie: no mixing between vars and files).
-      # It allows choosing a profile (by default it's [default]) and an "info"
-      # directory (by default $HOME/.aws).
-      # Supported information: region, aws_access_key_id, aws_secret_access_key,
-      # and aws_session_token.
-      #
-      # AWS credentials specification:
-      # http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files
+      # This module reads AWS config and credentials. 
+      # Behaviour aims to mimic what is described in AWS documentation:
+      # http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
       # http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
+      # Which is the following (stopping at the first successful case):
+      # 1) read config and credentials from environment variables
+      # 2) read config and credentials from files at location defined by environment variables
+      # 3) read config and credentials from files at default location 
+      #
+      # The mandatory fields for a successful "get credentials" are the id and the secret keys.
+      # Region is not required since Config#finalize falls back to sensible defaults.
+      # The behaviour is all-or-nothing (ie: no mixing between vars and files).
+      #
+      # It also allows choosing a profile (by default it's [default]) and an "info"
+      # directory (by default $HOME/.aws), which can be specified in the Vagrantfile.
+      # Supported information: region, aws_access_key_id, aws_secret_access_key, and aws_session_token.
 
       def get_aws_info(profile, location)
         # read credentials from environment variables
