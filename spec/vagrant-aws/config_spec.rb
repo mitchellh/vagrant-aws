@@ -127,9 +127,7 @@ describe VagrantPlugins::AWS::Config do
     ## ENV has been nuked so ENV['HOME'] will be a empty string when Credentials#get_aws_info gets called
     let(:filename_cfg)  { "/.aws/config" }
     let(:filename_keys) { "/.aws/credentials" }
-    #let(:data_cfg)      { "[default]\nregion=eu-west-1\noutput=text" }
-    #let(:data_keys)     { "[default]\naws_access_key_id=AKI\naws_secret_access_key=foobar" }
-    let(:data_cfg)      { 
+    let(:data_cfg)      {
 "[default]
 region=eu-west-1
 output=json
@@ -146,7 +144,7 @@ output=text
 region=us-west-2
 output=text
 " }
-let(:data_keys)     { 
+    let(:data_keys)     {
 "[default]
 aws_access_key_id=AKIdefault
 aws_secret_access_key=PASSdefault
@@ -165,35 +163,47 @@ aws_access_key_id=AKIuser3
 aws_secret_access_key=PASSuser3
 aws_session_token= TOKuser3
 " }
+    # filenames and file data when using AWS_SHARED_CREDENTIALS_FILE and AWS_CONFIG_FILE
+    let(:sh_dir)           { "/aws_shared/" }
+    let(:sh_filename_cfg)  { sh_dir + "config" }
+    let(:sh_filename_keys) { sh_dir + "credentials" }
+    let(:sh_data_cfg)      { "[default]\nregion=sh-region\noutput=text" }
+    let(:sh_data_keys)     { "[default]\naws_access_key_id=AKI_set_shared\naws_secret_access_key=set_shared_foobar" }
 
     context "with EC2 credential environment variables set" do
-      before :each do
+      subject do
         ENV.stub(:[]).with("AWS_ACCESS_KEY_ID").and_return("env_access_key")
         ENV.stub(:[]).with("AWS_SECRET_ACCESS_KEY").and_return("env_secret_key")
-      end
-      subject do
+        ENV.stub(:[]).with("AWS_SESSION_TOKEN").and_return("env_session_token")
+        ENV.stub(:[]).with("AWS_DEFAULT_REGION").and_return("env_region")
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
         instance.tap do |o|
           o.finalize!
         end
       end
-      its("access_key_id")         { should == "env_access_key" }
-      its("secret_access_key")     { should == "env_secret_key" }
-      its("session_token")         { should be_nil }
+      its("access_key_id")        { should == "env_access_key" }
+      its("secret_access_key")    { should == "env_secret_key" }
+      its("session_token")        { should == "env_session_token" }
+      its("region")               { should == "env_region" }
     end
 
-    context "without EC2 credential environment variables and fallback to default profile" do
+    context "without EC2 credential environment variables but with AWS_SHARED_CREDENTIALS_FILE set" do
       subject do
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        ENV.stub(:[]).with("AWS_CONFIG_FILE").and_return(sh_filename_cfg)
+        ENV.stub(:[]).with("AWS_SHARED_CREDENTIALS_FILE").and_return(sh_filename_keys)
+        allow(File).to receive(:read).with(sh_filename_cfg).and_return(sh_data_cfg)
+        allow(File).to receive(:read).with(sh_filename_keys).and_return(sh_data_keys)
         instance.tap do |o|
           o.finalize!
         end
       end
-      its("access_key_id")         { should == "AKIdefault" }
-      its("secret_access_key")     { should == "PASSdefault" }
+      its("access_key_id")         { should == "AKI_set_shared" }
+      its("secret_access_key")     { should == "set_shared_foobar" }
       its("session_token")         { should be_nil }
+      its("region")                { should == "sh-region" }
     end
 
     context "without EC2 credential environment variables and fallback to default profile" do
