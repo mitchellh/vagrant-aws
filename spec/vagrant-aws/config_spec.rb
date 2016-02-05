@@ -190,6 +190,7 @@ aws_session_token= TOKuser3
 
     context "without EC2 credential environment variables but with AWS_CONFIG_FILE and AWS_SHARED_CREDENTIALS_FILE set" do
       subject do
+        allow(File).to receive(:exist?).and_return(true)
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
         ENV.stub(:[]).with("AWS_CONFIG_FILE").and_return(sh_filename_cfg)
@@ -208,6 +209,7 @@ aws_session_token= TOKuser3
 
     context "without any credential environment variables and fallback to default profile at default location" do
       subject do
+        allow(File).to receive(:exist?).and_return(true)
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
         instance.tap do |o|
@@ -221,6 +223,7 @@ aws_session_token= TOKuser3
 
     context "without any credential environment variables and chosing a profile" do
       subject do
+        allow(File).to receive(:exist?).and_return(true)
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
         instance.aws_profile = "user3"

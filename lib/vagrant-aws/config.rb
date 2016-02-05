@@ -1,4 +1,5 @@
 require "vagrant"
+require "iniparse"
 
 module VagrantPlugins
   module AWS
@@ -505,7 +506,9 @@ module VagrantPlugins
             aws_config = location + 'config'
             aws_creds = location + 'credentials'
           end
-          aws_region, aws_id, aws_secret, aws_token = read_aws_files(profile, aws_config, aws_creds)
+          if File.exist?(aws_config) and File.exist?(aws_creds)
+            aws_region, aws_id, aws_secret, aws_token = read_aws_files(profile, aws_config, aws_creds)
+          end
         end
         aws_region = nil if aws_region == ''
         aws_id     = nil if aws_id == ''
@@ -519,37 +522,25 @@ module VagrantPlugins
       private
 
       def read_aws_files(profile, aws_config, aws_creds)
-        # profile line to match in the config file
-        pat = ''
+        # determine section in config ini file
         if profile == 'default'
-          pat = '\[default\]'
+          ini_profile = profile
         else
-          pat = '\[profile ' + profile + '\]'
+          ini_profile = 'profile ' + profile
         end
-        # read config file for selected profile
-        begin
-          data = File.read(aws_config)
-          regex = Regexp.new('^' + pat + '$\n^region\s*=\s*(.*)$')
-          aws_region = regex.match(data)[1]
-        rescue
-          aws_region = ''
-        end
+        # get info from config ini file for selected profile
+        data = File.read(aws_config)
+        doc_cfg = IniParse.parse(data)
+        aws_region = doc_cfg[ini_profile]['region']
 
-        # profile line to match in the credentials file
-        pat = '\[' + profile + '\]'
-        # read credentials file for selected profile
-        begin
-          aws_token = ''
-          data = File.read(aws_creds)
-          regex = Regexp.new('^' + pat + '$\n^aws_access_key_id\s*=\s*(.*)$\naws_secret_access_key\s*=\s*(.*)$(\n^aws_session_token\s*=\s*(.*)$)?')
-          matches = regex.match(data)
-          aws_id = matches[1]
-          aws_secret = matches[2]
-          aws_token = matches[4]
-        rescue
-          aws_id = ''
-          aws_secret = ''
-        end
+        # determine section in credentials ini file
+        ini_profile = profile
+        # get info from credentials ini file for selected profile
+        data = File.read(aws_creds)
+        doc_cfg = IniParse.parse(data)
+        aws_id = doc_cfg[ini_profile]['aws_access_key_id']
+        aws_secret = doc_cfg[ini_profile]['aws_secret_access_key']
+        aws_token = doc_cfg[ini_profile]['aws_session_token']
 
         return aws_region, aws_id, aws_secret, aws_token
       end
