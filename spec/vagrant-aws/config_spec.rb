@@ -123,7 +123,8 @@ describe VagrantPlugins::AWS::Config do
   end
 
 
-  describe "getting credentials from AWS profile" do
+  describe "getting credentials when there is an AWS profile" do
+    ## ENV has been nuked so ENV['HOME'] will be a empty string when Credentials#get_aws_info gets called
     let(:filename_cfg)  { "/.aws/config" }
     let(:filename_keys) { "/.aws/credentials" }
     #let(:data_cfg)      { "[default]\nregion=eu-west-1\noutput=text" }
@@ -164,8 +165,38 @@ aws_access_key_id=AKIuser3
 aws_secret_access_key=PASSuser3
 aws_session_token= TOKuser3
 " }
+
+    context "with EC2 credential environment variables set" do
+      before :each do
+        ENV.stub(:[]).with("AWS_ACCESS_KEY_ID").and_return("env_access_key")
+        ENV.stub(:[]).with("AWS_SECRET_ACCESS_KEY").and_return("env_secret_key")
+      end
+      subject do
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")         { should == "env_access_key" }
+      its("secret_access_key")     { should == "env_secret_key" }
+      its("session_token")         { should be_nil }
+    end
+
     context "without EC2 credential environment variables and fallback to default profile" do
-      ## ENV has been nuked so ENV['HOME'] will be a empty string
+      subject do
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")         { should == "AKIdefault" }
+      its("secret_access_key")     { should == "PASSdefault" }
+      its("session_token")         { should be_nil }
+    end
+
+    context "without EC2 credential environment variables and fallback to default profile" do
       subject do
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
@@ -179,7 +210,6 @@ aws_session_token= TOKuser3
     end
 
     context "without EC2 credential environment variables and chosing a profile" do
-      ## ENV has been nuked so ENV['HOME'] will be a empty string
       subject do
         allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
         allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
@@ -194,6 +224,7 @@ aws_session_token= TOKuser3
       its("region")                { should == "us-west-2" }
     end
   end
+
 
 
   describe "region config" do
