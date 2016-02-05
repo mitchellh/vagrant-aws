@@ -1,6 +1,18 @@
 require "vagrant-aws/config"
 require 'rspec/its'
 
+# remove deprecation warnings
+# (until someone decides to update the whole spec file to rspec 3.4)
+RSpec.configure do |config|
+  # ...
+  config.mock_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
+  config.expect_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
+end
+
 describe VagrantPlugins::AWS::Config do
   let(:instance) { described_class.new }
 
@@ -109,6 +121,80 @@ describe VagrantPlugins::AWS::Config do
       its("session_token")     { should == "session_token" }
     end
   end
+
+
+  describe "getting credentials from AWS profile" do
+    let(:filename_cfg)  { "/.aws/config" }
+    let(:filename_keys) { "/.aws/credentials" }
+    #let(:data_cfg)      { "[default]\nregion=eu-west-1\noutput=text" }
+    #let(:data_keys)     { "[default]\naws_access_key_id=AKI\naws_secret_access_key=foobar" }
+    let(:data_cfg)      { 
+"[default]
+region=eu-west-1
+output=json
+
+[profile user1]
+region=us-east-1
+output=text
+
+[profile user2]
+region=us-east-1
+output=text
+
+[profile user3]
+region=us-west-2
+output=text
+" }
+let(:data_keys)     { 
+"[default]
+aws_access_key_id=AKIdefault
+aws_secret_access_key=PASSdefault
+
+[user1]
+aws_access_key_id=AKIuser1
+aws_secret_access_key=PASSuser1
+
+[user2]
+aws_access_key_id=AKIuser2
+aws_secret_access_key=PASSuser2
+aws_session_token=TOKuser2
+
+[user3]
+aws_access_key_id=AKIuser3
+aws_secret_access_key=PASSuser3
+aws_session_token= TOKuser3
+" }
+    context "without EC2 credential environment variables and fallback to default profile" do
+      ## ENV has been nuked so ENV['HOME'] will be a empty string
+      subject do
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")         { should == "AKIdefault" }
+      its("secret_access_key")     { should == "PASSdefault" }
+      its("session_token")         { should be_nil }
+    end
+
+    context "without EC2 credential environment variables and chosing a profile" do
+      ## ENV has been nuked so ENV['HOME'] will be a empty string
+      subject do
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        instance.aws_profile = "user3"
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")         { should == "AKIuser3" }
+      its("secret_access_key")     { should == "PASSuser3" }
+      its("session_token")         { should == "TOKuser3" }
+      its("region")                { should == "us-west-2" }
+    end
+  end
+
 
   describe "region config" do
     let(:config_access_key_id)     { "foo" }
