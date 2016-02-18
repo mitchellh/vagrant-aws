@@ -167,6 +167,9 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+Note that you do not have to hard code your `aws.access_key_id` or `aws.secret_access_key`
+as they will be retrieved from the enviornment variables `AWS_ACCESS_KEY` and `AWS_SECRET_KEY`.
+
 In addition to the above top-level configs, you can use the `region_config`
 method to specify region-specific overrides within your Vagrantfile. Note
 that the top-level `region` config must always be specified to choose which
