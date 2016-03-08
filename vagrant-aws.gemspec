@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = "vagrant-aws"
 
   s.add_runtime_dependency "fog", "~> 1.22"
+  s.add_runtime_dependency "iniparse", "~> 1.4", ">= 1.4.2"
 
   s.add_development_dependency "rake"
   # rspec 3.4 to mock File
