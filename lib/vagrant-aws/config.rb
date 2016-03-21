@@ -1,4 +1,5 @@
 require "vagrant"
+require "iniparse"
 
 module VagrantPlugins
   module AWS
@@ -185,6 +186,16 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :tenancy
 
+      # The directory where AWS files are stored (usually $HOME/.aws)
+      #
+      # @return [String]
+      attr_accessor :aws_dir
+
+      # The selected AWS named profile (as defined in $HOME/.aws/* files)
+      #
+      # @return [String]
+      attr_accessor :aws_profile
+
       def initialize(region_specific=false)
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
@@ -220,6 +231,8 @@ module VagrantPlugins
         @unregister_elb_from_az    = UNSET_VALUE
         @kernel_id                 = UNSET_VALUE
         @tenancy                   = UNSET_VALUE
+        @aws_dir                   = UNSET_VALUE
+        @aws_profile               = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -304,11 +317,21 @@ module VagrantPlugins
       end
 
       def finalize!
-        # Try to get access keys from standard AWS environment variables; they
-        # will default to nil if the environment variables are not present.
-        @access_key_id     = ENV['AWS_ACCESS_KEY'] if @access_key_id     == UNSET_VALUE
-        @secret_access_key = ENV['AWS_SECRET_KEY'] if @secret_access_key == UNSET_VALUE
-        @session_token     = ENV['AWS_SESSION_TOKEN'] if @session_token == UNSET_VALUE
+        # If access_key_id or secret_access_key were not specified in Vagrantfile
+        # then try to read from environment variables first, and if it fails from
+        # the AWS folder.
+        if @access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE
+          @aws_profile = 'default' if @aws_profile == UNSET_VALUE
+          @aws_dir = ENV['HOME'].to_s + '/.aws/' if @aws_dir == UNSET_VALUE
+          @region, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
+          @region = UNSET_VALUE if @region.nil?
+        else
+          @aws_profile = nil
+          @aws_dir = nil
+        end
+
+        # session token must be set to nil, empty string isn't enough!
+        @session_token = nil if @session_token == UNSET_VALUE
 
         # AMI must be nil, since we can't default that
         @ami = nil if @ami == UNSET_VALUE
@@ -414,6 +437,10 @@ module VagrantPlugins
       def validate(machine)
         errors = _detected_errors
 
+        errors << I18n.t("vagrant_aws.config.aws_info_required",
+          :profile => @aws_profile, :location => @aws_dir) if \
+          @aws_profile and (@access_key_id.nil? or @secret_access_key.nil? or @region.nil?)
+
         errors << I18n.t("vagrant_aws.config.region_required") if @region.nil?
 
         if @region
@@ -449,5 +476,89 @@ module VagrantPlugins
         @__compiled_region_configs[name] || self
       end
     end
+
+
+    class Credentials < Vagrant.plugin("2", :config)
+      # This module reads AWS config and credentials. 
+      # Behaviour aims to mimic what is described in AWS documentation:
+      # http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
+      # http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
+      # Which is the following (stopping at the first successful case):
+      # 1) read config and credentials from environment variables
+      # 2) read config and credentials from files at location defined by environment variables
+      # 3) read config and credentials from files at default location 
+      #
+      # The mandatory fields for a successful "get credentials" are the id and the secret keys.
+      # Region is not required since Config#finalize falls back to sensible defaults.
+      # The behaviour is all-or-nothing (ie: no mixing between vars and files).
+      #
+      # It also allows choosing a profile (by default it's [default]) and an "info"
+      # directory (by default $HOME/.aws), which can be specified in the Vagrantfile.
+      # Supported information: region, aws_access_key_id, aws_secret_access_key, and aws_session_token.
+
+      def get_aws_info(profile, location)
+        # read credentials from environment variables
+        aws_region, aws_id, aws_secret, aws_token = read_aws_environment()
+        # if nothing there, then read from files
+        # (the _if_ doesn't check aws_region since Config#finalize sets one by default)
+        if aws_id.to_s == '' or aws_secret.to_s == ''
+          # check if there are env variables for credential location, if so use then
+          aws_config = ENV['AWS_CONFIG_FILE'].to_s
+          aws_creds = ENV['AWS_SHARED_CREDENTIALS_FILE'].to_s
+          if aws_config == '' or aws_creds == ''
+            aws_config = location + 'config'
+            aws_creds = location + 'credentials'
+          end
+          if File.exist?(aws_config) and File.exist?(aws_creds)
+            aws_region, aws_id, aws_secret, aws_token = read_aws_files(profile, aws_config, aws_creds)
+          end
+        end
+        aws_region = nil if aws_region == ''
+        aws_id     = nil if aws_id == ''
+        aws_secret = nil if aws_secret == ''
+        aws_token  = nil if aws_token == ''
+
+        return aws_region, aws_id, aws_secret, aws_token
+      end
+
+
+      private
+
+      def read_aws_files(profile, aws_config, aws_creds)
+        # determine section in config ini file
+        if profile == 'default'
+          ini_profile = profile
+        else
+          ini_profile = 'profile ' + profile
+        end
+        # get info from config ini file for selected profile
+        data = File.read(aws_config)
+        doc_cfg = IniParse.parse(data)
+        aws_region = doc_cfg[ini_profile]['region']
+
+        # determine section in credentials ini file
+        ini_profile = profile
+        # get info from credentials ini file for selected profile
+        data = File.read(aws_creds)
+        doc_cfg = IniParse.parse(data)
+        aws_id = doc_cfg[ini_profile]['aws_access_key_id']
+        aws_secret = doc_cfg[ini_profile]['aws_secret_access_key']
+        aws_token = doc_cfg[ini_profile]['aws_session_token']
+
+        return aws_region, aws_id, aws_secret, aws_token
+      end
+
+      def read_aws_environment()
+        aws_region = ENV['AWS_DEFAULT_REGION']
+        aws_id = ENV['AWS_ACCESS_KEY_ID']
+        aws_secret = ENV['AWS_SECRET_ACCESS_KEY']
+        aws_token = ENV['AWS_SESSION_TOKEN']
+
+        return aws_region, aws_id, aws_secret, aws_token
+      end
+
+    end
+
+
   end
 end

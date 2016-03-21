@@ -16,9 +16,11 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = "vagrant-aws"
 
   s.add_runtime_dependency "fog", "~> 1.22"
+  s.add_runtime_dependency "iniparse", "~> 1.4", ">= 1.4.2"
 
   s.add_development_dependency "rake"
-  s.add_development_dependency "rspec", "~> 2.12"
+  # rspec 3.4 to mock File
+  s.add_development_dependency "rspec", "~> 3.4"
   s.add_development_dependency "rspec-its"
 
   # The following block of code determines the files that should be included

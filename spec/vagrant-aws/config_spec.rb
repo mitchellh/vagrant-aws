@@ -1,6 +1,18 @@
 require "vagrant-aws/config"
 require 'rspec/its'
 
+# remove deprecation warnings
+# (until someone decides to update the whole spec file to rspec 3.4)
+RSpec.configure do |config|
+  # ...
+  config.mock_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
+  config.expect_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
+end
+
 describe VagrantPlugins::AWS::Config do
   let(:instance) { described_class.new }
 
@@ -62,6 +74,10 @@ describe VagrantPlugins::AWS::Config do
       :source_dest_check].each do |attribute|
 
       it "should not default #{attribute} if overridden" do
+        # but these should always come together, so you need to set them all or nothing
+        instance.send("access_key_id=".to_sym, "foo")
+        instance.send("secret_access_key=".to_sym, "foo")
+        instance.send("session_token=".to_sym, "foo")
         instance.send("#{attribute}=".to_sym, "foo")
         instance.finalize!
         instance.send(attribute).should == "foo"
@@ -89,8 +105,8 @@ describe VagrantPlugins::AWS::Config do
 
     context "with EC2 credential environment variables" do
       before :each do
-        ENV.stub(:[]).with("AWS_ACCESS_KEY").and_return("access_key")
-        ENV.stub(:[]).with("AWS_SECRET_KEY").and_return("secret_key")
+        ENV.stub(:[]).with("AWS_ACCESS_KEY_ID").and_return("access_key")
+        ENV.stub(:[]).with("AWS_SECRET_ACCESS_KEY").and_return("secret_key")
         ENV.stub(:[]).with("AWS_SESSION_TOKEN").and_return("session_token")
       end
 
@@ -105,6 +121,124 @@ describe VagrantPlugins::AWS::Config do
       its("session_token")     { should == "session_token" }
     end
   end
+
+
+  describe "getting credentials when there is an AWS profile" do
+    ## ENV has been nuked so ENV['HOME'] will be a empty string when Credentials#get_aws_info gets called
+    let(:filename_cfg)  { "/.aws/config" }
+    let(:filename_keys) { "/.aws/credentials" }
+    let(:data_cfg)      {
+"[default]
+region=eu-west-1
+output=json
+
+[profile user1]
+region=us-east-1
+output=text
+
+[profile user2]
+region=us-east-1
+output=text
+
+[profile user3]
+region=us-west-2
+output=text
+" }
+    let(:data_keys)     {
+"[default]
+aws_access_key_id=AKIdefault
+aws_secret_access_key=PASSdefault
+
+[user1]
+aws_access_key_id=AKIuser1
+aws_secret_access_key=PASSuser1
+
+[user2]
+aws_access_key_id=AKIuser2
+aws_secret_access_key=PASSuser2
+aws_session_token=TOKuser2
+
+[user3]
+aws_access_key_id=AKIuser3
+aws_secret_access_key=PASSuser3
+aws_session_token= TOKuser3
+" }
+    # filenames and file data when using AWS_SHARED_CREDENTIALS_FILE and AWS_CONFIG_FILE
+    let(:sh_dir)           { "/aws_shared/" }
+    let(:sh_filename_cfg)  { sh_dir + "config" }
+    let(:sh_filename_keys) { sh_dir + "credentials" }
+    let(:sh_data_cfg)      { "[default]\nregion=sh-region\noutput=text" }
+    let(:sh_data_keys)     { "[default]\naws_access_key_id=AKI_set_shared\naws_secret_access_key=set_shared_foobar" }
+
+    context "with EC2 credential environment variables set" do
+      subject do
+        ENV.stub(:[]).with("AWS_ACCESS_KEY_ID").and_return("env_access_key")
+        ENV.stub(:[]).with("AWS_SECRET_ACCESS_KEY").and_return("env_secret_key")
+        ENV.stub(:[]).with("AWS_SESSION_TOKEN").and_return("env_session_token")
+        ENV.stub(:[]).with("AWS_DEFAULT_REGION").and_return("env_region")
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")        { should == "env_access_key" }
+      its("secret_access_key")    { should == "env_secret_key" }
+      its("session_token")        { should == "env_session_token" }
+      its("region")               { should == "env_region" }
+    end
+
+    context "without EC2 credential environment variables but with AWS_CONFIG_FILE and AWS_SHARED_CREDENTIALS_FILE set" do
+      subject do
+        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        ENV.stub(:[]).with("AWS_CONFIG_FILE").and_return(sh_filename_cfg)
+        ENV.stub(:[]).with("AWS_SHARED_CREDENTIALS_FILE").and_return(sh_filename_keys)
+        allow(File).to receive(:read).with(sh_filename_cfg).and_return(sh_data_cfg)
+        allow(File).to receive(:read).with(sh_filename_keys).and_return(sh_data_keys)
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")         { should == "AKI_set_shared" }
+      its("secret_access_key")     { should == "set_shared_foobar" }
+      its("session_token")         { should be_nil }
+      its("region")                { should == "sh-region" }
+    end
+
+    context "without any credential environment variables and fallback to default profile at default location" do
+      subject do
+        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")         { should == "AKIdefault" }
+      its("secret_access_key")     { should == "PASSdefault" }
+      its("session_token")         { should be_nil }
+    end
+
+    context "without any credential environment variables and chosing a profile" do
+      subject do
+        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        instance.aws_profile = "user3"
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")         { should == "AKIuser3" }
+      its("secret_access_key")     { should == "PASSuser3" }
+      its("session_token")         { should == "TOKuser3" }
+      its("region")                { should == "us-west-2" }
+    end
+  end
+
+
 
   describe "region config" do
     let(:config_access_key_id)     { "foo" }
@@ -187,6 +321,7 @@ describe VagrantPlugins::AWS::Config do
 
         # Set some top-level values
         instance.access_key_id = "parent"
+        instance.secret_access_key = "parent"
         instance.ami = "parent"
 
         # Finalize and get the region
@@ -195,6 +330,7 @@ describe VagrantPlugins::AWS::Config do
       end
 
       its("access_key_id") { should == "parent" }
+      its("secret_access_key") { should == "parent" }
       its("ami")           { should == "child" }
     end
 
