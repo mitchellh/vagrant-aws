@@ -46,14 +46,15 @@ module VagrantPlugins
             if env[:result]
               b2.use ConfigValidate
               b2.use Call, IsCreated do |env2, b3|
-                if !env2[:result]
+                unless env2[:result]
                   b3.use MessageNotCreated
                   next
                 end
+
                 b3.use ConnectAWS
                 b3.use ElbDeregisterInstance
+                b3.use ProvisionerCleanup, :before if defined?(ProvisionerCleanup)
                 b3.use TerminateInstance
-                b3.use ProvisionerCleanup if defined?(ProvisionerCleanup)
               end
             else
               b2.use MessageWillNotDestroy
