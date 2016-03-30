@@ -46,7 +46,7 @@ module VagrantPlugins
             if env[:result]
               b2.use ConfigValidate
               b2.use Call, IsCreated do |env2, b3|
-                unless env2[:result]
+                if !env2[:result]
                   b3.use MessageNotCreated
                   next
                 end
