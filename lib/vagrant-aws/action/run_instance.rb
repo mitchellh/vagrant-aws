@@ -284,7 +284,7 @@ module VagrantPlugins
           end
 
           # Save this IP to the data dir so it can be released when the instance is destroyed
-          if h 
+          if h
             ip_file = env[:machine].data_dir.join('elastic_ip')
             ip_file.open('w+') do |f|
               f.write(h.to_json)
@@ -292,7 +292,7 @@ module VagrantPlugins
           end
         end
 
-        def handle_elastic_ip_error(env, message) 
+        def handle_elastic_ip_error(env, message)
           @logger.debug(message)
           terminate(env)
           raise Errors::FogError,
