@@ -97,7 +97,6 @@ module VagrantPlugins
             :ebs_optimized             => ebs_optimized,
             :associate_public_ip       => associate_public_ip,
             :kernel_id                 => kernel_id,
-            :associate_public_ip       => associate_public_ip,
             :tenancy                   => tenancy
           }
 
