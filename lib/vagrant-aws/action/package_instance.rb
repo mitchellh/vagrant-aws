@@ -25,10 +25,9 @@ module VagrantPlugins
         include Vagrant::Util::Retryable
 
         def initialize(app, env)
-          @app    = app
+          super
           @logger = Log4r::Logger.new("vagrant_aws::action::package_instance")
           env["package.include"] ||= []
-          env["package.output"] ||= "package.box"
         end
 
         alias_method :general_call, :call
