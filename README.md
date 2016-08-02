@@ -161,6 +161,8 @@ This provider exposes quite a few provider-specific configuration options:
 * `tenancy` - When running in a VPC configure the tenancy of the instance.  Supports 'default' and 'dedicated'.
 * `tags` - A hash of tags to set on the machine.
 * `package_tags` - A hash of tags to set on the ami generated during the package operation.
+* `package_only_snapshot` - A boolean that indicates whether the package command should only
+   create an AMI snapshot and not create a vagrant box. Defaults to false.
 * `use_iam_profile` - If true, will use [IAM profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/instance-profiles.html)
   for credentials.
 * `block_device_mapping` - Amazon EC2 Block Device Mapping Property

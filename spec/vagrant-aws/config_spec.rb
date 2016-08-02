@@ -46,6 +46,7 @@ describe VagrantPlugins::AWS::Config do
     its("iam_instance_profile_name") { should be_nil }
     its("tags")              { should == {} }
     its("package_tags")      { should == {} }
+    its("package_only_snapshot") { should == false }
     its("user_data")         { should be_nil }
     its("use_iam_profile")   { should be false }
     its("block_device_mapping")  {should == [] }

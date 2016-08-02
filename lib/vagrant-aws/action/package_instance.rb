@@ -92,26 +92,30 @@ module VagrantPlugins
             raise Errors::FogError, :message => e.message
           end
 
-          # Handles inclusions from --include and --vagrantfile options
-          setup_package_files(env)
+          region=env[:machine].provider_config.region
+          region_config=env[:machine].provider_config.get_region_config(region)
+          if !region_config.package_only_snapshot
+            # Handles inclusions from --include and --vagrantfile options
+            setup_package_files(env)
 
-          # Setup the temporary directory for the tarball files
-          @temp_dir = env[:tmp_path].join(Time.now.to_i.to_s)
-          env["export.temp_dir"] = @temp_dir
-          FileUtils.mkpath(env["export.temp_dir"])
+            # Setup the temporary directory for the tarball files
+            @temp_dir = env[:tmp_path].join(Time.now.to_i.to_s)
+            env["export.temp_dir"] = @temp_dir
+            FileUtils.mkpath(env["export.temp_dir"])
 
-          # Create the Vagrantfile and metadata.json files from templates to go in the box
-          create_vagrantfile(env)
-          create_metadata_file(env)
+            # Create the Vagrantfile and metadata.json files from templates to go in the box
+            create_vagrantfile(env)
+            create_metadata_file(env)
 
-          # Just match up a couple environmental variables so that
-          # the superclass will do the right thing. Then, call the
-          # superclass to actually create the tarball (.box file)
-          env["package.directory"] = env["export.temp_dir"]
-          general_call(env)
-          
-          # Always call recover to clean up the temp dir
-          clean_temp_dir
+            # Just match up a couple environmental variables so that
+            # the superclass will do the right thing. Then, call the
+            # superclass to actually create the tarball (.box file)
+            env["package.directory"] = env["export.temp_dir"]
+            general_call(env)
+
+            # Always call recover to clean up the temp dir
+            clean_temp_dir
+          end
         end
 
         protected
