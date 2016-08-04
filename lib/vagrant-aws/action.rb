@@ -185,6 +185,18 @@ module VagrantPlugins
         end
       end
 
+      # This action is called to resync shared folders
+      def self.action_reload
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use ConnectAWS
+          b.use Call, IsCreated do |env, b2|
+            b2.use SyncFolders
+          end
+        end
+      end
+
+
       # The autoload farm
       action_root = Pathname.new(File.expand_path("../action", __FILE__))
       autoload :ConnectAWS, action_root.join("connect_aws")
