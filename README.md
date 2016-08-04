@@ -226,12 +226,24 @@ the AWS machine.
 ## Synced Folders
 
 There is minimal support for synced folders. Upon `vagrant up`,
-`vagrant reload`, and `vagrant provision`, the AWS provider will use
+ and `vagrant provision`, the AWS provider will use
 `rsync` (if available) to uni-directionally sync the folder to
 the remote machine over SSH.
 
 See [Vagrant Synced folders: rsync](https://docs.vagrantup.com/v2/synced-folders/rsync.html)
 
+
+## Amazon Linux AMI's
+
+[Amazon Linux AMIs](http://aws.amazon.com/amazon-linux-ami/) are set 
+to require tty when sudo'ing, which causes problems when Vagrant tries
+to do things like setup the rsync folder. In order to get around this
+you can send aws user_data to populate the cloud init config and change this
+for the ec2-user when the instance is created:
+
+```ruby
+aws.user_data = "#!/bin/bash\necho 'Defaults:ec2-user !requiretty' > /etc/sudoers.d/999-vagrant-cloud-init-requiretty && chmod 440 /etc/sudoers.d/999-vagrant-cloud-init-requiretty\nyum install -y puppet\n"
+```
 
 ## Other Examples
 
