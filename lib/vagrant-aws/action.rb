@@ -74,6 +74,7 @@ module VagrantPlugins
             end
 
             b2.use Provision
+            b2.use SyncedFolders
           end
         end
       end
