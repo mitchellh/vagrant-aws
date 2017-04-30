@@ -16,6 +16,9 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = "vagrant-aws"
 
   s.add_runtime_dependency "fog", "~> 1.22"
+  # 1.44 requires xmlrpc which only supports >= ruby 2.3
+  # https://github.com/fog/fog-core/issues/206
+  s.add_runtime_dependency 'fog-core', '1.43.0'
   s.add_runtime_dependency "iniparse", "~> 1.4", ">= 1.4.2"
 
   s.add_development_dependency "rake"
