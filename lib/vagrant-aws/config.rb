@@ -104,6 +104,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :subnet_id
 
+      # The network interface to launch the machine with.  Cannot be specified with subnet_id or security_groups
+      #
+      # @return [String]
+      attr_accessor :network_interface
+
       # The tags for the machine.
       #
       # @return [Hash<String, String>]

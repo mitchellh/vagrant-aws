@@ -33,6 +33,7 @@ module VagrantPlugins
           private_ip_address    = region_config.private_ip_address
           security_groups       = region_config.security_groups
           subnet_id             = region_config.subnet_id
+          network_interface     = region_config.network_interface
           tags                  = region_config.tags
           user_data             = region_config.user_data
           block_device_mapping  = region_config.block_device_mapping
@@ -65,6 +66,7 @@ module VagrantPlugins
           env[:ui].info(" -- Availability Zone: #{availability_zone}") if availability_zone
           env[:ui].info(" -- Keypair: #{keypair}") if keypair
           env[:ui].info(" -- Subnet ID: #{subnet_id}") if subnet_id
+          env[:ui].info(" -- Network Interface: ${network_interface}") if network_interface
           env[:ui].info(" -- IAM Instance Profile ARN: #{iam_instance_profile_arn}") if iam_instance_profile_arn
           env[:ui].info(" -- IAM Instance Profile Name: #{iam_instance_profile_name}") if iam_instance_profile_name
           env[:ui].info(" -- Private IP: #{private_ip_address}") if private_ip_address
@@ -99,6 +101,15 @@ module VagrantPlugins
             :kernel_id                 => kernel_id,
             :tenancy                   => tenancy
           }
+
+          if !network_interface.empty?
+            options[:network_interfaces] = [
+              {
+                :NetworkInterfaceId => network_interface,
+                :DeviceIndex         => 0
+              }
+            ]
+          end
 
           if !security_groups.empty?
             security_group_key = options[:subnet_id].nil? ? :groups : :security_group_ids
