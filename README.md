@@ -144,13 +144,14 @@ This provider exposes quite a few provider-specific configuration options:
 * `secret_access_key` - The secret access key for accessing AWS
 * `security_groups` - An array of security groups for the instance. If this
   instance will be launched in VPC, this must be a list of security group
-  Name. For a nondefault VPC, you must use security group IDs instead (http://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html).
+  Name. For a nondefault VPC, you must use security group IDs instead (http://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html).  This can not be used when setting `network_interface`.
 * `iam_instance_profile_arn` - The Amazon resource name (ARN) of the IAM Instance
     Profile to associate with the instance
 * `iam_instance_profile_name` - The name of the IAM Instance Profile to associate
   with the instance
-* `subnet_id` - The subnet to boot the instance into, for VPC.
+* `subnet_id` - The subnet to boot the instance into, for VPC.  This can not be used when setting `network_interface`.
 * `associate_public_ip` - If true, will associate a public IP address to an instance in a VPC.
+* `network_interface` - The id of an existing elastic network interface (eni) to be used as the primary network interface.  If this is specified, `security_groups` and `subnet_id` must be left blank.
 * `ssh_host_attribute` - If `:public_ip_address`, `:dns_name`, or
   `:private_ip_address`, will use the public IP address, DNS name, or private
   IP address, respectively, to SSH to the instance. By default Vagrant uses the
