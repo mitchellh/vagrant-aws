@@ -66,7 +66,7 @@ module VagrantPlugins
           env[:ui].info(" -- Availability Zone: #{availability_zone}") if availability_zone
           env[:ui].info(" -- Keypair: #{keypair}") if keypair
           env[:ui].info(" -- Subnet ID: #{subnet_id}") if subnet_id
-          env[:ui].info(" -- Network Interface: ${network_interface}") if network_interface
+          env[:ui].info(" -- Network Interface: #{network_interface}") if network_interface
           env[:ui].info(" -- IAM Instance Profile ARN: #{iam_instance_profile_arn}") if iam_instance_profile_arn
           env[:ui].info(" -- IAM Instance Profile Name: #{iam_instance_profile_name}") if iam_instance_profile_name
           env[:ui].info(" -- Private IP: #{private_ip_address}") if private_ip_address
@@ -102,7 +102,7 @@ module VagrantPlugins
             :tenancy                   => tenancy
           }
 
-          if !network_interface.empty?
+          if network_interface
             options[:network_interfaces] = [
               {
                 :NetworkInterfaceId => network_interface,
