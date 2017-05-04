@@ -42,6 +42,7 @@ describe VagrantPlugins::AWS::Config do
     its("session_token") { should be_nil }
     its("security_groups")   { should == [] }
     its("subnet_id")         { should be_nil }
+    its("network_interface") { should be_nil }
     its("iam_instance_profile_arn") { should be_nil }
     its("iam_instance_profile_name") { should be_nil }
     its("tags")              { should == {} }
@@ -68,7 +69,7 @@ describe VagrantPlugins::AWS::Config do
     [:access_key_id, :ami, :availability_zone, :instance_ready_timeout,
       :instance_package_timeout, :instance_type, :keypair_name, :ssh_host_attribute,
       :ebs_optimized, :region, :secret_access_key, :session_token, :monitoring,
-      :associate_public_ip, :subnet_id, :tags, :package_tags, :elastic_ip,
+      :associate_public_ip, :subnet_id, :network_interface, :tags, :package_tags, :elastic_ip,
       :terminate_on_shutdown, :iam_instance_profile_arn, :iam_instance_profile_name,
       :use_iam_profile, :user_data, :block_device_mapping,
       :source_dest_check].each do |attribute|
