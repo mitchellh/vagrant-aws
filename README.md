@@ -26,7 +26,7 @@ installing, `vagrant up` and specify the `aws` provider. An example is
 shown below.
 
 ```
-$ vagrant plugin install vagrant-aws
+$ vagrant plugin install vagrant-aws-mkubenka
 ...
 $ vagrant up --provider=aws
 ...
