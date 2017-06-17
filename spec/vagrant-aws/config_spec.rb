@@ -219,6 +219,23 @@ aws_session_token= TOKuser3
       its("access_key_id")         { should == "AKIdefault" }
       its("secret_access_key")     { should == "PASSdefault" }
       its("session_token")         { should be_nil }
+      its("region")                { should == "eu-west-1" }
+    end
+
+    context "with default profile and overriding region" do
+      subject do
+        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        instance.region = "eu-central-1"
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")         { should == "AKIdefault" }
+      its("secret_access_key")     { should == "PASSdefault" }
+      its("session_token")         { should be_nil }
+      its("region")                { should == "eu-central-1" }
     end
 
     context "without any credential environment variables and chosing a profile" do
