@@ -1,13 +1,7 @@
 # Vagrant AWS Provider
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/mitchellh/vagrant-aws?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-<span class="badges">
-[![Gem Version](https://badge.fury.io/rb/vagrant-aws.png)][gem]
-[![Dependency Status](https://gemnasium.com/mitchellh/vagrant-aws.png)][gemnasium]
-</span>
-
-[gem]: https://rubygems.org/gems/vagrant-aws
-[gemnasium]: https://gemnasium.com/mitchellh/vagrant-aws
+[![Build Status](https://travis-ci.org/mkubenka/vagrant-aws.svg?branch=master)](https://travis-ci.org/mkubenka/vagrant-aws)
+[![Gem Version](https://badge.fury.io/rb/vagrant-aws-mkubenka.svg)](https://badge.fury.io/rb/vagrant-aws-mkubenka)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.2+ plugin that adds an [AWS](http://aws.amazon.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in
