@@ -7,3 +7,13 @@ cache: bundler
 rvm:
   - 2.2.7
   - 2.3.4
+
+deploy:
+  provider: rubygems
+  api_key:
+    secure: A1AYezvoon6JdYHphtrUEeG98r7AtFqsPcETp4BX3sPlSvOghHqco57/JasxFBFbis1irfVxhjqIFaS0lfOO0yxfIJQFnbZ6tTzKJB7IkSWUMuVfGo6qRxnO4vnuodx9Vhh27A7lovuptMCQBDdHXoSPUjgqHacrEzYKLDOarHercnRNRT9mWYR//qFO4RHtQz7hG+6p9tUvGmSeUkXB6AZwDPycPAJgrCd6bRYwlTmID6Jlq07bjcqfTTN+jZzdC22nhgjw2Cao0skcszO3H71DZYeFhoRIA8sMKXnNt7LGtvA2FJFM65bJj3TLVVpDe5Itn/KpSLSwuE9phPpVhv828S98h8pbLVYrhat+2jvNOqwtVw9C0LC9GpPlBcd/8AYuDwEO5a+hdnZ08JnihzqSvQd2XX9XvBiKy/A5mBc5D9bYJ3YXsy6zXToMM0nP8Xr0z3NCEFWtJ3ueGzHVmsZqwdoiH/2g6syx4k1YBHb9zdeGciMdk1vmckPYZJLpGh4cj4bDeIHaGPaZ2tYiBSaQNN+6YEMShQgl1d5k5Du6lHdUKnYR4Z7lvQkjfU73lkDoA9PvZuR7b7yi44stEvsxTpNJCZUZN0JmlXAsGlS3hDpD8/LcJWI6M0y7tBPQ3gEB/3YSAYsAcqJZNZ3wyTuqLPZBPJFr6Prwq3VoMhU=
+  gem: vagrant-aws-mkubenka
+  on:
+    repo: mkubenka/vagrant-aws
+    branch: mkubenka
+    rvm: 2.3.4
