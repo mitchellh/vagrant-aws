@@ -196,6 +196,21 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :aws_profile
 
+      # Launch as spot instance
+      #
+      # @return [Boolean]
+      attr_accessor :spot_instance
+
+      # Spot request max price
+      #
+      # @return [String]
+      attr_accessor :spot_max_price
+
+      # Spot request validity
+      #
+      # @return [Time]
+      attr_accessor :spot_valid_until
+
       def initialize(region_specific=false)
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
@@ -233,6 +248,9 @@ module VagrantPlugins
         @tenancy                   = UNSET_VALUE
         @aws_dir                   = UNSET_VALUE
         @aws_profile               = UNSET_VALUE
+        @spot_instance             = UNSET_VALUE
+        @spot_max_price            = UNSET_VALUE
+        @spot_valid_until          = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -409,6 +427,15 @@ module VagrantPlugins
         # default to nil
         @kernel_id = nil if @kernel_id == UNSET_VALUE
 
+        # By default don't use spot requests
+        @spot_instance = false if @spot_instance == UNSET_VALUE
+
+        # Required, no default
+        @spot_max_price = nil if @spot_max_price == UNSET_VALUE
+
+        # Default: Request is effective indefinitely.
+        @spot_valid_until = nil if @spot_valid_until == UNSET_VALUE
+
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
         if !@__region_specific
@@ -460,6 +487,7 @@ module VagrantPlugins
           end
 
           errors << I18n.t("vagrant_aws.config.ami_required", :region => @region)  if config.ami.nil?
+          errors << I18n.t("vagrant_aws.config.spot_price_required") if config.spot_instance && config.spot_max_price.nil?
         end
 
         { "AWS Provider" => errors }
@@ -479,14 +507,14 @@ module VagrantPlugins
 
 
     class Credentials < Vagrant.plugin("2", :config)
-      # This module reads AWS config and credentials. 
+      # This module reads AWS config and credentials.
       # Behaviour aims to mimic what is described in AWS documentation:
       # http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
       # http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
       # Which is the following (stopping at the first successful case):
       # 1) read config and credentials from environment variables
       # 2) read config and credentials from files at location defined by environment variables
-      # 3) read config and credentials from files at default location 
+      # 3) read config and credentials from files at default location
       #
       # The mandatory fields for a successful "get credentials" are the id and the secret keys.
       # Region is not required since Config#finalize falls back to sensible defaults.
