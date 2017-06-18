@@ -107,7 +107,11 @@ module VagrantPlugins
           end
 
           begin
-            server = env[:aws_compute].servers.create(options)
+            server = if region_config.spot_instance
+                       server_from_spot_request(env, region_config, options)
+                     else
+                       env[:aws_compute].servers.create(options)
+                     end
           rescue Fog::Compute::AWS::NotFound => e
             # Invalid subnet doesn't have its own error so we catch and
             # check the error message here.
@@ -210,6 +214,87 @@ module VagrantPlugins
           terminate(env) if env[:interrupted]
 
           @app.call(env)
+        end
+
+        # returns a fog server or nil
+        def server_from_spot_request(env, config, options)
+          if config.spot_max_price.nil?
+            spot_price_current = env[:aws_compute].describe_spot_price_history({
+              'StartTime' => Time.now.iso8601,
+              'EndTime' => Time.now.iso8601,
+              'InstanceType' => [config.instance_type],
+              'ProductDescription' => [config.spot_price_product_description.nil? ? 'Linux/UNIX' : config.spot_price_product_description]
+            })
+
+            spot_price_current.body['spotPriceHistorySet'].each do |set|
+              (@price_set ||= []) << set['spotPrice'].to_f
+            end
+
+            if @price_set.nil?
+              raise Errors::FogError,
+                :message => "Could not find any history spot prices."
+            end
+
+            avg_price = @price_set.inject(0.0) { |sum, el| sum + el } / @price_set.size
+
+            # make the bid 10% higher than the average
+            price = (avg_price * 1.1).round(4)
+          else
+            price = config.spot_max_price
+          end
+
+          options.merge!({
+            :price => price,
+            :valid_until => config.spot_valid_until
+          })
+
+          env[:ui].info(I18n.t("vagrant_aws.launching_spot_instance"))
+          env[:ui].info(" -- Price: #{price}")
+          env[:ui].info(" -- Valid until: #{config.spot_valid_until}") if config.spot_valid_until
+
+          # create the spot instance
+          spot_req = env[:aws_compute].spot_requests.create(options)
+
+          @logger.info("Spot request ID: #{spot_req.id}")
+
+          # initialize state
+          status_code = ""
+          while true
+            sleep 5
+
+            spot_req.reload()
+
+            # display something whenever the status code changes
+            if status_code != spot_req.state
+              env[:ui].info(spot_req.fault)
+              status_code = spot_req.state
+            end
+            spot_state = spot_req.state.to_sym
+            case spot_state
+            when :not_created, :open
+              @logger.debug("Spot request #{spot_state} #{status_code}, waiting")
+            when :active
+              break; # :)
+            when :closed, :cancelled, :failed
+              msg = "Spot request #{spot_state} #{status_code}, aborting"
+              @logger.error(msg)
+              raise Errors::FogError, :message => msg
+            else
+              @logger.debug("Unknown spot state #{spot_state} #{status_code}, waiting")
+            end
+          end
+          # cancel the spot request but let the server go thru
+          spot_req.destroy()
+
+          server = env[:aws_compute].servers.get(spot_req.instance_id)
+
+          # Spot Instances don't support tagging arguments on creation
+          # Retrospectively tag the server to handle this
+          if !config.tags.empty?
+            env[:aws_compute].create_tags(server.identity, config.tags)
+          end
+
+          server
         end
 
         def recover(env)
