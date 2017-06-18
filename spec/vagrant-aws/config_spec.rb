@@ -60,6 +60,7 @@ describe VagrantPlugins::AWS::Config do
     its("tenancy")     { should == "default" }
     its("spot_instance")     { should == false }
     its("spot_max_price")    { should be_nil }
+    its("spot_price_product_description")  { should be_nil }
     its("spot_valid_until")  { should be_nil }
   end
 

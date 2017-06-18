@@ -172,7 +172,8 @@ This provider exposes quite a few provider-specific configuration options:
 * `endpoint` - The endpoint URL for connecting to AWS (or an AWS-like service). Only required for non AWS clouds, such as [eucalyptus](https://github.com/eucalyptus/eucalyptus/wiki).
 
 * `spot_instance` - Boolean value; indicates whether the config is for a spot instance, or on-demand. For more information about spot instances, see the [AWS Documentation](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-spot-instances-work.html)
-* `spot_max_price` - Decimal value; state the maximum bid for your spot instance. Ignored if `spot_instance` is not true.
+* `spot_max_price` - Decimal value; state the maximum bid for your spot instance. If nil, it will compute average price in `region` for selected `instance_type`.
+* `spot_price_product_description` - The product description for the spot price history used to compute average price. Defaults to 'Linux/UNIX'. 
 * `spot_valid_until` - Timestamp; when this spot instance request should expire, destroying any related instances. Ignored if `spot_instance` is not true.
 
 These can be set like typical provider-specific configuration:

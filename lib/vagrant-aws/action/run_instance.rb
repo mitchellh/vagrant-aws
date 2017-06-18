@@ -218,13 +218,38 @@ module VagrantPlugins
 
         # returns a fog server or nil
         def server_from_spot_request(env, config, options)
+          if config.spot_max_price.nil?
+            spot_price_current = env[:aws_compute].describe_spot_price_history({
+              'StartTime' => Time.now.iso8601,
+              'EndTime' => Time.now.iso8601,
+              'InstanceType' => [config.instance_type],
+              'ProductDescription' => [config.spot_price_product_description.nil? ? 'Linux/UNIX' : config.spot_price_product_description]
+            })
+
+            spot_price_current.body['spotPriceHistorySet'].each do |set|
+              (@price_set ||= []) << set['spotPrice'].to_f
+            end
+
+            if @price_set.nil?
+              raise Errors::FogError,
+                :message => "Could not find any history spot prices."
+            end
+
+            avg_price = @price_set.inject(0.0) { |sum, el| sum + el } / @price_set.size
+
+            # make the bid 10% higher than the average
+            price = (avg_price * 1.1).round(4)
+          else
+            price = config.spot_max_price
+          end
+
           options.merge!({
-            :price => config.spot_max_price,
+            :price => price,
             :valid_until => config.spot_valid_until
           })
 
           env[:ui].info(I18n.t("vagrant_aws.launching_spot_instance"))
-          env[:ui].info(" -- Price: #{config.spot_max_price}")
+          env[:ui].info(" -- Price: #{price}")
           env[:ui].info(" -- Valid until: #{config.spot_valid_until}") if config.spot_valid_until
 
           # create the spot instance
