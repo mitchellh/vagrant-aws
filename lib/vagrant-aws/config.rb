@@ -571,6 +571,8 @@ module VagrantPlugins
           ini_profile = 'profile ' + profile
         end
 
+        aws_region = doc_cfg[ini_profile]['region']
+
         # determine section in credentials ini file
         ini_profile = profile
         # get info from credentials ini file for selected profile
