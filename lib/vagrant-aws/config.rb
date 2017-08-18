@@ -560,16 +560,16 @@ module VagrantPlugins
       private
 
       def read_aws_files(profile, aws_config, aws_creds)
+        # get info from config ini file for selected profile
+        data = File.read(aws_config)
+        doc_cfg = IniParse.parse(data)
+
         # determine section in config ini file
-        if profile == 'default'
+        if profile == 'default'  || !doc_cfg[profile].nil?
           ini_profile = profile
         else
           ini_profile = 'profile ' + profile
         end
-        # get info from config ini file for selected profile
-        data = File.read(aws_config)
-        doc_cfg = IniParse.parse(data)
-        aws_region = doc_cfg[ini_profile]['region']
 
         # determine section in credentials ini file
         ini_profile = profile
