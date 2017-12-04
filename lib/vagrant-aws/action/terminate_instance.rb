@@ -28,6 +28,7 @@ module VagrantPlugins
           # Destroy the server and remove the tracking ID
           env[:ui].info(I18n.t("vagrant_aws.terminating"))
           server.destroy
+          server.wait_for { server.state == 'terminated' }
           env[:machine].id = nil
 
           @app.call(env)
