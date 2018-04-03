@@ -321,6 +321,7 @@ module VagrantPlugins
         # then try to read from environment variables first, and if it fails from
         # the AWS folder.
         if @access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE
+          @aws_profile = ENV['AWS_PROFILE'] if ENV['AWS_PROFILE']
           @aws_profile = 'default' if @aws_profile == UNSET_VALUE
           @aws_dir = ENV['HOME'].to_s + '/.aws/' if @aws_dir == UNSET_VALUE
           @region, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
