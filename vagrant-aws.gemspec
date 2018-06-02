@@ -1,4 +1,6 @@
-$:.unshift File.expand_path("../lib", __FILE__)
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "vagrant-aws/version"
 
 Gem::Specification.new do |s|
@@ -15,7 +17,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "vagrant-aws"
 
-  s.add_runtime_dependency "fog", "~> 1.22"
+  s.add_runtime_dependency "fog-aws", "~> 3.0"
   s.add_runtime_dependency "iniparse", "~> 1.4", ">= 1.4.2"
 
   s.add_development_dependency "rake"

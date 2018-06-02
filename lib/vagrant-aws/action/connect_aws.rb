@@ -1,4 +1,4 @@
-require "fog"
+require "fog-aws"
 require "log4r"
 
 module VagrantPlugins
