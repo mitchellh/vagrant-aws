@@ -533,25 +533,17 @@ module VagrantPlugins
       private
 
       def read_aws_files(profile, aws_config, aws_creds)
-        # determine section in config ini file
-        if profile == 'default'
-          ini_profile = profile
-        else
-          ini_profile = 'profile ' + profile
-        end
         # get info from config ini file for selected profile
         data = File.read(aws_config)
         doc_cfg = IniParse.parse(data)
-        aws_region = doc_cfg[ini_profile]['region']
+        aws_region = doc_cfg[profile]['region']
 
-        # determine section in credentials ini file
-        ini_profile = profile
         # get info from credentials ini file for selected profile
         data = File.read(aws_creds)
         doc_cfg = IniParse.parse(data)
-        aws_id = doc_cfg[ini_profile]['aws_access_key_id']
-        aws_secret = doc_cfg[ini_profile]['aws_secret_access_key']
-        aws_token = doc_cfg[ini_profile]['aws_session_token']
+        aws_id = doc_cfg[profile]['aws_access_key_id']
+        aws_secret = doc_cfg[profile]['aws_secret_access_key']
+        aws_token = doc_cfg[profile]['aws_session_token']
 
         return aws_region, aws_id, aws_secret, aws_token
       end
