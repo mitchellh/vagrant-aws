@@ -327,11 +327,12 @@ module VagrantPlugins
         # If access_key_id or secret_access_key were not specified in Vagrantfile
         # then try to read from environment variables first, and if it fails from
         # the AWS folder.
-        if @access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE
+        if (@access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE) and @use_iam_profile == UNSET_VALUE
           @aws_profile = 'default' if @aws_profile == UNSET_VALUE
           @aws_dir = ENV['HOME'].to_s + '/.aws/' if @aws_dir == UNSET_VALUE
           @region, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
           @region = UNSET_VALUE if @region.nil?
+        elsif @use_iam_profile != UNSET_VALUE
         else
           @aws_profile = nil
           @aws_dir = nil
@@ -447,7 +448,7 @@ module VagrantPlugins
 
         errors << I18n.t("vagrant_aws.config.aws_info_required",
           :profile => @aws_profile, :location => @aws_dir) if \
-          @aws_profile and (@access_key_id.nil? or @secret_access_key.nil? or @region.nil?)
+          @aws_profile.nil? and (@access_key_id.nil? or @secret_access_key.nil? or @region.nil?)
 
         errors << I18n.t("vagrant_aws.config.region_required") if @region.nil?
 
