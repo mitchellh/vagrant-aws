@@ -18,6 +18,8 @@ en:
 
     launching_instance: |-
       Launching an instance with the following settings...
+    launching_spot_instance: |-
+       Launching a spot request instance with the following settings...
     launch_no_keypair: |-
       Warning! You didn't specify a keypair to launch your instance with.
       This can sometimes result in not being able to access your instance.
@@ -104,7 +106,7 @@ en:
         Error: %{err}
       instance_package_timeout: |-
         The AMI failed to become "ready" in AWS. The timeout currently
-        set waiting for the instance to become ready is %{timeout} seconds. For 
+        set waiting for the instance to become ready is %{timeout} seconds. For
         larger instances AMI burning may take long periods of time. Please
         ensure the timeout is set high enough, it can be changed by adjusting
         the `instance_package_timeout` configuration on the AWS provider.
