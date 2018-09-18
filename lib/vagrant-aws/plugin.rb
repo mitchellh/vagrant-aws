@@ -34,6 +34,13 @@ module VagrantPlugins
         Provider
       end
 
+      provider_capability(:aws, :winrm_info) do
+        setup_logging
+        
+        require_relative 'capability'
+        Capability::WinRMInfo
+      end      
+
       # This initializes the internationalization strings.
       def self.setup_i18n
         I18n.load_path << File.expand_path("locales/en.yml", AWS.source_root)

@@ -62,6 +62,8 @@ en:
     will_not_destroy: |-
       The instance '%{name}' will not be destroyed, since the confirmation
       was declined.
+    getting_winrm_password: |-
+      Getting WinRM password from AWS...
 
     config:
       access_key_id_required: |-

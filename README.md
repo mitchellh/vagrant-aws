@@ -298,6 +298,41 @@ Vagrant.configure("2") do |config|
 end
 ```
 
+### Windows WinRM passwords
+
+Want to use the EC2-generated Administrator password as the WinRM password for your Windows images? Use `:aws` as the WinRM password, and it will be fetched and decrypted using your private key.
+
+```ruby
+Vagrant.configure("2") do |config|
+  # ... other stuff
+
+  config.vm.communicator = "winrm"
+  config.winrm.username = "Administrator"
+
+  config.vm.provider "aws" do |aws, override|
+    # Indicate that the password should be fetched and decrypted from AWS   
+    override.winrm.password = :aws
+
+    # private_key_path needed to decrypt the password
+    override.ssh.private_key_path = '~/mykey.pem'
+
+    # keypair name corresponding to private_key_path
+    aws.keypair_name = "mykey"
+
+    # Use a security group that allows WinRM port inbound (port 5985)
+    aws.security_groups = ['some_security_group_that_allows_winrm_inbound']
+
+    # Enable WinRM on the instance
+    aws.user_data = <<-USERDATA
+      <powershell>
+        Enable-PSRemoting -Force
+        netsh advfirewall firewall add rule name="WinRM HTTP" dir=in localport=5985 protocol=TCP action=allow
+      </powershell>
+    USERDATA
+  end
+end
+```
+
 ## Development
 
 To work on the `vagrant-aws` plugin, clone this repository out, and use

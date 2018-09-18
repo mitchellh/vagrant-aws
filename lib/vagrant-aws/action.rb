@@ -185,6 +185,14 @@ module VagrantPlugins
         end
       end
 
+      def self.action_get_winrm_password
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use ConnectAWS
+          b.use GetWinRMPassword
+        end
+      end
+
       # The autoload farm
       action_root = Pathname.new(File.expand_path("../action", __FILE__))
       autoload :ConnectAWS, action_root.join("connect_aws")
@@ -205,6 +213,7 @@ module VagrantPlugins
       autoload :WarnNetworks, action_root.join("warn_networks")
       autoload :ElbRegisterInstance, action_root.join("elb_register_instance")
       autoload :ElbDeregisterInstance, action_root.join("elb_deregister_instance")
+      autoload :GetWinRMPassword, action_root.join("get_winrm_password")
     end
   end
 end
