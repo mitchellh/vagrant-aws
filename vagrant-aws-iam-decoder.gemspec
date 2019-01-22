@@ -2,13 +2,15 @@ $:.unshift File.expand_path("../lib", __FILE__)
 require "vagrant-aws/version"
 
 Gem::Specification.new do |s|
-  s.name          = "vagrant-aws"
+  s.name          = "vagrant-aws-iam-decoder"
   s.version       = VagrantPlugins::AWS::VERSION
+  # http://guides.rubygems.org/patterns/#prerelease-gems
+  s.version       = "#{s.version}.pre.#{ENV['TRAVIS_BUILD_NUMBER']}" if ENV['TRAVIS']
   s.platform      = Gem::Platform::RUBY
   s.license       = "MIT"
   s.authors       = "Mitchell Hashimoto"
   s.email         = "mitchell@hashicorp.com"
-  s.homepage      = "http://www.vagrantup.com"
+  s.homepage      = "https://github.com/iam-decoder/vagrant-aws"
   s.summary       = "Enables Vagrant to manage machines in EC2 and VPC."
   s.description   = "Enables Vagrant to manage machines in EC2 and VPC."
 

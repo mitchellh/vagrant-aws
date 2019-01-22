@@ -202,6 +202,26 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :aws_profile
 
+      # Launch as spot instance
+      #
+      # @return [Boolean]
+      attr_accessor :spot_instance
+
+      # Spot request max price
+      #
+      # @return [String]
+      attr_accessor :spot_max_price
+
+      # Spot request validity
+      #
+      # @return [Time]
+      attr_accessor :spot_valid_until
+
+      # The product description for the spot price history
+      #
+      # @return [String]
+      attr_accessor :spot_price_product_description
+
       def initialize(region_specific=false)
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
@@ -240,6 +260,9 @@ module VagrantPlugins
         @tenancy                   = UNSET_VALUE
         @aws_dir                   = UNSET_VALUE
         @aws_profile               = UNSET_VALUE
+        @spot_instance             = UNSET_VALUE
+        @spot_max_price            = UNSET_VALUE
+        @spot_valid_until          = UNSET_VALUE
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)
@@ -330,8 +353,8 @@ module VagrantPlugins
         if @access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE
           @aws_profile = 'default' if @aws_profile == UNSET_VALUE
           @aws_dir = ENV['HOME'].to_s + '/.aws/' if @aws_dir == UNSET_VALUE
-          @region, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
-          @region = UNSET_VALUE if @region.nil?
+          @aws_region, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
+          @region = @aws_region if @region == UNSET_VALUE and !@aws_region.nil?
         else
           @aws_profile = nil
           @aws_dir = nil
@@ -417,6 +440,18 @@ module VagrantPlugins
         # default to nil
         @kernel_id = nil if @kernel_id == UNSET_VALUE
 
+        # By default don't use spot requests
+        @spot_instance = false if @spot_instance == UNSET_VALUE
+
+        # default to nil
+        @spot_max_price = nil if @spot_max_price == UNSET_VALUE
+
+        # Default: Request is effective indefinitely.
+        @spot_valid_until = nil if @spot_valid_until == UNSET_VALUE
+
+        # default to nil
+        @spot_price_product_description = nil if @spot_price_product_description == UNSET_VALUE
+
         # Compile our region specific configurations only within
         # NON-REGION-SPECIFIC configurations.
         if !@__region_specific
@@ -487,14 +522,14 @@ module VagrantPlugins
 
 
     class Credentials < Vagrant.plugin("2", :config)
-      # This module reads AWS config and credentials. 
+      # This module reads AWS config and credentials.
       # Behaviour aims to mimic what is described in AWS documentation:
       # http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
       # http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
       # Which is the following (stopping at the first successful case):
       # 1) read config and credentials from environment variables
       # 2) read config and credentials from files at location defined by environment variables
-      # 3) read config and credentials from files at default location 
+      # 3) read config and credentials from files at default location
       #
       # The mandatory fields for a successful "get credentials" are the id and the secret keys.
       # Region is not required since Config#finalize falls back to sensible defaults.
@@ -533,15 +568,17 @@ module VagrantPlugins
       private
 
       def read_aws_files(profile, aws_config, aws_creds)
+        # get info from config ini file for selected profile
+        data = File.read(aws_config)
+        doc_cfg = IniParse.parse(data)
+
         # determine section in config ini file
-        if profile == 'default'
+        if profile == 'default'  || !doc_cfg[profile].nil?
           ini_profile = profile
         else
           ini_profile = 'profile ' + profile
         end
-        # get info from config ini file for selected profile
-        data = File.read(aws_config)
-        doc_cfg = IniParse.parse(data)
+
         aws_region = doc_cfg[ini_profile]['region']
 
         # determine section in credentials ini file

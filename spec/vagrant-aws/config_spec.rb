@@ -58,6 +58,10 @@ describe VagrantPlugins::AWS::Config do
     its("associate_public_ip")     { should == false }
     its("unregister_elb_from_az") { should == true }
     its("tenancy")     { should == "default" }
+    its("spot_instance")     { should == false }
+    its("spot_max_price")    { should be_nil }
+    its("spot_price_product_description")  { should be_nil }
+    its("spot_valid_until")  { should be_nil }
   end
 
   describe "overriding defaults" do
@@ -219,6 +223,23 @@ aws_session_token= TOKuser3
       its("access_key_id")         { should == "AKIdefault" }
       its("secret_access_key")     { should == "PASSdefault" }
       its("session_token")         { should be_nil }
+      its("region")                { should == "eu-west-1" }
+    end
+
+    context "with default profile and overriding region" do
+      subject do
+        allow(File).to receive(:exist?).and_return(true)
+        allow(File).to receive(:read).with(filename_cfg).and_return(data_cfg)
+        allow(File).to receive(:read).with(filename_keys).and_return(data_keys)
+        instance.region = "eu-central-1"
+        instance.tap do |o|
+          o.finalize!
+        end
+      end
+      its("access_key_id")         { should == "AKIdefault" }
+      its("secret_access_key")     { should == "PASSdefault" }
+      its("session_token")         { should be_nil }
+      its("region")                { should == "eu-central-1" }
     end
 
     context "without any credential environment variables and chosing a profile" do

@@ -1,13 +1,7 @@
 # Vagrant AWS Provider
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/mitchellh/vagrant-aws?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-<span class="badges">
-[![Gem Version](https://badge.fury.io/rb/vagrant-aws.png)][gem]
-[![Dependency Status](https://gemnasium.com/mitchellh/vagrant-aws.png)][gemnasium]
-</span>
-
-[gem]: https://rubygems.org/gems/vagrant-aws
-[gemnasium]: https://gemnasium.com/mitchellh/vagrant-aws
+[![Build Status](https://travis-ci.org/iam-decoder/vagrant-aws.svg?branch=iam-decoder)](https://travis-ci.org/iam-decoder/vagrant-aws)
+[![Gem Version](https://badge.fury.io/rb/vagrant-aws-iam-decoder.svg)](https://badge.fury.io/rb/vagrant-aws-iam-decoder)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.2+ plugin that adds an [AWS](http://aws.amazon.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in
@@ -24,6 +18,7 @@ EC2 and VPC.
 * Define region-specific configurations so Vagrant can manage machines
   in multiple regions.
 * Package running instances into new vagrant-aws friendly boxes
+* Spot Instance Support
 
 ## Usage
 
@@ -32,7 +27,7 @@ installing, `vagrant up` and specify the `aws` provider. An example is
 shown below.
 
 ```
-$ vagrant plugin install vagrant-aws
+$ vagrant plugin install vagrant-aws-iam-decoder
 ...
 $ vagrant up --provider=aws
 ...
@@ -137,7 +132,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `session_token` - The session token provided by STS
 * `private_ip_address` - The private IP address to assign to an instance
   within a [VPC](http://aws.amazon.com/vpc/)
-* `elastic_ip` - Can be set to 'true', or to an existing Elastic IP address. 
+* `elastic_ip` - Can be set to 'true', or to an existing Elastic IP address.
   If true, allocate a new Elastic IP address to the instance. If set
   to an existing Elastic IP address, assign the address to the instance.
 * `region` - The region to start the instance in, such as "us-east-1"
@@ -169,6 +164,11 @@ This provider exposes quite a few provider-specific configuration options:
 * `terminate_on_shutdown` - Indicates whether an instance stops or terminates
   when you initiate shutdown from the instance.
 * `endpoint` - The endpoint URL for connecting to AWS (or an AWS-like service). Only required for non AWS clouds, such as [eucalyptus](https://github.com/eucalyptus/eucalyptus/wiki).
+
+* `spot_instance` - Boolean value; indicates whether the config is for a spot instance, or on-demand. For more information about spot instances, see the [AWS Documentation](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-spot-instances-work.html)
+* `spot_max_price` - Decimal value; state the maximum bid for your spot instance. If nil, it will compute average price in `region` for selected `instance_type`.
+* `spot_price_product_description` - The product description for the spot price history used to compute average price. Defaults to 'Linux/UNIX'.
+* `spot_valid_until` - Timestamp; when this spot instance request should expire, destroying any related instances. Ignored if `spot_instance` is not true.
 
 These can be set like typical provider-specific configuration:
 
@@ -316,7 +316,7 @@ $ bundle exec rake
 If those pass, you're ready to start developing the plugin. You can test
 the plugin without installing it into your Vagrant environment by just
 creating a `Vagrantfile` in the top level of this directory (it is gitignored)
-and add the following line to your `Vagrantfile` 
+and add the following line to your `Vagrantfile`
 ```ruby
 Vagrant.require_plugin "vagrant-aws"
 ```
