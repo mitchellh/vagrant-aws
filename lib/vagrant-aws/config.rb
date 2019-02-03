@@ -120,6 +120,12 @@ module VagrantPlugins
       # @return [Hash<String, String>]
       attr_accessor :package_tags
 
+      # Whether to create a vagrant package or just take a snapshot when running
+      # the package subcommand.
+      #
+      # @return [Boolean]
+      attr_accessor :package_only_snapshot
+
       # Use IAM Instance Role for authentication to AWS instead of an
       # explicit access_id and secret_access_key
       #
@@ -222,6 +228,7 @@ module VagrantPlugins
         @subnet_id                 = UNSET_VALUE
         @tags                      = {}
         @package_tags              = {}
+        @package_only_snapshot     = false
         @user_data                 = UNSET_VALUE
         @use_iam_profile           = UNSET_VALUE
         @block_device_mapping      = []
