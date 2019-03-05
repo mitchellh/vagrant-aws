@@ -202,6 +202,13 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :aws_profile
 
+      # The additional network adapters which should
+      # be attached to instance
+      #
+      # @return [Array<Hash>]
+      attr_accessor :additional_network_interfaces
+
+
       def initialize(region_specific=false)
         @access_key_id             = UNSET_VALUE
         @ami                       = UNSET_VALUE
@@ -240,6 +247,7 @@ module VagrantPlugins
         @tenancy                   = UNSET_VALUE
         @aws_dir                   = UNSET_VALUE
         @aws_profile               = UNSET_VALUE
+	@additional_network_interfaces     = []
 
         # Internal state (prefix with __ so they aren't automatically
         # merged)

@@ -165,6 +165,7 @@ This provider exposes quite a few provider-specific configuration options:
   for credentials.
 * `block_device_mapping` - Amazon EC2 Block Device Mapping Property
 * `elb` - The ELB name to attach to the instance.
+* `additional_network_interfaces` - An array of the extra network interfaces to create and attach once the machine is up
 * `unregister_elb_from_az` - Removes the ELB from the AZ on removal of the last instance if true (default). In non default VPC this has to be false.
 * `terminate_on_shutdown` - Indicates whether an instance stops or terminates
   when you initiate shutdown from the instance.
@@ -297,6 +298,39 @@ Vagrant.configure("2") do |config|
   end
 end
 ```
+
+### Additional Network Adapters
+ 
+You can add extra network adapters to your instance after boot.
+ 
+```ruby
+ Vagrant.configure("2") do |config|
+  # ... other stuff
+ 
+  config.vm.provider "aws" do |aws|
+ 
+    # subnet & security groups for primary network interface with device index 0
+    aws.subnet_id = 'subnet-caba8084'
+    aws.security_groups = 'sg-edb6e09b'
+ 
+    # add additonal interfaces after boot
+    aws.additional_network_interfaces = [
+      { 
+        :device_index => 1, 
+        :subnet_id => 'subnet-2f76b4e7', 
+        :security_groups => ['sg-b2a58ce3', 'sg-008f7950'],
+        :private_ip_address => '172.16.110.200' #optional
+      },
+      { 
+        :device_index => 2, 
+        :subnet_id => 'subnet-e9725abc', 
+        :security_groups => ['sg-0ded8ff6']
+      }
+    ]
+  end
+end
+```
+
 
 ## Development
 
