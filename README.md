@@ -1,7 +1,5 @@
 # Vagrant AWS Provider
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/mitchellh/vagrant-aws?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-<span class="badges">
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/mitchellh/vagrant-aws?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Gem Version](https://badge.fury.io/rb/vagrant-aws.png)][gem]
 [![Dependency Status](https://gemnasium.com/mitchellh/vagrant-aws.png)][gemnasium]
 </span>
