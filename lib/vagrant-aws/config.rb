@@ -330,7 +330,10 @@ module VagrantPlugins
         if @access_key_id == UNSET_VALUE or @secret_access_key == UNSET_VALUE
           @aws_profile = 'default' if @aws_profile == UNSET_VALUE
           @aws_dir = ENV['HOME'].to_s + '/.aws/' if @aws_dir == UNSET_VALUE
-          @region, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
+          region_aws, @access_key_id, @secret_access_key, @session_token = Credentials.new.get_aws_info(@aws_profile, @aws_dir)
+          if @region == UNSET_VALUE
+            @region = region_aws
+          end
           @region = UNSET_VALUE if @region.nil?
         else
           @aws_profile = nil
