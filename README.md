@@ -1,4 +1,11 @@
 # Vagrant AWS Provider
+
+# Official Support
+
+**This plugin is no longer officially supported by HashiCorp, and is no longer maintained.
+It should only be used at your own risk, as the plugin may or may not work and is subject
+to breaking changes in future releases of Vagrant.**
+
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/mitchellh/vagrant-aws?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 <span class="badges">
