@@ -13,7 +13,7 @@ This is a [Vagrant](http://www.vagrantup.com) 1.2+ plugin that adds an [AWS](htt
 provider to Vagrant, allowing Vagrant to control and provision machines in
 EC2 and VPC.
 
-**NOTE:** This plugin requires Vagrant 1.2+,
+**NOTE:** This plugin requires Vagrant 1.2+, ruby-dev build-essential libxml2-dev zlib1g-dev libcurl4-gnutls-dev
 
 ## Features
 
