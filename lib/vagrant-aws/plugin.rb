@@ -4,10 +4,17 @@ rescue LoadError
   raise "The Vagrant AWS plugin must be run within Vagrant."
 end
 
-# This is a sanity check to make sure no one is attempting to install
-# this into an early Vagrant version.
-if Vagrant::VERSION < "1.2.0"
-  raise "The Vagrant AWS plugin is only compatible with Vagrant 1.2+"
+# This is a sanity check to make sure no one is attempting to install this
+# into an early Vagrant version or a Vagrant version that requires SSH
+# keys that AWS does not support.
+#
+# Upstream issue documenting platforms that don't support SHA2 SSH keys:
+# https://github.com/hashicorp/vagrant/issues/12344
+#
+# AWS documentation about what kinds of SSH keys are required:
+# https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
+if Vagrant::VERSION < "1.2.0" or "2.2.15" < Vagrant::Version
+  raise "The Vagrant AWS plugin is only compatible with Vagrant 1.2 to 2.2.15"
 end
 
 module VagrantPlugins
